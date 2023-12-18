@@ -1,0 +1,61 @@
+{
+  "name": "repairgest",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "start": "tauri dev"
+  },
+  "dependencies": {
+    "@mantine/core": "^7.3.2",
+    "@mantine/dates": "^7.3.2",
+    "@mantine/form": "^7.3.2",
+    "@mantine/hooks": "^7.3.2",
+    "@mantine/modals": "^7.3.2",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tauri-apps/api": "^1.5.2",
+    "dayjs": "^1.11.10",
+    "mongodb": "^6.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-modal": "^3.16.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
+    "@babel/preset-react": "^7.23.3",
+    "@tauri-apps/cli": "^1.5.8",
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@types/react-modal": "^3.16.3",
+    "@vitejs/plugin-react": "^4.0.3",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.56.0",
+    "postcss": "^8.4.32",
+    "postcss-preset-mantine": "^1.12.0",
+    "postcss-simple-vars": "^7.0.1",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.3",
+    "vite": "^4.4.4"
+  },
+  "resolutions": {
+    "mini-css-extract-plugin": "2.4.7"
+  },
+  "description": "This template should help get you started developing with Tauri, React and Typescript in Vite.",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/AndreFCTeles/RepairGest.git"
+  },
+  "author": "André Teles",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndreFCTeles/RepairGest/issues"
+  },
+  "homepage": "https://github.com/AndreFCTeles/RepairGest#readme"
+}
