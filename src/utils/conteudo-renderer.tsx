@@ -8,12 +8,12 @@ import ReparConteudo from '../components/reparacoes/reparacoes-conteudo';
 interface RenderConteudoProps { opcaoSelecionada: string; }
 
 const RenderConteudo: React.FC<RenderConteudoProps> = ({opcaoSelecionada}) => {
-   const componentes: Record<string, React.FC> = {
+   const conteudos: Record<string, React.FC> = {
       reparacoes: ReparConteudo,
       clientes: ClientesConteudo,
       principal: MainContent
    };
-   const ComponenteSelecionado = componentes[opcaoSelecionada];
+   const ComponenteSelecionado = conteudos[opcaoSelecionada];
 
    return (<ComponenteSelecionado />);
 };

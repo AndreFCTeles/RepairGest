@@ -1,6 +1,6 @@
 import React from 'react';
 import Procura from '../partilhado/procura'
-import DbDisplay from '../partilhado/db-display';
+// import DbDisplay from '../partilhado/db-display';
 
 const ClientesConteudo: React.FC = () => {
    return (    
@@ -10,9 +10,9 @@ const ClientesConteudo: React.FC = () => {
                <p>Filtros</p>               
                <Procura />
             </div>
-            <DbDisplay>
+            <div>{/*<DbDisplay>*/}
                <p>Clientes-Conteúdo</p>
-            </DbDisplay>
+            </div>{/*</DbDisplay>*/}
          </div>
       </>
    );

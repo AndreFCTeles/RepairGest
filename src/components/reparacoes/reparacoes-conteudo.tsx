@@ -1,6 +1,6 @@
 import React from 'react';
 import Procura from '../partilhado/procura';
-import DbDisplay from '../partilhado/db-display';
+// import DbDisplay from '../partilhado/db-display';
 
 const ReparConteudo:React.FC = () => {
    return (    
@@ -10,9 +10,9 @@ const ReparConteudo:React.FC = () => {
                <p>Filtros</p>               
                <Procura />
             </div>
-            <DbDisplay>
+            <div>{/*<DbDisplay>*/}
                <p>Reparações-Conteúdo</p>
-            </DbDisplay>
+            </div>{/*</DbDisplay>*/}
          </div>
       </>
    );

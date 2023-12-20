@@ -19,6 +19,23 @@
   -webkit-text-size-adjust: 100%;
 }
 
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+}
+
+input {
+  padding: 3px 10px 3px 10px;
+}
+
+.mantine-TextInput-root {
+  border: 1px;
+  border-radius: 5px;
+}
+
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 0, 0, 0;
@@ -27,14 +44,18 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
-}
-
 @layer components {
+
+  #root,
+  nav {
+    @apply h-full
+  }
+
+  body,
+  main {
+    @apply h-screen
+  }
+
   .navButton {
     @apply w-full p-2 mb-1 rounded-sm ring-1 focus:bg-white block ring-white bg-gray-100 hover:bg-gray-200 text-black text-center font-bold;
   }
