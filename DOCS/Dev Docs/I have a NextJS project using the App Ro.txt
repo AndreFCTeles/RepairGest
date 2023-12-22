@@ -1,0 +1,35 @@
+I have a NextJS project using the App Router and fetching data from JSON files using NextApiRequest and NextApiResponse. This is the code from my api/fetchData.ts file, that fetches a JSON file from http://localhost:4000/users:
+
+import { NextApiRequest, NextApiResponse } from 'next';
+
+const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
+   try {
+      const {path} = req.query;
+      if (!path) return res.status(400).json({error: 'Invalid path'});
+     
+      const filePath = 'http://localhost:4000/${path}';
+      const response = await fetch(filePath);
+      if (!response.ok) throw new Error('data fetching (${filePath}) failed. Status: ${response.status}.')
+      const jsonData = await response.json();
+
+      res.status(200).json(jsonData); 
+      console.log(response.json())     
+      return response.json();
+   } catch (error) {
+      console.error('Fetch error:', error);
+      res.status(500).json({ error: 'Server error' });
+   }
+};
+export default fetchData;
+
+How do I make it so fetchData() receives a dynamic path to a JSON file, so I can use this function for different JSON files? How do I use this function to fetch JSON data from different pages?
+I want the user to specify which JSON file to fetch using buttons (onClick method) on the main page.tsx.
+Keep in mind I don't want to use 'useRouter'.
+
+The goal for this is to create tables dynamically, using data from requested JSON file.
+To summarize: 
+- page.tsx has buttons that choose which JSON file to fetch. It has a sidebar with buttons and a <div> element to present the resulting table.
+- ui/shared/TableConstructor requests data to be fetched using api/fetchData.ts and proceeds to generate a table with the provided JSON data.
+- api/fetchData.ts handles the fetch request using the provided JSON name/path and NextApiRequest and NextApiResponse.
+
+

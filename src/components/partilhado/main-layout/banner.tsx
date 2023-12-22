@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
+import { Flex, Stack } from '@mantine/core';
 
-const Banner: React.FC = () => {
+interface BannerProps { children: ReactNode; }
+
+const Banner: React.FC<BannerProps> = ({ children }) => {
    return (
-      <div className='bg-white flex flex-row justify-items-center'>{/*  h-1/6 */}
-         <div className="p-4 flex flex-1">
-            <p className='p-2'>Logo</p>
-            <p className='p-2'>REPAIRGEST</p>            
-         </div>  
-      </div>
+      <Stack className='bg-white h-full w-full' gap={0}>
+         <Flex className='flavourDiv h-1/4 w-full'>REPAIRgest</Flex>
+         <Flex className="p-4 h-3/4" align="center">
+            {children}          
+         </Flex>  
+      </Stack>
    );
 };
 

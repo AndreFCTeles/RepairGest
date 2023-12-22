@@ -1,7 +1,7 @@
+import React, { useState } from 'react';
+import { Text, Stack, Flex, TextInput, Textarea, Checkbox, Button, Group, Box, Fieldset, Select, SegmentedControl } from '@mantine/core';
 // import { useForm } from '@mantine/form';
-import { Stack, Affix, Flex, TextInput, Textarea, Checkbox, Button, Group, Box, Fieldset, Select, ScrollArea, SegmentedControl } from '@mantine/core';
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
-import React, { useState, useRef, useEffect } from 'react';
 import 'dayjs/locale/pt';
 
 const NRInternaForm: React.FC = () => {
@@ -10,15 +10,6 @@ const NRInternaForm: React.FC = () => {
    const [valorAcc, setValorAcc] = useState('nao');
    // inicialização da data
    const [data, setData] = useState<Date | null>(null);
-   // configuração de scroll
-   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
-   useEffect(() => {
-      // Configurar ScrollArea max height para altura da parent div
-      if (scrollAreaRef.current) {
-         const parentHeight = scrollAreaRef.current.clientHeight;
-         scrollAreaRef.current.style.maxHeight = `${parentHeight}px`;
-      }
-   }, []);
 
    /*
    const form = useForm({
@@ -34,15 +25,9 @@ const NRInternaForm: React.FC = () => {
    */
 
    return (
-      <div className='p-5 h-full'>
-         
-         <Group justify="flex-start" mt="md" className='pb-5'>
-            <h1 className='font-bold'>Reparação Interna</h1>
-            <Button type="submit" variant='default'>Confirmar</Button>
-            <Button type="submit" variant='default'>Imprimir</Button>
-            <Button type="submit" variant='default'>Enviar E-mail</Button>
-         </Group>
-         
+      <div className='p-5 h-full'>         
+         <Text className='font-bold' size="xl">Reparação Interna</Text>
+               
          <Box mx="auto"><form className='h-full'>
 
                <Flex
@@ -76,7 +61,7 @@ const NRInternaForm: React.FC = () => {
                         disabled
                         />
                         <TextInput
-                        label="Número da máquina"
+                        label="Número de série"
                         placeholder="auto-gerar num"
                         value={Math.floor(Math.random()*10000)}
                         disabled
