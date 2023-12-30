@@ -4,6 +4,9 @@ const app = express();
 const port = 3000;
 const fs = require('fs');
 const path = require('path');
+// const repairRoutes = require('./routes/repairRoutes');
+// const mongoose = require('mongoose');
+// const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors()); // Enable CORS for all routes
@@ -23,3 +26,14 @@ app.get('/api/data', (req, res) => {
 app.listen(port, () => {
    console.log(`Server is running at http://localhost:${port}`);
 });
+
+/*
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/yourdbname', {
+   useNewUrlParser: true,
+   useUnifiedTopology: true,
+});
+
+// Use repair routes
+app.use('/api/repairs', repairRoutes);
+*/

@@ -1,6 +1,6 @@
 import React from 'react';
-import Procura from '../partilhado/procura';
-import { Button, Group, Flex, Menu } from '@mantine/core';
+//import Procura from '../partilhado/procura';
+import { Button, Flex, Menu } from '@mantine/core';
 
 const ReparFiltros:React.FC = () => {
    return (    

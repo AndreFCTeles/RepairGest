@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, Stack, Flex, TextInput, Textarea, Checkbox, Button, Group, Box, Fieldset, Select, SegmentedControl } from '@mantine/core';
+import { Text, Stack, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, Select, SegmentedControl } from '@mantine/core';
 // import { useForm } from '@mantine/form';
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 import 'dayjs/locale/pt';
@@ -23,12 +23,30 @@ const NRInternaForm: React.FC = () => {
       },
    });
    */
+   const [formData, setFormData] = useState({});
+
+   const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+         const response = await fetch('http://localhost:5000/api/repairs/create', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify(formData),
+         });
+         // Handle response as needed
+      } catch (error) {
+         console.error('Error submitting form:', error);
+      }
+   };
+
 
    return (
       <div className='p-5 h-full'>         
          <Text className='font-bold' size="xl">Reparação Interna</Text>
                
-         <Box mx="auto"><form className='h-full'>
+         <Box mx="auto"><form onSubmit={handleSubmit} className='h-full'>
 
                <Flex
                justify="center"

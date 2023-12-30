@@ -1,6 +1,6 @@
 // Frameworks
 import React, { useState }  from 'react';
-import { Flex, Image, AppShell, Burger, Button, Group, Collapse, ScrollArea, Container } from '@mantine/core';
+import { Flex, Stack, Image, AppShell,  Button, Group, Collapse, ScrollArea, Container } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 // Componentes
 import Banner from "./components/partilhado/main-layout/banner";
@@ -8,6 +8,10 @@ import RenderFiltros from './utils/filtros-renderer';
 import RenderConteudo from './utils/conteudo-renderer';
 import RenderFormulario from './utils/form-renderer';
 import logo190x170 from './assets/logo190x170.png';
+// Tabela
+
+
+
 
 const App: React.FC = () => {
    // Estados para conteúdo
@@ -16,7 +20,7 @@ const App: React.FC = () => {
    const [opcaoFormSelecionada, setOpcaoFormSelecionada] = useState<string>(''); // Conteúdo de Formulário
    // MENU
       // Colapsa menu em viewports pequenos
-      const [opened, { toggle }] = useDisclosure();
+      // const [opened, { toggle }] = useDisclosure();
       // Estados de dropdowns
       const [reparacoesState, reparacoesActions] = useDisclosure(); // Reparações A
       const [botState, botActions] = useDisclosure(); // Reparações B
@@ -39,20 +43,24 @@ const App: React.FC = () => {
          </Flex>); }
    }
 
+
+
+
+
    return (
       <AppShell
       layout='alt'
       header={{height:100}}
       navbar={{
-         width: {sm: 200, lg: 300},
+         width: {sm: 200, md: 300, lg: 400},
          breakpoint: 'sm',
-         collapsed: { mobile: !opened } 
+         //collapsed: { mobile: !opened } 
       }}>
          <AppShell.Header>            
             <Group h="100%" w="100%">
                <Banner>
                   <Group align='center' className='pl-0 pr-4'>
-                     <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+                     {/*<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />*/}
                      <Container hiddenFrom="sm">Menu</Container>
                   </Group>
                   {renderFiltros()}
@@ -61,9 +69,12 @@ const App: React.FC = () => {
          </AppShell.Header>
          
          <AppShell.Navbar>
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            <div className="flex flex-col navbar p-4 h-full">
-               <Image src={logo190x170} className='pb-4'/>
+            {/*<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />*/}
+            <Stack gap={0} justify='start' className="navbar p-4 h-full ">
+               <Flex id="logoContainer">
+                  <Image src={logo190x170} className='pb-4 self-auto mx-auto'  />
+               </Flex>
+               
                {/* REPARAÇÕES */}
                <div className='bg-opacity-30 bg-black'> 
                   <Group>
@@ -166,7 +177,7 @@ const App: React.FC = () => {
                      setOpcaoContSelecionada('principal');
                   }}>Voltar</Button>
                )}
-            </div>
+            </Stack>
          </AppShell.Navbar>
 
          <ScrollArea>

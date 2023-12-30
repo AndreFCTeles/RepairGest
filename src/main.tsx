@@ -6,8 +6,14 @@ import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import "./estilos.css";
 
+
+const theme = {
+  breakpoints: {sm: '300px' },
+  navbar: {breakpoint: null}
+}
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <MantineProvider>
+  <MantineProvider theme={theme}>
     <App />
   </MantineProvider>,
 );

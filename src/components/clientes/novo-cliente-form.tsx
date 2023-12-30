@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Text, Stack, Flex, TextInput, Textarea, Checkbox, Button, Group, Box, Fieldset, Select, SegmentedControl } from '@mantine/core';
+import React from 'react';
+import { Text, Stack, Flex, TextInput, Textarea,  Box, Fieldset, Select, } from '@mantine/core';
 // import { useForm } from '@mantine/form';
-import { DatePickerInput , DatesProvider} from '@mantine/dates'
+//import { DatePickerInput , DatesProvider} from '@mantine/dates'
 import 'dayjs/locale/pt';
 
 const NClienteForm: React.FC = () => {
