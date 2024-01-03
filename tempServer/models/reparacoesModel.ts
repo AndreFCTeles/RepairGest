@@ -1,0 +1,55 @@
+interface Reparacao {
+   _id: { $oid: string };
+   ID: number;
+   Maquina: string;
+   NumMaquina: string;
+   Marca: string;
+   OrdemReparacao: number;
+   Actualizada: null | boolean; // Assuming this can be null or a string
+   Avaria1: null | boolean;
+   Avaria2: null | boolean;
+   Avaria3: null | boolean;
+   Avaria4: null | boolean;
+   Avaria5: null | boolean;
+   Avaria6: null | boolean;
+   Avaria7: null | boolean;
+   Avaria8: null | boolean;
+   Avaria9: null | boolean;
+   Avaria10: null | boolean;
+   Avaria11: null | boolean;
+   Avaria12: null | boolean;
+   Avaria13: null | boolean;
+   Avaria14: null | boolean;
+   Avaria15: null | boolean;
+   Avaria16: null | boolean;
+   Avaria17: null | boolean;
+   Avaria18: null | boolean;
+   Avaria19: null | boolean;
+   Avaria20: null | boolean;
+   Avaria21: null | boolean;
+   Avaria22: null | boolean;
+   Avaria23: null | boolean;
+   Avaria24: null | boolean;
+   Avaria25: null | boolean;
+   Avaria26: null | boolean;
+   Avaria27: null | boolean;
+   Avaria28: null | boolean;
+   Avaria29: null | boolean;
+   Avaria30: null | boolean;
+   Extra1: null | boolean;
+   Extra2: null | boolean;
+   Extra3: null | boolean;
+   Observacoes: string;
+   DataTime: { $date: string };
+   Acessorios: null | boolean;
+   Tipo: null | string;
+   ModeloElectrex: null | boolean;
+   IntExt: null | string;
+   Utilizador: null | string;
+   Cliente: null | string;
+   Link: null | string;
+   LinkCheck: null | string;
+   ModeloCheck: null | string;
+}
+
+export default Reparacao;

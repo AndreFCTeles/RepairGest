@@ -1,22 +1,23 @@
-import React, { useEffect, useState } from 'react';
-
-const FetchData: React.FC<{ onDataFetched: (data: any) => void }> = ({ onDataFetched }) => {
-   const [loading, setLoading] = useState(true);
-
-   useEffect(() => {
-      fetch('http://localhost:3000/api/data')
-         .then((response) => response.json())
-         .then((data) => {
-         onDataFetched(data);
-         setLoading(false);
-         })
-         .catch((error) => {
-         console.error('Erro ao buscar dados:', error);
-         setLoading(false);
-         });
-   }, []);
-
-   return <div>{loading ? 'A carregar dados...' : null}</div>;
+const fetchData = async ( page: number, pageSize: number ) => {
+   try {
+      const response = await fetch(`http://localhost:3000/api/data?page=${page}&pageSize=${pageSize}`);
+      if (!response.ok) { throw new Error(`Busca de dados falhou. Status: ${response.status}`)};
+      const fetchedData = await response.json();
+      return fetchedData;
+   } catch (error) {
+      console.error('Erro ao buscar dados (fetch):', error);
+      throw error;
+   }
+};
+const fetchTotalCount = async () => {
+   try {
+      const response = await fetch('http://localhost:3000/api/total-count');
+      const totalCount = await response.json();
+      return { totalCount };
+   } catch (error) {
+      console.error('Error fetching total count:', error);
+      throw error;
+   }
 };
 
-export default FetchData;
+export {fetchData, fetchTotalCount};

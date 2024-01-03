@@ -11,6 +11,16 @@ const NRInternaForm: React.FC = () => {
    // inicialização da data
    const [data, setData] = useState<Date | null>(null);
 
+
+   // inicialização de estados para formulário
+   const [ordemRep, setOrdemRep] = useState("");
+   const [numSerie, setNumSerie] = useState("");
+   const [cliente, setCliente] = useState("");
+   const [marca, setMarca] = useState("");
+   const [modelo, setModelo] = useState("");
+   const [tipo, setTipo] = useState("");
+   const [observa, setObserva] = useState("");
+
    /*
    const form = useForm({
       initialValues: {
@@ -25,10 +35,10 @@ const NRInternaForm: React.FC = () => {
    */
    const [formData, setFormData] = useState({});
 
-   const handleSubmit = async (e) => {
+   const handleSubmit = async (e:any) => {
       e.preventDefault();
       try {
-         const response = await fetch('http://localhost:5000/api/repairs/create', {
+         const response = await fetch('http://localhost:5000/files', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',

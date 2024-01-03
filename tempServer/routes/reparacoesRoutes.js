@@ -1,12 +1,12 @@
-const express = require('express');
+const { express, Request, Response } = require('express');
 const router = express.Router();
-const Repair = require('../models/repairModel');
+const Repar = require('../models/reparacoesModel');
 
 // Create endpoint to handle data creation
-router.post('/create', async (req, res) => {
+router.post('/reparacoes', async (req, res) => {
    try {
-      const newRepair = await Repair.create(req.body);
-      res.json(newRepair);
+      const newRepar = await Repar.create(req.body);
+      res.json(newRepar);
    } catch (error) {
       console.error('Erro a criar nova reparação:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -14,10 +14,10 @@ router.post('/create', async (req, res) => {
 });
 
 // Create endpoint to handle data retrieval
-router.get('/retrieve', async (req, res) => {
+router.get('/reparacoes', async (req, res) => {
    try {
-      const repairs = await Repair.find();
-      res.json(repairs);
+      const repars = await Repar.find();
+      res.json(repars);
    } catch (error) {
       console.error('Erro a retornar reparações:', error);
       res.status(500).json({ error: 'Internal server error' });

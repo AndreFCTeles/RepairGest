@@ -8,7 +8,6 @@ import RenderFiltros from './utils/filtros-renderer';
 import RenderConteudo from './utils/conteudo-renderer';
 import RenderFormulario from './utils/form-renderer';
 import logo190x170 from './assets/logo190x170.png';
-// Tabela
 
 
 
