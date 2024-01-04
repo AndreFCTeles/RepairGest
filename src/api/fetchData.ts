@@ -9,15 +9,5 @@ const fetchData = async ( page: number, pageSize: number ) => {
       throw error;
    }
 };
-const fetchTotalCount = async () => {
-   try {
-      const response = await fetch('http://localhost:3000/api/total-count');
-      const totalCount = await response.json();
-      return { totalCount };
-   } catch (error) {
-      console.error('Error fetching total count:', error);
-      throw error;
-   }
-};
 
-export {fetchData, fetchTotalCount};
+export default fetchData;

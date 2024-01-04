@@ -4,13 +4,20 @@ import { Table } from '@mantine/core';
 interface GerarTabelaProps {
    data: any[];
    headers: string[];
+   currentPage: number;
+   itemsPerPage: number;
 }
 
-const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
+const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers, currentPage, itemsPerPage }) => {
    // em caso de erro
-   if (!data || !headers || data.length === 0 || headers.length === 0) {
+   if (!data || !headers || !data.length|| !headers.length) {
       return <div>Não existem dados a apresentar</div>;
    }
+   
+   // inicializar paginação
+   const startIndex = (currentPage - 1) * itemsPerPage;
+   const endIndex = startIndex + itemsPerPage;
+   const paginatedData = data.slice(startIndex, endIndex);
 
    const extractValue = (item: any, header: string): any => {
       // para estruturas nested
@@ -22,16 +29,13 @@ const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
             const nestedValue = value[key];
 
             // verificar se o valor está vazio
-            if (nestedValue !== null && nestedValue !== undefined) {
+            if (nestedValue !== null || nestedValue !== undefined) {
                const specialProperty = Object.keys(nestedValue).find(prop => prop.startsWith('$')); // verifica se o nome começa por $
-               const observa = Object.keys(nestedValue).find(prop => prop.includes('Observacoes')); // verifica se a key é "Observacoes"
-               if (specialProperty) {
+               if (specialProperty) {    
                   return nestedValue[specialProperty].toString();
-               } else if (observa) {
-                  
                }
                return nestedValue;
-            }           
+            }
          } else {
             return null; // keys em falta/inválidas
          }
@@ -52,7 +56,7 @@ const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
       </Table.Tr>
    ));
    
-   // Criar tabela propriamente dita
+   
    return (
       <Table stickyHeader stickyHeaderOffset={60} striped highlightOnHover withTableBorder withColumnBorders>
          <Table.Thead>

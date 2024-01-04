@@ -13,46 +13,49 @@ const ReparConteudo:React.FC = () => {
    useEffect(() => {
       const fetchDataAndUpdateState = async () => {
          try {
-            setIsLoading(true);
-            const fetchedData = await fetchData(currentPage, 30);
+            setIsLoading(true); // Set loading state to true
+            const {data: fetchedData, totalCount} = await fetchData(currentPage, 30);
 
             if (fetchedData.length > 0) {
                const primeiroItem = fetchedData[0];
                const headerKeys = Object.keys(primeiroItem);
                setHeaders(headerKeys);
-               setTotalItems(fetchedData.length);
             }
             setData(fetchedData);
+            setTotalItems(totalCount);
          } catch (error) {
             console.error('Erro ao buscar e atualizar dados:', error);
          } finally {
-            setIsLoading(false);
+            setIsLoading(false); // Set loading state to false after fetching is done
          }
       }
       fetchDataAndUpdateState();
-      
+
       return () => {}; // cleanup
    }, [currentPage]);
-   const handlePageChange = (newPage: number) => { setCurrentPage(newPage); }
+
+   const handlePageChange = (newPage: number) => {
+      setCurrentPage(newPage);
+   }
 
    return (    
       <div className="flex bg-gray-100">    
-         {isLoading ? (
-            // Display a loading spinner or message while data is being fetched
-            <div>Shit's loading yo</div>
-         ) : (
-            <Stack>
-               <Pagination
-                  total={totalItems}
-                  value={currentPage}
-                  onChange={handlePageChange}
-               />
-               <GerarTabela 
-                  data={data} 
-                  headers={headers} 
-               />  
-            </Stack>
-         )}
+         <Stack>
+            {isLoading ? (
+               // Display a loading spinner or message while data is being fetched
+               <div>Shit's loading yo</div>
+            ) : (
+               <>
+                  <Pagination
+                     total={totalItems}
+                     value={currentPage}
+                     onChange={handlePageChange}
+                     withEdges
+                  />
+                  <GerarTabela data={data} headers={headers} currentPage={currentPage} itemsPerPage={30} />
+               </>
+            )}
+         </Stack>
       </div>
    );
 };
