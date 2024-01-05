@@ -1,6 +1,6 @@
 // Frameworks
 import React, { useState }  from 'react';
-import { Flex, Stack, Image, AppShell,  Button, Group, Collapse, ScrollArea, Container } from '@mantine/core';
+import { Flex, Stack, Image, AppShell,  Button, Group, Collapse, Container } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 // Componentes
 import Banner from "./components/partilhado/main-layout/banner";
@@ -18,12 +18,12 @@ const App: React.FC = () => {
    const [opcaoContSelecionada, setOpcaoContSelecionada] = useState<string>('principal'); // Conteúdo de Tabela
    const [opcaoFormSelecionada, setOpcaoFormSelecionada] = useState<string>(''); // Conteúdo de Formulário
    // MENU
-      // Colapsa menu em viewports pequenos
-      // const [opened, { toggle }] = useDisclosure();
-      // Estados de dropdowns
-      const [reparacoesState, reparacoesActions] = useDisclosure(); // Reparações A
-      const [botState, botActions] = useDisclosure(); // Reparações B
-      const [clientesState, clientesActions] = useDisclosure(); // Clientes
+   // Colapsar menu em viewports pequenos?
+   // const [opened, { toggle }] = useDisclosure();
+   // Estados de dropdowns
+   const [reparacoesState, reparacoesActions] = useDisclosure(); // Reparações A
+   const [botState, botActions] = useDisclosure(); // Reparações B
+   const [clientesState, clientesActions] = useDisclosure(); // Clientes
 
    // Tipo de conteúdo a apresentar [Formulario, Tabela]
    const renderContent = () => {
@@ -40,11 +40,7 @@ const App: React.FC = () => {
                <Button type="submit" variant='default'>Enviar E-mail</Button>
             </Group>            
          </Flex>); }
-   }
-
-
-
-
+   };
 
    return (
       <AppShell
@@ -179,14 +175,12 @@ const App: React.FC = () => {
             </Stack>
          </AppShell.Navbar>
 
-         <ScrollArea>
-            <AppShell.Main>
-               <div id="Content" className="bg-gray-100 h-fit min-h-full">
-                     {/* Render tabela se 'conteudo' selecionado, render formulário se 'formulario' selecionado */}
-                     {renderContent()}
-               </div>
-            </AppShell.Main>
-         </ScrollArea>
+         <AppShell.Main>
+            <div id="Content">
+                  {/* Render tabela se 'conteudo' selecionado, render formulário se 'formulario' selecionado */}
+                  {renderContent()}
+            </div>
+         </AppShell.Main>
 
       </AppShell>
    );

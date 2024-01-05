@@ -2,23 +2,27 @@
 const express = require('express'); // framework essencial para API
 const cors = require('cors'); // framework de busca de dados
 const fs = require('fs').promises; // framework para sistema de ficheiros
-const path = require('path'); // libraria para caminhos de ficheiros
+const path = require('path'); // libraria para filesystem
 
 // configuração do servidor
 const app = express();
 const port = 3000;
-const dataFilePath = path.join(__dirname, 'files/tblRepairList.json');
+const dataFilePath = path.join(__dirname, 'files');
 
 // Inicialização
 app.use(express.json());
+/*
 const corsOptions = {
-   origin: `http://localhost:${port}`, // Replace with your front-end's actual origin
+   origin: `http://localhost:1420`, // Replace with your front-end's actual origin
    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
    credentials: true,
 };
 app.use(cors(corsOptions));
+*/
+app.use(cors());
+
 // Carregar dados JSON a partir de um ficheiro
-app.use('/files', express.static(path.join(__dirname, 'files'))); // Servir ficheiros estáticos a partir de caminho
+app.use('/files', express.static(dataFilePath)); // Servir ficheiros estáticos a partir de caminho
 
 // Ler ficheiro JSON
 const readJsonFile = async (fileName) => {
@@ -41,6 +45,11 @@ app.get('/api/data', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblRepairList.json';
       const jsonData = await readJsonFile(fileName);
+
+      // Ordenar dados pela data - mais recente primeiro
+      const sortedData = jsonData.sort((a, b) =>
+         new Date(a.DataTime['$date']).getTime() - new Date(b.DataTime['$date']).getTime()
+      );
 
       if (req.query.page || req.query.pageSize) { // caso seja pedida paginação
          // Declarar paginação pretendida
@@ -75,7 +84,8 @@ app.post('/api/data', async (req, res) => {
 
       jsonData.push(newRepar);
 
-      await fs.writeFile(dataFilePath, JSON.stringify(jsonData, null, 2), 'utf8');
+      const filePath = path.join(dataFilePath, fileName);
+      await fs.writeFile(filePath, JSON.stringify(jsonData, null, 2), 'utf8');
 
       res.status(201).json({ success: true, data: newRepar });
    } catch (error) {
@@ -84,4 +94,4 @@ app.post('/api/data', async (req, res) => {
 });
 
 // Start
-app.listen(port, () => { console.log(`servidor a correr em http://localhost:${port}`); });
+app.listen(port, () => { console.log(`Servidor a correr em http://localhost:${port}`); });

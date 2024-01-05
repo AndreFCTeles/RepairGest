@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table } from '@mantine/core';
+import { Table, Menu, Button, ScrollArea } from '@mantine/core';
 
 interface GerarTabelaProps {
    data: any[];
@@ -8,9 +8,7 @@ interface GerarTabelaProps {
 
 const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
    // em caso de erro
-   if (!data || !headers || data.length === 0 || headers.length === 0) {
-      return <div>Não existem dados a apresentar</div>;
-   }
+   if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
 
    const extractValue = (item: any, header: string): any => {
       // para estruturas nested
@@ -24,20 +22,32 @@ const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
             // verificar se o valor está vazio
             if (nestedValue !== null && nestedValue !== undefined) {
                const specialProperty = Object.keys(nestedValue).find(prop => prop.startsWith('$')); // verifica se o nome começa por $
-               const observa = Object.keys(nestedValue).find(prop => prop.includes('Observacoes')); // verifica se a key é "Observacoes"
                if (specialProperty) {
                   return nestedValue[specialProperty].toString();
-               } else if (observa) {
-                  
-               }
+               } 
                return nestedValue;
             }           
          } else {
             return null; // keys em falta/inválidas
          }
       }, item);
-   }
+   }   
 
+   // Componente Observações
+   const observacoes = (obData:string)=>{
+      return(
+         <Menu shadow="md" width={200}>
+            <Menu.Target>
+               <Button className="navButton">Ver</Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+               <Menu.Item>
+                  {obData}
+               </Menu.Item>
+            </Menu.Dropdown>
+         </Menu>
+      )
+   };
    // Popular componente Mantine
    const tableHeaders = headers.map((header) => (
       <Table.Th key={header}>{header}</Table.Th>
@@ -46,7 +56,7 @@ const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
       <Table.Tr key={index}>
          {headers.map((header) => (
          <Table.Td key={header}>
-            {extractValue(item, header)}
+            {header==='Observacoes' ? observacoes(extractValue(item, header)):extractValue(item, header)}
          </Table.Td>
          ))}
       </Table.Tr>
@@ -54,12 +64,14 @@ const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
    
    // Criar tabela propriamente dita
    return (
-      <Table stickyHeader stickyHeaderOffset={60} striped highlightOnHover withTableBorder withColumnBorders>
-         <Table.Thead>
-            <Table.Tr>{tableHeaders}</Table.Tr>
-         </Table.Thead>
-         <Table.Tbody>{tableRows}</Table.Tbody>
-      </Table>
+      <ScrollArea>
+         <Table stickyHeader stickyHeaderOffset={0} striped highlightOnHover withTableBorder withColumnBorders>
+            <Table.Thead>
+               <Table.Tr>{tableHeaders}</Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>{tableRows}</Table.Tbody>
+         </Table>
+      </ScrollArea>
    );
 };
 

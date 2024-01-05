@@ -30,6 +30,21 @@ main {
   padding-right: 0 !important;
 }
 
+#Content {
+  background-color: rgb(243 244 246);
+  height: 100% !important;
+  max-height: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.TableContainer {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}
+
 .flavourDiv {
   width: 100%;
   padding-left: 1em;
@@ -52,9 +67,6 @@ input {
   background-color: #2D2D2D;
 }
 
-#logoContainer {
-  width: 100% !important;
-}
 
 @media (prefers-color-scheme: dark) {
   :root {

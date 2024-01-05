@@ -13,6 +13,7 @@ const NRInternaForm: React.FC = () => {
 
 
    // inicialização de estados para formulário
+   /*
    const [ordemRep, setOrdemRep] = useState("");
    const [numSerie, setNumSerie] = useState("");
    const [cliente, setCliente] = useState("");
@@ -20,6 +21,7 @@ const NRInternaForm: React.FC = () => {
    const [modelo, setModelo] = useState("");
    const [tipo, setTipo] = useState("");
    const [observa, setObserva] = useState("");
+   */
 
    /*
    const form = useForm({
@@ -33,8 +35,9 @@ const NRInternaForm: React.FC = () => {
       },
    });
    */
-   const [formData, setFormData] = useState({});
+   //const [formData, setFormData] = useState({});
 
+   /*
    const handleSubmit = async (e:any) => {
       e.preventDefault();
       try {
@@ -50,13 +53,14 @@ const NRInternaForm: React.FC = () => {
          console.error('Error submitting form:', error);
       }
    };
+   */
 
 
    return (
       <div className='p-5 h-full'>         
          <Text className='font-bold' size="xl">Reparação Interna</Text>
                
-         <Box mx="auto"><form onSubmit={handleSubmit} className='h-full'>
+         <Box mx="auto"><form className='h-full'>{/*onSubmit=handleSubmit*/}
 
                <Flex
                justify="center"

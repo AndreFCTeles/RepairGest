@@ -8,6 +8,5 @@ const fetchData = async ( page: number, pageSize: number ) => {
       console.error('Erro ao buscar dados (fetch):', error);
       throw error;
    }
-};
-
+}
 export default fetchData;
