@@ -20,8 +20,10 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "repairgest",
       "icon": [
+        "icons/icon.icns",
+        "icons/icon.ico",
         "icons/logo190x170.png",
         "icons/logo32x28.png"
       ]

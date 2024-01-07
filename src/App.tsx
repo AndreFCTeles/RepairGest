@@ -1,31 +1,39 @@
 // Frameworks
 import React, { useState }  from 'react';
-import { Flex, Stack, Image, AppShell,  Button, Group, Collapse, Container } from '@mantine/core';
+import { Flex, Stack, Image, AppShell,  Button, Group, Collapse, Container, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 // Componentes
 import Banner from "./components/partilhado/main-layout/banner";
 import RenderFiltros from './utils/filtros-renderer';
 import RenderConteudo from './utils/conteudo-renderer';
 import RenderFormulario from './utils/form-renderer';
+import LoginForm from './components/partilhado/main-layout/login';
+// Sidebar - Logotipo
 import logo190x170 from './assets/logo190x170.png';
 
 
 
 
 const App: React.FC = () => {
+   // Estado do login
+   //const [authenticated, setAuthenticated] = useState(false);
+   const [showLoginModal, setShowLoginModal] = useState(true);
+
    // Estados para conteúdo
    const [opcaoSelecionada, setOpcaoSelecionada] = useState<string>('conteudo'); // Tipo de conteúdo: Formulário/Tabela
    const [opcaoContSelecionada, setOpcaoContSelecionada] = useState<string>('principal'); // Conteúdo de Tabela
    const [opcaoFormSelecionada, setOpcaoFormSelecionada] = useState<string>(''); // Conteúdo de Formulário
-   // MENU
-   // Colapsar menu em viewports pequenos?
-   // const [opened, { toggle }] = useDisclosure();
-   // Estados de dropdowns
+
+   // Estados de dropdowns - menu
    const [reparacoesState, reparacoesActions] = useDisclosure(); // Reparações A
    const [botState, botActions] = useDisclosure(); // Reparações B
    const [clientesState, clientesActions] = useDisclosure(); // Clientes
 
-   // Tipo de conteúdo a apresentar [Formulario, Tabela]
+
+
+
+
+   // Tipo de conteúdo a apresentar [Tabela, Formulario]
    const renderContent = () => {
       if (opcaoSelecionada==='formulario') { return <RenderFormulario opcaoSelecionada={opcaoFormSelecionada} />; } 
       else { return <RenderConteudo opcaoSelecionada={opcaoContSelecionada} />; }
@@ -42,20 +50,21 @@ const App: React.FC = () => {
          </Flex>); }
    };
 
+
+
+
    return (
       <AppShell
       layout='alt'
       header={{height:100}}
       navbar={{
          width: {sm: 200, md: 300, lg: 400},
-         breakpoint: 'sm',
-         //collapsed: { mobile: !opened } 
+         breakpoint: 'sm'
       }}>
          <AppShell.Header>            
             <Group h="100%" w="100%">
                <Banner>
                   <Group align='center' className='pl-0 pr-4'>
-                     {/*<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />*/}
                      <Container hiddenFrom="sm">Menu</Container>
                   </Group>
                   {renderFiltros()}
@@ -63,123 +72,144 @@ const App: React.FC = () => {
             </Group>
          </AppShell.Header>
          
-         <AppShell.Navbar>
-            {/*<Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />*/}
-            <Stack gap={0} justify='start' className="navbar p-4 h-full ">
-               <Flex id="logoContainer">
-                  <Image src={logo190x170} className='pb-4 self-auto mx-auto'  />
-               </Flex>
-               
-               {/* REPARAÇÕES */}
-               <div className='bg-opacity-30 bg-black'> 
-                  <Group>
-                     <Button 
-                     className="navButton" 
-                     onClick={() => {
-                        reparacoesActions.toggle(); 
-                        clientesActions.close();
-                     }}>Reparações</Button>
-                  </Group>
+         <AppShell.Navbar>            
+            {showLoginModal ? null : (
+               <Stack gap={0} justify='start' className="navbar p-4 h-full ">
+                  <Flex id="logoContainer">
+                     <Image src={logo190x170} className='pb-4 self-auto mx-auto'  />
+                  </Flex>
+                  
+                  {/* REPARAÇÕES */}
+                  <div className='bg-opacity-30 bg-black'> 
+                     <Group>
+                        <Button 
+                        className="navButton" 
+                        onClick={() => {
+                           reparacoesActions.toggle(); 
+                           clientesActions.close();
+                        }}>Reparações</Button>
+                     </Group>
 
-                  {/* ${reparacoesState===true ? border-2: border-0} */}
-                  <Collapse 
-                  className='dropdown' 
-                  in={reparacoesState}>
-                     <div>
-                        <Group>
-                           <Button 
-                           className="navButton mt-1" 
-                           onClick={() => {
-                              botActions.toggle();
-                           }}>Nova Reparação</Button>
-                        </Group>
-
-                        <Collapse in={botState} className='dropdown mx-7'>
-                           <div>
+                     {/* ${reparacoesState===true ? border-2: border-0} */}
+                     <Collapse 
+                     className='dropdown' 
+                     in={reparacoesState}>
+                        <div>
+                           <Group>
                               <Button 
                               className="navButton mt-1" 
                               onClick={() => {
-                                 setOpcaoSelecionada('formulario');
-                                 setOpcaoFormSelecionada('reparInterna');
-                              }}>Interna</Button>
-                              <Button 
-                              className="navButton mt-1" 
-                              onClick={() => {
-                                 setOpcaoSelecionada('formulario');
-                                 setOpcaoFormSelecionada('reparExterna');
-                              }}>Externa</Button>
-                              <Button 
-                              className="navButton mt-1 mb-2" 
-                              onClick={() => {
-                                 setOpcaoSelecionada('formulario');
-                                 setOpcaoFormSelecionada('reparCircuito');
-                              }}>Circuitos</Button>
-                           </div>
-                        </Collapse>
-                     </div>
-                     <Button  
-                     className="navButton my-1" 
-                     onClick={() => {
-                        setOpcaoSelecionada('conteudo');
-                        setOpcaoContSelecionada('reparacoes');
-                     }}>Consulta</Button>
-                  </Collapse>
-               </div>
-               {/* /REPARAÇÕES */}
+                                 botActions.toggle();
+                              }}>Nova Reparação</Button>
+                           </Group>
 
-               {/* CLIENTES */}
-               <div className='bg-opacity-30 bg-black'>
-                  <Group>
-                     <Button 
-                     className="navButton mt-1" 
-                     onClick={() => {
-                        reparacoesActions.close();
-                        botActions.close();
-                        clientesActions.toggle();
-                     }}>Clientes</Button>
-                  </Group>
+                           <Collapse in={botState} className='dropdown mx-7'>
+                              <div>
+                                 <Button 
+                                 className="navButton mt-1" 
+                                 onClick={() => {
+                                    setOpcaoSelecionada('formulario');
+                                    setOpcaoFormSelecionada('reparInterna');
+                                 }}>Interna</Button>
+                                 <Button 
+                                 className="navButton mt-1" 
+                                 onClick={() => {
+                                    setOpcaoSelecionada('formulario');
+                                    setOpcaoFormSelecionada('reparExterna');
+                                 }}>Externa</Button>
+                                 <Button 
+                                 className="navButton mt-1 mb-2" 
+                                 onClick={() => {
+                                    setOpcaoSelecionada('formulario');
+                                    setOpcaoFormSelecionada('reparCircuito');
+                                 }}>Circuitos</Button>
+                              </div>
+                           </Collapse>
+                        </div>
+                        <Button  
+                        className="navButton my-1" 
+                        onClick={() => {
+                           setOpcaoSelecionada('conteudo');
+                           setOpcaoContSelecionada('reparacoes');
+                        }}>Consulta</Button>
+                     </Collapse>
+                  </div>
+                  {/* /REPARAÇÕES */}
 
-                  <Collapse 
-                  in={clientesState} 
-                  className='dropdown'>
-                     <div>
+                  {/* CLIENTES */}
+                  <div className='bg-opacity-30 bg-black'>
+                     <Group>
                         <Button 
                         className="navButton mt-1" 
                         onClick={() => {
-                           setOpcaoSelecionada('formulario');
-                           setOpcaoFormSelecionada('novoCliente');
-                        }}>Novo Cliente</Button>
-                        <Button 
-                        className="navButton my-1" 
-                        onClick={()=>{
-                           setOpcaoSelecionada('conteudo');
-                           setOpcaoContSelecionada('clientes');
-                        }}>Consulta</Button>
-                     </div>
-                  </Collapse>
-               </div>
-               {/* /CLIENTES */}
+                           reparacoesActions.close();
+                           botActions.close();
+                           clientesActions.toggle();
+                        }}>Clientes</Button>
+                     </Group>
 
-               {/* VOLTAR */}
-               {(opcaoSelecionada === 'formulario' || opcaoContSelecionada !== 'principal') && (
-                  <Button 
-                  className="navButton mt-1"
-                  onClick={() => {
-                     clientesActions.close();
-                     reparacoesActions.close();
-                     botActions.close();
-                     setOpcaoSelecionada('conteudo');
-                     setOpcaoContSelecionada('principal');
-                  }}>Voltar</Button>
-               )}
-            </Stack>
+                     <Collapse 
+                     in={clientesState} 
+                     className='dropdown'>
+                        <div>
+                           <Button 
+                           className="navButton mt-1" 
+                           onClick={() => {
+                              setOpcaoSelecionada('formulario');
+                              setOpcaoFormSelecionada('novoCliente');
+                           }}>Novo Cliente</Button>
+                           <Button 
+                           className="navButton my-1" 
+                           onClick={()=>{
+                              setOpcaoSelecionada('conteudo');
+                              setOpcaoContSelecionada('clientes');
+                           }}>Consulta</Button>
+                        </div>
+                     </Collapse>
+                  </div>
+                  {/* /CLIENTES */}
+
+                  {/* VOLTAR */}
+                  {(opcaoSelecionada === 'formulario' || opcaoContSelecionada !== 'principal') && (
+                     <Button 
+                     className="navButton mt-1"
+                     onClick={() => {
+                        clientesActions.close();
+                        reparacoesActions.close();
+                        botActions.close();
+                        setOpcaoSelecionada('conteudo');
+                        setOpcaoContSelecionada('principal');
+                     }}>Voltar</Button>
+                  )}
+               </Stack>
+            )}
          </AppShell.Navbar>
 
          <AppShell.Main>
-            <div id="Content">
+            {showLoginModal ? (
+               <Modal
+               opened={showLoginModal}
+               onClose={() => setShowLoginModal(false)}
+               title="Login"
+               centered
+               overlayProps={{
+                  backgroundOpacity: 0.55,
+                  blur: 3,
+               }}
+               >
+                  <LoginForm
+                     onLoginSuccess={() => {
+                        setShowLoginModal(false);
+                        //setAuthenticated(true);
+                     }}
+                  />
+               </Modal>
+            ) : (
+               <div id="Content">
                   {/* Render tabela se 'conteudo' selecionado, render formulário se 'formulario' selecionado */}
                   {renderContent()}
-            </div>
+               </div>
+            )}
          </AppShell.Main>
 
       </AppShell>

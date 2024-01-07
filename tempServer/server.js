@@ -93,5 +93,23 @@ app.post('/api/data', async (req, res) => {
    }
 });
 
+// API endpoint para login
+app.post('/api/login', async (req, res) => {
+   try {
+      const { user, password } = req.body;
+      const jsonData = await readJsonFile('login.json');
+      const userMatch = jsonData.reparacoes.find((u) => u.user === user && u.password === password);
+
+      if (userMatch) {
+         res.json({ success: true, user: userMatch });
+      } else {
+         res.status(401).json({ success: false, message: 'Invalid credentials' });
+      }
+   } catch (error) {
+      handleError(res, error, 'Error during login');
+   }
+});
+
+
 // Start
 app.listen(port, () => { console.log(`Servidor a correr em http://localhost:${port}`); });

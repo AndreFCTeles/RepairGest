@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import fetchData from '../../api/fetchData';
 import GerarTabela from '../partilhado/tabela';
 // import { Pagination, Flex, LoadingOverlay } from '@mantine/core';
-import { Pagination, Flex } from '@mantine/core';
+import { Pagination, Flex, Center } from '@mantine/core';
 // import { useDisclosure } from '@mantine/hooks';
 
 const ReparConteudo:React.FC = () => {
@@ -49,16 +49,18 @@ const ReparConteudo:React.FC = () => {
             <div>Shit's loading, yo</div>
          ) : (
             <Flex className="flex-col mb-1 TableContainer">
-               <Pagination
-                  total={totalItems}
-                  value={currentPage}
-                  onChange={handlePageChange}
-                  siblings={3}
-                  boundaries={2}
-                  withEdges
-                  className='m-1'
-               />
-               <GerarTabela 
+               <Center>
+                  <Pagination
+                     total={totalItems}
+                     value={currentPage}
+                     onChange={handlePageChange}
+                     siblings={3}
+                     boundaries={2}
+                     withEdges
+                     className='m-1'
+                  />
+               </Center>
+                              <GerarTabela 
                   data={data} 
                   headers={headers} 
                />  
