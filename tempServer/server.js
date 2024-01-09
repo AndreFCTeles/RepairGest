@@ -1,99 +1,130 @@
+/* |----- INICIALIZAÇÃO DO SERVIDOR -----| */
+
 // importação de frameworks
-const express = require('express'); // framework essencial para API
-const cors = require('cors'); // framework de busca de dados
-const fs = require('fs').promises; // framework para sistema de ficheiros
-const path = require('path'); // libraria para filesystem
+const express = require('express'); // --------------- Framework essencial para API
+const cors = require('cors'); // --------------------- Framework de busca de dados
+const fs = require('fs').promises; // ---------------- Framework para sistema de ficheiros
+const path = require('path'); // --------------------- Libraria para filesystem
 
 // configuração do servidor
 const app = express();
 const port = 3000;
 const dataFilePath = path.join(__dirname, 'files');
 
-// Inicialização
-app.use(express.json());
-/*
-const corsOptions = {
-   origin: `http://localhost:1420`, // Replace with your front-end's actual origin
-   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-   credentials: true,
-};
-app.use(cors(corsOptions));
-*/
-app.use(cors());
+// Objeto temporário para cache
+// let cache = {}; // Cache disabled
 
-// Carregar dados JSON a partir de um ficheiro
-app.use('/files', express.static(dataFilePath)); // Servir ficheiros estáticos a partir de caminho
+// Inicialização de frameworks
+app.use(express.json());  // ------------------------- Funcionalidades básicas Express para funcionalidades do servidor
+app.use(cors()); // ---------------------------------- CORS básico para cross-referencing de origens cliente-servidor
+app.use('/files', express.static(dataFilePath)); // -- Servir ficheiros JSON estáticos a partir de caminho
+
+
+
+
+
+/* |----- FUNÇÕES PARA FUNCIONALIDADES DO SERVIDOR -----| */
 
 // Ler ficheiro JSON
 const readJsonFile = async (fileName) => {
    try {
       const filePath = path.join(dataFilePath, fileName);
       const jsonData = await fs.readFile(filePath, 'utf-8');
-      return JSON.parse(jsonData);
+      const parsedJsonData = JSON.parse(jsonData);
+      //console.log('Amostra de dados:', parsedJsonData[0]);
+      return parsedJsonData;
    } catch (error) {
       throw error;
    }
 };
+
 // Error handling
 const handleError = (res, error, message = 'Erro') => {
    console.error(`${message}: ${error.message}`);
    res.status(500).json({ error: message });
 };
 
-// API endpoint para buscar dados JSON
-app.get('/api/data', async (req, res) => {
+// Comparar dois valores para sorting - ordenar por data
+const compareFunction = (a, b) => {
+   const dateA = new Date(a.DataTime || 0);
+   const dateB = new Date(b.DataTime || 0);
+   return dateB - dateA;
+}
+
+// Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
+function quickSort(arr, compareFunction) {
+   if (arr.length < 2) return arr;
+   let pivot = arr[Math.floor(Math.random() * arr.length)];
+   let left = [], right = [], equal = [];
+   for (let element of arr) {
+      const comparison = compareFunction(element, pivot);
+      if (comparison < 0) left.push(element);
+      else if (comparison > 0) right.push(element);
+      else equal.push(element);
+   }
+   return [...quickSort(left, compareFunction), ...equal, ...quickSort(right, compareFunction)];
+}
+
+
+
+
+
+/* |----- ENDPOINTS DA API -----| */
+
+// API endpoint para buscar dados de reparação
+app.get('/api/repar', async (req, res) => {
    try {
-      const fileName = req.query.fileName || 'tblRepairList.json';
-      const jsonData = await readJsonFile(fileName);
+      const fileName = req.query.fileName || 'tblRepairList.json'; // ------------------------------------ Busca ficheiro
+      // const cacheKey = `${fileName}-sorted`; // ------------------------------------------------------- Prepara cache
 
-      // Ordenar dados pela data - mais recente primeiro
-      const sortedData = jsonData.sort((a, b) =>
-         new Date(a.DataTime['$date']).getTime() - new Date(b.DataTime['$date']).getTime()
-      );
+      // if (!cache[cacheKey]) { // ---------------------------------------------------------------------- Verificar se existe o ficheiro organizado em cache
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      // cache[cacheKey] = quickSort(dataCopy, compareFunction); // -------------------------------------- Ordenar dados por data e guardar em cache
+      const sortedData = quickSort(dataCopy, compareFunction); // ---------------------------------------- Ordenar dados por data sem guardar em cache
+      // }
 
-      if (req.query.page || req.query.pageSize) { // caso seja pedida paginação
-         // Declarar paginação pretendida
-         const page = parseInt(req.query.page, 10) || 1;
-         const pageSize = parseInt(req.query.pageSize, 10) || 30;
-         // Calcular inicio e fim baseado em parâmetros de paginação
-         const startIndex = (page - 1) * pageSize;
-         const endIndex = startIndex + pageSize;
-         // Fetch, retornar subset consoante paginação
-         const paginatedData = jsonData.slice(startIndex, endIndex);
+      // Declarar paginação pretendida
+      const page = parseInt(req.query.page, 10) || 1;
+      const pageSize = parseInt(req.query.pageSize, 10) || 30;
 
-         res.json({
-            data: paginatedData,
-            totalCount: jsonData.length,
-            pageSize
-         }); // Informação paginada de uma BD e número de items
-      } else {
-         res.json({ data: jsonData, totalCount: jsonData.length }); // retorna TODA a informação numa BD
-      }
+      // Contagem de items/páginas
+      // const totalItems = cache[cacheKey].length; // --------------------------------------------------- Buscar numero total de items da cache
+      const totalItems = sortedData.length; // ----------------------------------------------------------- Buscar numero total de items sem cache
+      const totalPages = Math.ceil(totalItems / pageSize);
+
+      // Calcular inicio e fim baseado em parâmetros de paginação
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+
+      // Fetch, retornar subset consoante paginação
+      // const paginatedData = cache[cacheKey].slice(startIndex, endIndex); // --------------------------- Buscar dados da cache
+      const paginatedData = sortedData.slice(startIndex, endIndex); // ----------------------------------- Buscar dados sem cache
+
+      // Retornar dados
+      res.json({ data: paginatedData, totalItems, totalPages, currentPage: page });
    } catch (error) {
-      handleError(res, error, 'Erro ao buscar dados');
+      handleError(res, error, 400, 'Erro ao buscar dados - Servidor');
    }
 });
 
-// API endpoint para escrever dados
-app.post('/api/data', async (req, res) => {
+// API endpoint para escrever dados - WIP
+app.post('/api/repar', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblRepairList.json';
       const jsonData = await readJsonFile(fileName);
-
       const newRepar = req.body;
-
       jsonData.push(newRepar);
-
       const filePath = path.join(dataFilePath, fileName);
       await fs.writeFile(filePath, JSON.stringify(jsonData, null, 2), 'utf8');
-
       res.status(201).json({ success: true, data: newRepar });
    } catch (error) {
-      handleError(res, error, 'Erro ao escrever dados');
+      handleError(res, error, 'Erro ao escrever dados - Servidor');
    }
 });
 
-// API endpoint para login
+// API endpoint para login - WIP
 app.post('/api/login', async (req, res) => {
    try {
       const { user, password } = req.body;
@@ -103,13 +134,17 @@ app.post('/api/login', async (req, res) => {
       if (userMatch) {
          res.json({ success: true, user: userMatch });
       } else {
-         res.status(401).json({ success: false, message: 'Invalid credentials' });
+         res.status(401).json({ success: false, message: 'Credenciais inválidas - Servidor' });
       }
    } catch (error) {
-      handleError(res, error, 'Error during login');
+      handleError(res, error, 'Erro durante autenticação - Servidor');
    }
 });
 
 
-// Start
+
+
+
+/* |----- CORRER SERVIDOR -----| */
+
 app.listen(port, () => { console.log(`Servidor a correr em http://localhost:${port}`); });

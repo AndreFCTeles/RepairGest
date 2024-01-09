@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import fetchData from '../../api/fetchData';
-import GerarTabela from '../partilhado/tabela';
+import {fetchReparData} from '../../api/fetchData';
+import GerarTabelaRepar from './tabela-reparacoes';
 // import { Pagination, Flex, LoadingOverlay } from '@mantine/core';
 import { Pagination, Flex, Center } from '@mantine/core';
 // import { useDisclosure } from '@mantine/hooks';
@@ -10,7 +10,7 @@ const ReparConteudo:React.FC = () => {
    const [data, setData] = useState<any[]>([]);
    const [headers, setHeaders] = useState<string[]>([]);
    const [currentPage, setCurrentPage] = useState(1);
-   const [totalItems, setTotalItems] = useState(0);
+   const [totalPages, setTotalPages] = useState(0);
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
@@ -20,17 +20,17 @@ const ReparConteudo:React.FC = () => {
       const fetchDataAndUpdateState = async () => {
          try {
             setIsLoading(true);
-            const fetchedData = await fetchData(currentPage, 30);
+            const fetchedData = await fetchReparData(currentPage, 30);
 
-            if (fetchedData.totalCount > 0) {
+            if (fetchedData.totalPages > 0) {
                const primeiroItem = fetchedData.data[0];
                const headerKeys = Object.keys(primeiroItem);
                setHeaders(headerKeys);
-               setTotalItems(fetchedData.totalCount);
+               setTotalPages(fetchedData.totalPages);
             }
             setData(fetchedData.data);
          } catch (error) {
-            console.error('Erro ao buscar e atualizar dados:', error);
+            console.error('Erro ao buscar e atualizar dados - Aplicação:', error);
          } finally {
             setIsLoading(false);
          }
@@ -48,10 +48,10 @@ const ReparConteudo:React.FC = () => {
             // <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
             <div>Shit's loading, yo</div>
          ) : (
-            <Flex className="flex-col mb-1 TableContainer">
+            <Flex className="flex-col mb-1 px-4 pb-4 TableContainer">
                <Center>
                   <Pagination
-                     total={totalItems}
+                     total={totalPages}
                      value={currentPage}
                      onChange={handlePageChange}
                      siblings={3}
@@ -60,7 +60,7 @@ const ReparConteudo:React.FC = () => {
                      className='m-1'
                   />
                </Center>
-                              <GerarTabela 
+               <GerarTabelaRepar 
                   data={data} 
                   headers={headers} 
                />  

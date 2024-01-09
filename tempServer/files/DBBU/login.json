@@ -1,0 +1,22 @@
+{
+   "reparacoes": [
+      {
+         "_id": 1,
+         "user": "Rogério Ermengardo",
+         "password": "ububuga1999",
+         "account_type": "user"
+      },
+      {
+         "_id": 2,
+         "user": "Juventildo Merengues",
+         "password": "251974jurema",
+         "account_type": "user"
+      },
+      {
+         "_id": 3,
+         "user": "André Teles",
+         "password": "Filipe11",
+         "account_type": "admin"
+      }
+   ]
+}
