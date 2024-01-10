@@ -1,88 +1,1178 @@
 [
   {
-    "Clientes1": "A.Gabriel",
-    "Clientes2": "AG Gases Y Consumibles",
-    "Clientes3": "Acail-Ind. Com. Ferro e Aços",
-    "Clientes4": "Acemil",
-    "Clientes5": "Aguinox",
-    "Clientes6": "Albindustria,lda",
-    "Clientes7": "Almeidas Amaral",
-    "Clientes8": "Andias & Marques",
-    "Clientes9": "Anguloperfil",
-    "Clientes10": "Avesteel",
-    "Clientes11": "Avinox",
-    "Clientes12": "Baralhas",
-    "Clientes13": "Benemáquinas",
-    "Clientes14": "Blas - Represent. soldauras, S.L.",
-    "Clientes15": "Bordas SARL",
-    "Clientes16": "Bovisil",
-    "Clientes17": "Bricofel",
-    "Clientes18": "Carcei",
-    "Clientes19": "Castolin",
-    "Clientes20": "Castro & Alves, Lda",
-    "Clientes21": "Castromac",
-    "Clientes22": "Central Serralharia",
-    "Clientes23": "Coprial",
-    "Clientes24": "Coroferma",
-    "Clientes25": "ECEP,Lda",
-    "Clientes26": "EI2B Salr",
-    "Clientes27": "EI2B Sarl",
-    "Clientes28": "ENICLAY",
-    "Clientes29": "Electro Portugal, lda",
-    "Clientes30": "Electroantuã",
-    "Clientes31": "Elie Service - Soudage",
-    "Clientes32": "Expressomáquinas, Lda",
-    "Clientes33": "FASTSTEEL",
-    "Clientes34": "Final",
-    "Clientes35": "Fixacom",
-    "Clientes36": "Fozmaquinas",
-    "Clientes37": "Gasidouro",
-    "Clientes38": "Gomes & Branco",
-    "Clientes39": "Hemasol",
-    "Clientes40": "Imenaset",
-    "Clientes41": "Indotool-Comercio de Ferram.e Acessórios",
-    "Clientes42": "J.A.Quintas",
-    "Clientes43": "J.L.Neves",
-    "Clientes44": "La Soudure Sérésienne, SPRL",
-    "Clientes45": "Macafer",
-    "Clientes46": "Maqser",
-    "Clientes47": "Maquet Soudage",
-    "Clientes48": "Martial SAS",
-    "Clientes49": "Maurício & Cia, Lda",
-    "Clientes50": "Mecanitor",
-    "Clientes51": "Mecwide,S.A",
-    "Clientes52": "Metalsoc",
-    "Clientes53": "Metalusa SA",
-    "Clientes54": "Morais & Câmara, lda",
-    "Clientes55": "Motrinde",
-    "Clientes56": "Nelson Gaspar Moreira",
-    "Clientes57": "Nippon Gases Espanha",
-    "Clientes58": "Ofinu",
-    "Clientes59": "Oliver SAS",
-    "Clientes60": "Orexad",
-    "Clientes61": "Orexad JBDI",
-    "Clientes62": "Ouest Soudure",
-    "Clientes63": "Oxicentro",
-    "Clientes64": "Paramáquinas",
-    "Clientes65": "Parsolda",
-    "Clientes66": "Pedro Brenha",
-    "Clientes67": "Praxair Espanha",
-    "Clientes68": "Praxair Portugal",
-    "Clientes69": "Reclangol",
-    "Clientes70": "Rexoldas",
-    "Clientes71": "Ruba, S.L.",
-    "Clientes72": "Sarifer",
-    "Clientes73": "Serimm",
-    "Clientes74": "Setmáquinas-Equip.Industriais",
-    "Clientes75": "Soldasur,S.A.",
-    "Clientes76": "Soparafuso",
-    "Clientes77": "Sovende",
-    "Clientes78": "Sumasol",
-    "Clientes79": "Suministros",
-    "Clientes80": "Terotecnica,lda",
-    "Clientes81": "Valinox",
-    "Clientes82": "Vieira dos Santos",
-    "Clientes83": "Vimodal-Soc. Aces.Industriais",
-    "Clientes84": "YTX-YACHTINOX"
+    "ID": 0,
+    "Nome": "A.Gabriel",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 1,
+    "Nome": "AG Gases Y Consumibles",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 2,
+    "Nome": "Acail-Ind. Com. Ferro e Aços",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 3,
+    "Nome": "Acemil",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 4,
+    "Nome": "Aguinox",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 5,
+    "Nome": "Albindustria,lda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 6,
+    "Nome": "Almeidas Amaral",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 7,
+    "Nome": "Andias & Marques",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 8,
+    "Nome": "Anguloperfil",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 9,
+    "Nome": "Avesteel",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 10,
+    "Nome": "Avinox",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 11,
+    "Nome": "Baralhas",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 12,
+    "Nome": "Benemáquinas",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 13,
+    "Nome": "Blas - Represent. soldauras, S.L.",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 14,
+    "Nome": "Bordas SARL",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 15,
+    "Nome": "Bovisil",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 16,
+    "Nome": "Bricofel",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 17,
+    "Nome": "Carcei",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 18,
+    "Nome": "Castolin",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 19,
+    "Nome": "Castro & Alves, Lda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 20,
+    "Nome": "Castromac",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 21,
+    "Nome": "Central Serralharia",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 22,
+    "Nome": "Coprial",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 23,
+    "Nome": "Coroferma",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 24,
+    "Nome": "ECEP,Lda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 25,
+    "Nome": "EI2B Salr",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 26,
+    "Nome": "EI2B Sarl",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 27,
+    "Nome": "ENICLAY",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 28,
+    "Nome": "Electro Portugal, lda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 29,
+    "Nome": "Electroantuã",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 30,
+    "Nome": "Elie Service - Soudage",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 31,
+    "Nome": "Expressomáquinas, Lda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 32,
+    "Nome": "FASTSTEEL",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 33,
+    "Nome": "Final",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 34,
+    "Nome": "Fixacom",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 35,
+    "Nome": "Fozmaquinas",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 36,
+    "Nome": "Gasidouro",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 37,
+    "Nome": "Gomes & Branco",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 38,
+    "Nome": "Hemasol",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 39,
+    "Nome": "Imenaset",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 40,
+    "Nome": "Indotool-Comercio de Ferram.e Acessórios",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 41,
+    "Nome": "J.A.Quintas",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 42,
+    "Nome": "J.L.Neves",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 43,
+    "Nome": "La Soudure Sérésienne, SPRL",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 44,
+    "Nome": "Macafer",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 45,
+    "Nome": "Maqser",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 46,
+    "Nome": "Maquet Soudage",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 47,
+    "Nome": "Martial SAS",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 48,
+    "Nome": "Maurício & Cia, Lda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 49,
+    "Nome": "Mecanitor",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 50,
+    "Nome": "Mecwide,S.A",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 51,
+    "Nome": "Metalsoc",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 52,
+    "Nome": "Metalusa SA",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 53,
+    "Nome": "Morais & Câmara, lda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 54,
+    "Nome": "Motrinde",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 55,
+    "Nome": "Nelson Gaspar Moreira",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 56,
+    "Nome": "Nippon Gases Espanha",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 57,
+    "Nome": "Ofinu",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 58,
+    "Nome": "Oliver SAS",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 59,
+    "Nome": "Orexad",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 60,
+    "Nome": "Orexad JBDI",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 61,
+    "Nome": "Ouest Soudure",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 62,
+    "Nome": "Oxicentro",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 63,
+    "Nome": "Paramáquinas",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 64,
+    "Nome": "Parsolda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 65,
+    "Nome": "Pedro Brenha",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 66,
+    "Nome": "Praxair Espanha",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 67,
+    "Nome": "Praxair Portugal",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 68,
+    "Nome": "Reclangol",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 69,
+    "Nome": "Rexoldas",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 70,
+    "Nome": "Ruba, S.L.",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 71,
+    "Nome": "Sarifer",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 72,
+    "Nome": "Serimm",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 73,
+    "Nome": "Setmáquinas-Equip.Industriais",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 74,
+    "Nome": "Soldasur,S.A.",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 75,
+    "Nome": "Soparafuso",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 76,
+    "Nome": "Sovende",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 77,
+    "Nome": "Sumasol",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 78,
+    "Nome": "Suministros",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 79,
+    "Nome": "Terotecnica,lda",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 80,
+    "Nome": "Valinox",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 81,
+    "Nome": "Vieira dos Santos",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 82,
+    "Nome": "Vimodal-Soc. Aces.Industriais",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
+  },
+  {
+    "ID": 83,
+    "Nome": "YTX-YACHTINOX",
+    "Empresa": null,
+    "Morada": null,
+    "Contactos": [
+      {
+        "Nome": null,
+        "Tel": null,
+        "Obs": null,
+        "Email": null
+      }
+    ]
   }
 ]

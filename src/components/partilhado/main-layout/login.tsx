@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, TextInput, Button, Center } from '@mantine/core';
+import { Container, TextInput, Button, Center, PasswordInput } from '@mantine/core';
 
 interface LoginProps {
    onLoginSuccess: () => void;
@@ -42,10 +42,10 @@ const LoginForm: React.FC<LoginProps> = ({onLoginSuccess}) => {
                data-autofocus
                onChange={(e) => setUser(e.target.value)}
             />
-            <TextInput
+            <PasswordInput 
                label="Password"
-               type="password"
                placeholder="password"
+               error="Password inválida"
                value={password}
                onChange={(e) => setPassword(e.target.value)}
             />

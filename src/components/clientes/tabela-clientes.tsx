@@ -11,16 +11,34 @@ interface NomesColunasCliente {
    [key: string]: string;
 }
 
-const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
+const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers }) => {
    // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
 
    // Inicializar campos mostrados/filtrados
    const colunasMostradasCliente: string[] = [
+      'Cliente',
+      'OrdemReparacao',
+      'Marca', 
+      'Maquina',
+      'ModeloElectrex',
+      'Tipo', 
+      'DataTime', 
+      'Avarias',
+      'Observacoes'
    ]
 
    // Tornar campos mais legíveis
    const nomesColunasCliente: NomesColunasCliente = {      
+      'Cliente':'Cliente',     
+      'OrdemReparacao':'Ordem Reparação',
+      'Marca':'Marca', 
+      'Maquina':'Maquina',
+      'ModeloElectrex':'Modelo Electrex',
+      'Tipo':'Tipo', 
+      'DataTime':'Data', 
+      'Avarias':'Avarias',
+      'Observacoes':'Observações', 
    }
 
    // Tornar "Observações" em botão para visualizar os dados de maneira menos intrusiva
@@ -68,4 +86,4 @@ const GerarTabela: React.FC<GerarTabelaProps> = ({ data, headers }) => {
    );
 };
 
-export default GerarTabela;
+export default GerarTabelaCli;

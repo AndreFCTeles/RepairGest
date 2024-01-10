@@ -45,24 +45,37 @@ const handleError = (res, error, message = 'Erro') => {
 };
 
 // Comparar dois valores para sorting - ordenar por data
-const compareFunction = (a, b) => {
+const dateCompareFunction = (a, b) => {
    const dateA = new Date(a.DataTime || 0);
    const dateB = new Date(b.DataTime || 0);
    return dateB - dateA;
 }
+// Comparar dois valores para sorting - ordenar por string
+const stringCompareFunction = (a, b, field) => {
+   const strA = a[field] || "";
+   const strB = b[field] || "";
+   if (strA < strB) { return -1; }
+   if (strA > strB) { return 1; }
+   return 0;
+};
 
 // Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
-function quickSort(arr, compareFunction) {
-   if (arr.length < 2) return arr;
+function quickSort(arr, field) {
+   if (arr.length < 2) return arr; // --- arr.length = 1 ou 0, aceitar valor simples em vez de array   
+   // Determinar tipo de comparação dependendo do tipo de dados recebidos
+   const fieldType = typeof arr[0][field];
+   const compareFunction = fieldType === 'string' ? stringCompareFunction : dateCompareFunction;
+   // Argumentos para funcionamento do algoritmo
    let pivot = arr[Math.floor(Math.random() * arr.length)];
    let left = [], right = [], equal = [];
+
    for (let element of arr) {
-      const comparison = compareFunction(element, pivot);
+      const comparison = compareFunction(element, pivot, field);
       if (comparison < 0) left.push(element);
       else if (comparison > 0) right.push(element);
       else equal.push(element);
    }
-   return [...quickSort(left, compareFunction), ...equal, ...quickSort(right, compareFunction)];
+   return [...quickSort(left, field), ...equal, ...quickSort(right, field)];
 }
 
 
@@ -71,7 +84,7 @@ function quickSort(arr, compareFunction) {
 
 /* |----- ENDPOINTS DA API -----| */
 
-// API endpoint para buscar dados de reparação
+// API endpoint para buscar dados de reparações
 app.get('/api/repar', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblRepairList.json'; // ------------------------------------ Busca ficheiro
@@ -81,36 +94,55 @@ app.get('/api/repar', async (req, res) => {
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
       const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
       if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      // cache[cacheKey] = quickSort(dataCopy, compareFunction); // -------------------------------------- Ordenar dados por data e guardar em cache
-      const sortedData = quickSort(dataCopy, compareFunction); // ---------------------------------------- Ordenar dados por data sem guardar em cache
+      // cache[cacheKey] = quickSort(dataCopy, 'DataTime'); // ------------------------------------------- Ordenar dados por data e guardar em cache
+      const sortedData = quickSort(dataCopy, 'DataTime'); // --------------------------------------------- Ordenar dados por data sem guardar em cache
       // }
 
-      // Declarar paginação pretendida
-      const page = parseInt(req.query.page, 10) || 1;
-      const pageSize = parseInt(req.query.pageSize, 10) || 30;
+      if (Number.isInteger(page) && Number.isInteger(pageSize) && page > 0 && pageSize > 0) { // --------- Caso seja necessária paginação dos dados
+         // Declarar paginação pretendida
+         const page = parseInt(req.query.page, 10);
+         const pageSize = parseInt(req.query.pageSize, 10);
 
-      // Contagem de items/páginas
-      // const totalItems = cache[cacheKey].length; // --------------------------------------------------- Buscar numero total de items da cache
-      const totalItems = sortedData.length; // ----------------------------------------------------------- Buscar numero total de items sem cache
-      const totalPages = Math.ceil(totalItems / pageSize);
+         // Contagem de items/páginas
+         const totalItems = sortedData.length; // -------------------------------------------------------- Buscar numero total de items sem cache
+         // const totalItems = cache[cacheKey].length; // ------------------------------------------------ Buscar numero total de items da cache
+         const totalPages = Math.ceil(totalItems / pageSize);
 
-      // Calcular inicio e fim baseado em parâmetros de paginação
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
+         // Calcular inicio e fim baseado em parâmetros de paginação
+         const startIndex = (page - 1) * pageSize;
+         const endIndex = startIndex + pageSize;
 
-      // Fetch, retornar subset consoante paginação
-      // const paginatedData = cache[cacheKey].slice(startIndex, endIndex); // --------------------------- Buscar dados da cache
-      const paginatedData = sortedData.slice(startIndex, endIndex); // ----------------------------------- Buscar dados sem cache
+         // Fetch, retornar subset consoante paginação
+         // const paginatedData = cache[cacheKey].slice(startIndex, endIndex); // ------------------------ Buscar dados da cache
+         const paginatedData = sortedData.slice(startIndex, endIndex); // -------------------------------- Buscar dados sem cache
 
-      // Retornar dados
-      res.json({ data: paginatedData, totalItems, totalPages, currentPage: page });
+         // Retornar dados
+         res.json({ data: paginatedData, totalItems, totalPages, currentPage: page });
+      } else {
+         res.json({ data: sortedData });
+      }
    } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados - Servidor');
+      handleError(res, error, 400, 'Erro ao buscar dados de reparações - Servidor');
+   }
+});
+
+// API endpoint para buscar dados de clientes
+app.get('/api/clientes', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblClientes.json'; // -------------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'Nome'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      // Retornar dados
+      res.json({ data: sortedData });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados dos clientes - Servidor');
    }
 });
 
 // API endpoint para escrever dados - WIP
-app.post('/api/repar', async (req, res) => {
+app.post('/api/', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblRepairList.json';
       const jsonData = await readJsonFile(fileName);
