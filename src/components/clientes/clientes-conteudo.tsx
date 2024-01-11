@@ -1,9 +1,22 @@
+/* |----- IMPORTAÇÕES -----| */
+
+// Frameworks
 import React, { useRef, useState, useEffect } from 'react';
 import { Pagination, Text, Flex, Center, Fieldset, Radio, Autocomplete, ScrollArea } from '@mantine/core';
+
+// Componentes
 import fetchData from '../../api/fetchData';
 import GerarTabelaCli from './tabela-clientes';
 
+
+
+
+/* |----- COMPONENTE -----| */
+
 const ClientesConteudo: React.FC = () => {
+
+   /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
+
    // Estado para cache e uso de dados
    const [clientList, setClientList] = useState<any[]>([]);
    const [allRepairsCache, setAllRepairsCache] = useState<any[]>([]);
@@ -18,12 +31,19 @@ const ClientesConteudo: React.FC = () => {
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
+   const [autocompleteFilter, setAutocompleteFilter] = useState('');
 
    // Dimensionamento dinâmico de elementos
    const radioGroupRef = useRef<HTMLDivElement | null>(null);
    const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
-   // Função que refresca dados da tabela
+   
+
+
+
+   /* |----- FUNÇÕES "HELPER" - Separação de lógica -----| */
+
+   // Refrescamento de dados da tabela
    const updateTableData = (repairs: any[], page: number) => {
       const pageSize = 30; // Declara o numero de items por página
       const startIndex = (page - 1) * pageSize; // Declara o tamanho de cada página
@@ -32,23 +52,52 @@ const ClientesConteudo: React.FC = () => {
       setTotalPages(Math.ceil(repairs.length / pageSize));
    };
 
+
+   // Dimensionamento de lista de clientes
+   const adjustListSize = () => {
+      const radioGroupParent = radioGroupRef.current?.parentElement;
+      const scrollAreaParent = scrollAreaRef.current?.parentElement;
+      if (radioGroupParent && scrollAreaParent) {
+         const procuraClienteHeight = radioGroupParent.querySelector('.procuraCliente')?.clientHeight || 0;
+         const clientesListaTituloHeight = radioGroupParent.querySelector('.clientesListaTitulo')?.clientHeight || 0;
+
+         const totalDeductions = procuraClienteHeight + clientesListaTituloHeight + 24; // Adicionar margens ou padding (24)
+         const availableHeight = radioGroupParent.clientHeight - totalDeductions;
+
+         const finalHeight = availableHeight > 0 ? `${availableHeight}px` : '100%';
+         radioGroupRef.current!.style.height = finalHeight;
+         scrollAreaRef.current!.style.height = finalHeight;
+      }
+   };
+   // Gestão da filtragem da lista de clientes 
+   const handleAutocompleteChange = (value: string) => { setAutocompleteFilter(value.toLowerCase()); };
+   const handleRadioChange = (value: string) => { setSelectedClient(value); };
+
+
+   // Paginação - mudança de página
+   const handlePageChange = (newPage: number) => { 
+      setCurrentPage(newPage); 
+      updateTableData(filteredRepairsCache, newPage);
+   };
+
+
+
+
+   /* |----- GESTÃO DE ESTADOS -----| */
+
+   // Buscar dados e atualizar tabela
    useEffect(() => {
       const fetchClientsAndRepairs = async () => {
          setIsLoading(true);
          try {
-            const clientsResponse = await fetchData('clientes');
-            const repairsResponse = await fetchData('repar');
-
-            setAllRepairsCache(repairsResponse.data);
-            const repairsWithClient = repairsResponse.data.filter((repair: any) => repair.Cliente);
-            setFilteredRepairsCache(repairsWithClient);
-
-            setClientList(clientsResponse.data);
-            if (repairsWithClient.length > 0) {
-               setHeaders(Object.keys(repairsWithClient[0]));
-            }
-
-            updateTableData(repairsWithClient, 1);
+            const clienteRes = await fetchData('clientes');
+            const reparRes = await fetchData('repar');
+            const reparClienteDados = reparRes.data.filter((repair: any) => repair.Cliente);
+            if (reparClienteDados.length > 0) { setHeaders(Object.keys(reparClienteDados[0])); }
+            setAllRepairsCache(reparRes.data);
+            setFilteredRepairsCache(reparClienteDados);
+            setClientList(clienteRes.data);
+            updateTableData(reparClienteDados, 1);
          } catch (error) {
             console.error('Error fetching data:', error);
          } finally {
@@ -56,47 +105,35 @@ const ClientesConteudo: React.FC = () => {
          }
       };
       fetchClientsAndRepairs();
+      adjustListSize();
    }, []);
 
+
+   // Filtragem dinâmica de dados
    useEffect(() => {
-      let newFilteredRepairs;
-      if (selectedClient) {
       // Filtrar dados de reparação consoante o cliente selecionado e refrescar tabela
-      // When a new Cliente is selected, filter from allRepairsCache
-         newFilteredRepairs = allRepairsCache
-            .filter((repair: any) => repair.Cliente && repair.Cliente.toLowerCase() === selectedClient.toLowerCase());
-      } else {
-         // If no Cliente is selected, use the initial filtered cache
-         newFilteredRepairs = filteredRepairsCache;
-      }
+      let newFilteredRepairs = selectedClient      
+         ? allRepairsCache.filter((repair: any) => repair.Cliente && repair.Cliente.toLowerCase() === selectedClient.toLowerCase())
+         : filteredRepairsCache; // Se nenhum cliente for selecionado, usar a cache de dados filtrados inicial
+      // Atualizar estados
       setFilteredRepairsCache(newFilteredRepairs);
-      updateTableData(newFilteredRepairs, 1); // Always revert to page 1 on filter change
+      updateTableData(newFilteredRepairs, 1); // Reverter para página 1 mudando de filtragem
       setCurrentPage(1);
-      
-      // Ajusta tamanhos da lista dinamicamente
-      const radioGroupParent = radioGroupRef.current?.parentElement;
-      const scrollAreaParent = scrollAreaRef.current?.parentElement;
-      if (radioGroupParent && scrollAreaParent) {
-         const procuraClienteHeight = radioGroupParent.querySelector('.procuraCliente')?.clientHeight || 0;
-         const clientesListaTituloHeight = radioGroupParent.querySelector('.clientesListaTitulo')?.clientHeight || 0;
-
-         const availableHeight = Math.min(
-            radioGroupParent.clientHeight, scrollAreaParent.clientHeight) - 
-            (procuraClienteHeight + clientesListaTituloHeight);
-
-         // Determina espaço existente para tamanho dinâmico da lista de clientes
-         const finalHeight = availableHeight > 0 ? `${availableHeight-20}px` : '100%';
-
-         radioGroupRef.current!.style.height = finalHeight;
-         scrollAreaRef.current!.style.height = finalHeight;
-      }
-
    }, [selectedClient, allRepairsCache]);
+   
 
-   const handlePageChange = (newPage: number) => { 
-      setCurrentPage(newPage); 
-      updateTableData(filteredRepairsCache, newPage);
-   }
+   // Lógica para dimensionamento caso a janela mude de tamanho
+   useEffect(() => {
+      const resizeObserver = new ResizeObserver(() => { adjustListSize(); });
+      if (radioGroupRef.current) { resizeObserver.observe(radioGroupRef.current); }
+      return () => { if (radioGroupRef.current) { resizeObserver.unobserve(radioGroupRef.current); } };
+   }, []);
+   
+   
+
+
+
+   /* |----- JSX / GERAR ELEMENTO -----| */
 
    return (  
       <div className="bg-gray-100 FIXContainer" >    
@@ -107,27 +144,32 @@ const ClientesConteudo: React.FC = () => {
          >
 
             {/* Campo de pesquisa */}            
-            <Fieldset className='min-w-64 h-full flex flex-col'>
+            <Fieldset w={'300px'} className='h-full flex flex-col'>
                <Text className='font-bold clientesListaTitulo' size="xl">Clientes</Text>
                <Radio.Group 
                name="clientes" 
-               onChange={value => setSelectedClient(value)}
                className='pt-2 flex flex-col flex-1 h-full FIXContainer'
+               onChange={handleRadioChange}
                ref={radioGroupRef}
                >
                   <Autocomplete
                   className="procuraCliente"
                   placeholder="Procurar"
-                  value={selectedClient}
-                  onChange={setSelectedClient}
-                  data={clientList.map(client => client.Nome)}
                   dropdownOpened={false}
+                  value={autocompleteFilter}
+                  onChange={handleAutocompleteChange}
+                  data={clientList.map(client => client.Nome)}
                   />
                   <ScrollArea className='flex-1 pt-3' ref={scrollAreaRef}>
                      {clientList
-                        .filter(client => client.Nome.toLowerCase().includes(selectedClient.toLowerCase()))
+                        .filter(client => client.Nome.toLowerCase().includes(autocompleteFilter))
                         .map(client => (
-                              <Radio key={client.ID} value={client.Nome} label={client.Nome}/>
+                              <Radio 
+                              key={client.ID} 
+                              value={client.Nome} 
+                              label={client.Nome}
+                              className='p-1'
+                              />                              
                         ))
                      }           
                   </ScrollArea>

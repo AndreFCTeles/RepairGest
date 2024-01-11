@@ -1,0 +1,170 @@
+[
+  {
+    "Avaria": "Alça"
+  },
+  {
+    "Avaria": "Amperimetro"
+  },
+  {
+    "Avaria": "Atualização firmware"
+  },
+  {
+    "Avaria": "Cabo de alimentação"
+  },
+  {
+    "Avaria": "Cabo interligaçao"
+  },
+  {
+    "Avaria": "Circuito Frontal"
+  },
+  {
+    "Avaria": "Circuito HF"
+  },
+  {
+    "Avaria": "Circuito controlo"
+  },
+  {
+    "Avaria": "Circuito controlo frontal display"
+  },
+  {
+    "Avaria": "Circuito de potencia"
+  },
+  {
+    "Avaria": "Circuito fonte de alimentação"
+  },
+  {
+    "Avaria": "Circuito frontal"
+  },
+  {
+    "Avaria": "Comutador 4 Pos"
+  },
+  {
+    "Avaria": "Comutador 7 Pos"
+  },
+  {
+    "Avaria": "Controlador"
+  },
+  {
+    "Avaria": "Diodo Secundário"
+  },
+  {
+    "Avaria": "Diodos secundario"
+  },
+  {
+    "Avaria": "Electroválvula"
+  },
+  {
+    "Avaria": "Encoder"
+  },
+  {
+    "Avaria": "Filtro MS"
+  },
+  {
+    "Avaria": "Flat Cable"
+  },
+  {
+    "Avaria": "IGBT"
+  },
+  {
+    "Avaria": "Inductância"
+  },
+  {
+    "Avaria": "Indutância"
+  },
+  {
+    "Avaria": "Interface"
+  },
+  {
+    "Avaria": "Microcontrolador"
+  },
+  {
+    "Avaria": "Motor do fio"
+  },
+  {
+    "Avaria": "Outros"
+  },
+  {
+    "Avaria": "Painel Frontal"
+  },
+  {
+    "Avaria": "Painel Tr."
+  },
+  {
+    "Avaria": "Pistas e outros componentes"
+  },
+  {
+    "Avaria": "Ponte"
+  },
+  {
+    "Avaria": "Ponte rectificadora"
+  },
+  {
+    "Avaria": "Potenciometro"
+  },
+  {
+    "Avaria": "Potênciometro I2"
+  },
+  {
+    "Avaria": "Radiador"
+  },
+  {
+    "Avaria": "Relé 12VDC"
+  },
+  {
+    "Avaria": "Relé 48VDC"
+  },
+  {
+    "Avaria": "Reparação de tocha"
+  },
+  {
+    "Avaria": "Resistência Cerâmica"
+  },
+  {
+    "Avaria": "Sem defeito"
+  },
+  {
+    "Avaria": "Sensor hall"
+  },
+  {
+    "Avaria": "Sub. Módulo"
+  },
+  {
+    "Avaria": "Sub. Painel Fr"
+  },
+  {
+    "Avaria": "Sub. Painel Tr"
+  },
+  {
+    "Avaria": "Subst. Electrovalvula"
+  },
+  {
+    "Avaria": "Tocha"
+  },
+  {
+    "Avaria": "Tomadas"
+  },
+  {
+    "Avaria": "Transf. queimado"
+  },
+  {
+    "Avaria": "Transformador C.I."
+  },
+  {
+    "Avaria": "Transformador Impulsos"
+  },
+  {
+    "Avaria": "Transformador Potência"
+  },
+  {
+    "Avaria": "Transformador auxiliar"
+  },
+  {
+    "Avaria": "Transistor IGBT"
+  },
+  {
+    "Avaria": "Térmico"
+  },
+  {
+    "Avaria": "Ventilador"
+  }
+]

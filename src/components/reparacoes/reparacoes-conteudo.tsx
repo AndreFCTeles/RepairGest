@@ -1,9 +1,22 @@
+/* |----- IMPORTAÇÕES -----| */
+
+// Frameworks
 import React, { useState, useEffect } from 'react';
 import { Pagination, Flex, Center } from '@mantine/core';
+
+// Componentes
 import fetchData from '../../api/fetchData';
 import GerarTabelaRepar from './tabela-reparacoes';
 
-const ReparConteudo:React.FC = () => {
+
+
+
+/* |----- COMPONENTE -----| */
+
+const ReparConteudo:React.FC = () => {   
+
+   /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
+
    // Estados da tabela
    const [data, setData] = useState<any[]>([]);
    const [headers, setHeaders] = useState<string[]>([]);
@@ -13,6 +26,12 @@ const ReparConteudo:React.FC = () => {
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
 
+
+
+
+   /* |----- GESTÃO DE ESTADOS -----| */
+
+   // Buscar dados e atualizar tabela
    useEffect(() => {
       const fetchDataAndUpdateState = async () => {
          try {
@@ -35,7 +54,16 @@ const ReparConteudo:React.FC = () => {
       fetchDataAndUpdateState();      
       return () => {}; // cleanup
    }, [currentPage]);
+
+   // Paginação - mudança de página
    const handlePageChange = (newPage: number) => { setCurrentPage(newPage); }
+   
+   
+
+
+
+   /* |----- JSX / GERAR ELEMENTO -----| */
+
 
    return (    
       <div className="bg-gray-100 FIXContainer" >    

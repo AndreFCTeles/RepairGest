@@ -1,10 +1,10 @@
 /* |----- INICIALIZAÇÃO DO SERVIDOR -----| */
 
 // importação de frameworks
-const express = require('express'); // --------------- Framework essencial para API
-const cors = require('cors'); // --------------------- Framework de busca de dados
-const fs = require('fs').promises; // ---------------- Framework para sistema de ficheiros
-const path = require('path'); // --------------------- Libraria para filesystem
+const express = require('express'); // ---------------- Framework essencial para API
+const cors = require('cors'); // ---------------------- Framework de busca de dados
+const fs = require('fs').promises; // ----------------- Framework para sistema de ficheiros
+const path = require('path'); // ---------------------- Libraria para filesystem
 
 // configuração do servidor
 const app = express();
@@ -15,15 +15,15 @@ const dataFilePath = path.join(__dirname, 'files');
 // let cache = {}; // Cache disabled
 
 // Inicialização de frameworks
-app.use(express.json());  // ------------------------- Funcionalidades básicas Express para funcionalidades do servidor
-app.use(cors()); // ---------------------------------- CORS básico para cross-referencing de origens cliente-servidor
-app.use('/files', express.static(dataFilePath)); // -- Servir ficheiros JSON estáticos a partir de caminho
+app.use(express.json());  // -------------------------- Funcionalidades básicas Express para funcionalidades do servidor
+app.use(cors()); // ----------------------------------- CORS básico para cross-referencing de origens cliente-servidor
+app.use('/files', express.static(dataFilePath)); // --- Servir ficheiros JSON estáticos a partir de caminho
 
 
 
 
 
-/* |----- FUNÇÕES PARA FUNCIONALIDADES DO SERVIDOR -----| */
+/* |----- FUNÇÕES PARA FUNCIONALIDADES DO SERVIDOR - Funções "Helper" -----| */
 
 // Ler ficheiro JSON
 const readJsonFile = async (fileName) => {
@@ -61,7 +61,7 @@ const stringCompareFunction = (a, b, field) => {
 
 // Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
 function quickSort(arr, field) {
-   if (arr.length < 2) return arr; // --- arr.length = 1 ou 0, aceitar valor simples em vez de array   
+   if (arr.length < 2) return arr; // --------------- arr.length = 1 ou 0, aceitar valor simples em vez de array   
    // Determinar tipo de comparação dependendo do tipo de dados recebidos
    const fieldType = typeof arr[0][field];
    const compareFunction = fieldType === 'string' ? stringCompareFunction : dateCompareFunction;
@@ -82,7 +82,13 @@ function quickSort(arr, field) {
 
 
 
-/* |----- ENDPOINTS DA API -----| */
+
+// |----------------------------|
+// |----- ENDPOINTS DA API -----|
+// |----------------------------|
+
+
+// |----- ENDPOINTS DE BUSCA -----|
 
 // API endpoint para buscar dados de reparações
 app.get('/api/repar', async (req, res) => {
@@ -98,25 +104,25 @@ app.get('/api/repar', async (req, res) => {
       const sortedData = quickSort(dataCopy, 'DataTime'); // --------------------------------------------- Ordenar dados por data sem guardar em cache
       // }
 
+      // Declarar paginação pretendida
+      const page = parseInt(req.query.page, 10);
+      const pageSize = parseInt(req.query.pageSize, 10);
+
+      // Contagem de items/páginas
+      const totalItems = sortedData.length; // ----------------------------------------------------------- Buscar numero total de items sem cache
+      // const totalItems = cache[cacheKey].length; // --------------------------------------------------- Buscar numero total de items da cache
+      const totalPages = Math.ceil(totalItems / pageSize);
+
+      // Calcular inicio e fim baseado em parâmetros de paginação
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+
+      // Fetch, retornar subset consoante paginação
+      // const paginatedData = cache[cacheKey].slice(startIndex, endIndex); // --------------------------- Buscar dados da cache
+      const paginatedData = sortedData.slice(startIndex, endIndex); // ----------------------------------- Buscar dados sem cache
+
+      // Retornar dados
       if (Number.isInteger(page) && Number.isInteger(pageSize) && page > 0 && pageSize > 0) { // --------- Caso seja necessária paginação dos dados
-         // Declarar paginação pretendida
-         const page = parseInt(req.query.page, 10);
-         const pageSize = parseInt(req.query.pageSize, 10);
-
-         // Contagem de items/páginas
-         const totalItems = sortedData.length; // -------------------------------------------------------- Buscar numero total de items sem cache
-         // const totalItems = cache[cacheKey].length; // ------------------------------------------------ Buscar numero total de items da cache
-         const totalPages = Math.ceil(totalItems / pageSize);
-
-         // Calcular inicio e fim baseado em parâmetros de paginação
-         const startIndex = (page - 1) * pageSize;
-         const endIndex = startIndex + pageSize;
-
-         // Fetch, retornar subset consoante paginação
-         // const paginatedData = cache[cacheKey].slice(startIndex, endIndex); // ------------------------ Buscar dados da cache
-         const paginatedData = sortedData.slice(startIndex, endIndex); // -------------------------------- Buscar dados sem cache
-
-         // Retornar dados
          res.json({ data: paginatedData, totalItems, totalPages, currentPage: page });
       } else {
          res.json({ data: sortedData });
@@ -137,9 +143,28 @@ app.get('/api/clientes', async (req, res) => {
       // Retornar dados
       res.json({ data: sortedData });
    } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados dos clientes - Servidor');
+      handleError(res, error, 400, 'Erro ao buscar dados de clientes - Servidor');
    }
 });
+
+// API endpoint para buscar dados de avarias
+app.get('/api/avarias', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblAvarias.json'; // --------------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'Nome'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      // Retornar dados
+      res.json({ data: sortedData });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados de avarias - Servidor');
+   }
+});
+
+
+
+// |----- ENDPOINTS DE ESCRITA -----|
 
 // API endpoint para escrever dados - WIP
 app.post('/api/', async (req, res) => {

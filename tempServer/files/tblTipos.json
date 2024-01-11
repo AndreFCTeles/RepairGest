@@ -1,0 +1,17 @@
+[
+  {
+    "Tipo": "Inverter"
+  },
+  {
+    "Tipo": "Mig"
+  },
+  {
+    "Tipo": "Plasmas"
+  },
+  {
+    "Tipo": "Pontos"
+  },
+  {
+    "Tipo": "Refrigeradores"
+  }
+]
