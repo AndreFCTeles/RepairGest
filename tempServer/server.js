@@ -48,12 +48,14 @@ const handleError = (res, error, message = 'Erro') => {
 const dateCompareFunction = (a, b) => {
    const dateA = new Date(a.DataTime || 0);
    const dateB = new Date(b.DataTime || 0);
+   //console.log(`A comparar: ${dateA} e ${dateB}`);
    return dateB - dateA;
 }
 // Comparar dois valores para sorting - ordenar por string
 const stringCompareFunction = (a, b, field) => {
    const strA = a[field] || "";
    const strB = b[field] || "";
+   //console.log(`A comparar: ${strA} e ${strB}`);
    if (strA < strB) { return -1; }
    if (strA > strB) { return 1; }
    return 0;
@@ -61,13 +63,13 @@ const stringCompareFunction = (a, b, field) => {
 
 // Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
 function quickSort(arr, field) {
-   if (arr.length < 2) return arr; // --------------- arr.length = 1 ou 0, aceitar valor simples em vez de array   
+   if (arr.length < 2) return arr; // --------------- arr.length = 1 ou 0, aceitar valor simples em vez de array (=já ordenado)   
    // Determinar tipo de comparação dependendo do tipo de dados recebidos
-   const fieldType = typeof arr[0][field];
-   const compareFunction = fieldType === 'string' ? stringCompareFunction : dateCompareFunction;
+   const compareFunction = field === 'DataTime' ? dateCompareFunction : stringCompareFunction;
    // Argumentos para funcionamento do algoritmo
-   let pivot = arr[Math.floor(Math.random() * arr.length)];
-   let left = [], right = [], equal = [];
+   const pivotIndex = Math.floor(arr.length / 2);
+   const pivot = arr[pivotIndex];
+   const left = [], right = [], equal = [];
 
    for (let element of arr) {
       const comparison = compareFunction(element, pivot, field);
@@ -75,7 +77,10 @@ function quickSort(arr, field) {
       else if (comparison > 0) right.push(element);
       else equal.push(element);
    }
-   return [...quickSort(left, field), ...equal, ...quickSort(right, field)];
+   const sortedLeft = quickSort(left, field);
+   const sortedRight = quickSort(right, field);
+
+   return [...sortedLeft, ...equal, ...sortedRight];
 }
 
 
@@ -151,6 +156,21 @@ app.get('/api/clientes', async (req, res) => {
 app.get('/api/avarias', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblAvarias.json'; // --------------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'Nome'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      // Retornar dados
+      res.json({ data: sortedData });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados de avarias - Servidor');
+   }
+});
+
+// API endpoint para buscar dados de clientes
+app.get('/api/clientes', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblClientes.json'; // -------------------------------------- Busca ficheiro
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
       const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
       if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
