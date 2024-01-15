@@ -31,7 +31,7 @@ const NRInternaForm: React.FC = () => {
    useEffect(() => {
       const fetchAvarias = async () => {
          try {
-            const avarias = await fetchData('tblAvarias.json'); // Fetch data from tblAvarias.json
+            const avarias = await fetchData('getavarias'); // Fetch data from tblAvarias.json
             setAvariasList(avarias.data);
          } catch (error) {
             console.error('Erro ao buscar dados - Aplicação:', error);

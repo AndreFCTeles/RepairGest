@@ -1,8 +1,14 @@
-import React, { useRef } from 'react';
-import { Text, Flex, TextInput, Textarea,  Box, Fieldset, Button, Stack, Grid} from '@mantine/core';
-import { useForm } from '@mantine/form';
+/* |----- IMPORTAÇÕES -----| */
+
+// Frameworks
+import React, { useRef, useState, useEffect } from 'react';
+import { Text, Flex, TextInput, Textarea,  Box, Fieldset, Button,  Group, ScrollArea} from '@mantine/core';
+import { useMantineAutofocus } from '@mantine/hooks'
+
+// Componentes
 import fetchData from '../../api/fetchData';
 
+// Inicialização do formato dos dados em formulário
 interface Contacto {
    Nome: string;
    Tel: string;
@@ -12,54 +18,45 @@ interface Contacto {
 
 interface FormValues {
    Nome: string;
+   Pais: string;
    Morada: string;
    Contactos: Contacto[];
 }
 
-const NClienteForm: React.FC = () => {
 
+
+
+/* |----- COMPONENTE -----| */
+
+const NClienteForm: React.FC = () => { 
+   
+   /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
+
+   // Parâmetros de dimensões para conteúdo dinâmico
+   const CONTACTO_WIDTH = 310; 
+   const CONTACTO_GAP = 0; 
+
+   // Estados do formulário
+   const contactosRef = useRef<HTMLFieldSetElement  | null>(null);
+   const contactosScrollAreaRef = useRef<HTMLDivElement | null>(null);
    const formRef = useRef<HTMLFormElement>(null);
-   const form = useForm<FormValues>({
-      initialValues: {
-         Nome: '',
-         Morada: '',
-         Contactos: [{ Nome: '', Tel: '', Email: '', Obs: '' }],
-      },
-      validate: {
-         Nome: (value) => (value ? null : 'Nome is required'),
-         Morada: (value) => (value ? null : 'Morada is required'),
-         Contactos: (value) => value.every(contact => 
-            contact.Nome && contact.Tel && contact.Email && contact.Obs
-            ? null : { Nome: 'Nome is required', Tel: 'Tel is required', Email: 'Email is required', Obs: 'Observations are required' }
-         ),
-      },
+   const [formValues, setFormValues] = useState<FormValues>({
+      Nome: '',
+      Morada: '',
+      Pais: '',
+      Contactos: [{ Nome: '', Tel: '', Email: '', Obs: '' }],
    });
 
-   const addContact = () => {
-      const newContactos = [...form.values.Contactos, { Nome: '', Tel: '', Email: '', Obs: '' }];
-      form.setFieldValue('Contactos', newContactos);
-   };
+   
 
-   const validateContactos = () => {
-      const errors: { Contactos?: { [key: string]: Partial<Contacto> } } = {};
-      form.values.Contactos.forEach((contacto, index) => {
-         let contactErrors: Partial<Contacto> = {};
-         if (contacto.Email && !/^\S+@\S+\.\S+$/.test(contacto.Email)) {
-            contactErrors.Email = 'Invalid email';
-         }
-         // Add more validations for Nome, Tel, Obs as needed
 
-         if (Object.keys(contactErrors).length) {
-            if (!errors.Contactos) { errors.Contactos = {}; }
-            errors.Contactos[index] = contactErrors;
-         }
-      });
-      return errors;
-   };
 
+   /* |----- FUNÇÕES "HELPER" - Separação de lógica -----| */
+
+   // Gerar ID único para dados
    const generateUniqueId = async () => {
       try {
-         const data = await fetchData('clientes');
+         const data = await fetchData('getclientes');
          const maxId = data.reduce((max: number, item: any) => (item.ID > max ? item.ID : max), 0);
          return maxId + 1;
       } catch (error) {
@@ -68,24 +65,81 @@ const NClienteForm: React.FC = () => {
       }
    };
 
-   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      const contactosErrors = validateContactos();
-      if (await form.validate() && Object.keys(contactosErrors).length === 0) {
-         const uniqueId = await generateUniqueId();
-         const formData = {
-         ID: uniqueId,
-         ...form.values,
-         };
-         console.log('Form Data:', formData);
-         // Handle the form submission here
-      } else {
-         //form.setErrors(contactosErrors);
+   // Adicionar contacto
+   const addContact = () => {
+      const newContactos = [...formValues.Contactos, { Nome: '', Tel: '', Email: '', Obs: '' }];
+      setFormValues({ ...formValues, Contactos: newContactos });
+   };
+
+   // Eliminar contacto
+   const deleteContacto = (index: number) => {
+      const updatedContactos = formValues.Contactos.filter((_, idx) => idx !== index);
+      setFormValues({ ...formValues, Contactos: updatedContactos });
+   };
+
+   // Determinar quantos contactos existem 
+   const handleContactChange = ( index: number, field: keyof Contacto, value: string ) => {
+      const updatedContactos = [...formValues.Contactos];
+      updatedContactos[index][field] = value;
+      setFormValues({ ...formValues, Contactos: updatedContactos });
+   };
+
+
+
+   /* |----- DIMENSÕES DINÂMICAS -----| */
+
+   // Cálculo do tamanho dos elementos
+   const getContactosWidth = (numContactos: number) => {
+      if (numContactos <= 2) { return `${CONTACTO_WIDTH * numContactos + CONTACTO_GAP * (numContactos - 1)}px`; }
+      return `${CONTACTO_WIDTH * 2 + CONTACTO_GAP}px`; // Width for two Contactos
+   };
+
+   // Ajuste do tamanho do elemento de contactos
+   const adjustContactosListSize = () => {
+      if (contactosRef.current && contactosScrollAreaRef.current) {
+         const totalDeductions = 40; // Adjust this value as needed
+         const availableHeight = contactosRef.current.clientHeight - totalDeductions;
+         const finalHeight = availableHeight > 0 ? `${availableHeight}px` : '100%';
+         contactosScrollAreaRef.current.style.height = finalHeight;
       }
    };
 
+   // Ajuste dinâmico de tamanhos em função do tamanho da janela
+   useEffect(() => {
+      const resizeObserver = new ResizeObserver(() => { adjustContactosListSize(); });
+      if (contactosRef.current) { resizeObserver.observe(contactosRef.current); }
+
+      return () => { if (contactosRef.current) { resizeObserver.unobserve(contactosRef.current); }};
+   }, []);
+   
+   // Ajustar o tamanho inicial dos elementos (quando a página é carregada)
+   useEffect(() => { adjustContactosListSize(); }, [formValues.Contactos.length]);
+
+   // botão para ser exportado para barra de "filtros"
    // <Button onClick={() => formRef.current?.dispatchEvent(new Event('submit', { cancelable: true }))}>Submit Form from Outside</Button>
-      
+   
+   
+
+
+
+   /* |----- SUBMETER DADOS -----| */
+
+   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+   
+      const uniqueId = await generateUniqueId();
+      const formData = {
+         ID: uniqueId,
+         ...formValues,
+      };
+      console.log('Form Data:', formData);
+   };
+
+   
+
+
+
+   /* |----- JSX / GERAR ELEMENTO -----| */
 
    return (
       <div className='p-5 h-full'>         
@@ -96,68 +150,98 @@ const NClienteForm: React.FC = () => {
          className='h-full'
          ref={formRef} 
          onSubmit={handleSubmit} >
-            <Stack 
+            <Group 
             justify="center"
-            align="center">
+            align="top">
 
-               <Fieldset legend="Dados do cliente" className='lg-w-1/2'>                  
+               <Fieldset legend="Dados do cliente" h={'315px'}>                  
                   <TextInput
                   label="Nome"
                   placeholder="Nome da Empresa"
                   withAsterisk
-                  {...form.getInputProps('Nome')}
+                  value={formValues.Nome}
+                  onChange={(e) => setFormValues({ ...formValues, Nome: e.target.value })}
                   />
                   <Textarea
-                     label="Morada"
-                     placeholder="Endereço"
-                     withAsterisk
-                     {...form.getInputProps('Morada')}
+                  label="País"
+                  placeholder="País"
+                  withAsterisk
+                  value={formValues.Pais}
+                  onChange={(e) => setFormValues({ ...formValues, Pais: e.target.value })}
+                  />     
+                  <Textarea
+                  label="Morada"
+                  placeholder="Endereço"
+                  withAsterisk
+                  value={formValues.Morada}
+                  onChange={(e) => setFormValues({ ...formValues, Morada: e.target.value })}
                   />                  
                   <Button onClick={addContact} className='normalBtn'>Novo Contacto</Button> 
                </Fieldset>
 
                
                {/* Novo Contacto */}
-               <Fieldset legend='Contactos'>
-                  <Grid grow>
-                     {form.values.Contactos.map((contacto, index) => (
-                        <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-                           <React.Fragment key={index}>
+               {formValues.Contactos.length > 0 && (
+               <Fieldset 
+               legend='Contactos' 
+               style={{
+                  width: getContactosWidth(formValues.Contactos.length),
+                  height:
+                     formValues.Contactos.length >= 3
+                     ? `calc(480px + 50px)`
+                     : '480px',
+               }}
+               ref={contactosRef}>
+                  <ScrollArea ref={contactosScrollAreaRef} type='auto' scrollbars='y'>
+                     <Flex wrap='wrap'>
+                        { formValues.Contactos.map((contacto, index) => (
+                           <Flex key={index} direction={{ base: 'column', md: 'row' }} className='p-2'>
                               <Fieldset legend={`Contacto ${index + 1}`} className='w-64'>
-                                 <Flex direction="column" gap="sm" w={'100%'} justify={'left'}>
+                                 <Flex 
+                                 direction="column" 
+                                 gap="sm"
+                                 justify={'center'}
+                                 style={{ flexBasis: '50%', maxWidth: '256px' }}>
                                     <TextInput
                                        label="Nome"
                                        placeholder="Nome do Contacto"
-                                       {...form.getInputProps(`Contactos[${index}].Nome`)}
-                                    />
+                                       value={contacto.Nome}
+                                       onChange={(e) => handleContactChange(index, 'Nome', e.target.value)}
+                                       />
 
                                     <TextInput
                                        label="Telefone"
                                        placeholder="Telefone do Contacto"
-                                       {...form.getInputProps(`Contactos[${index}].Tel`)}
+                                       value={contacto.Tel}
+                                       onChange={(e) => handleContactChange(index, 'Tel', e.target.value)}
                                     />
 
                                     <Textarea
                                        label="Observações"
                                        placeholder="Observações do Contacto"
-                                       {...form.getInputProps(`Contactos[${index}].Obs`)}
+                                       value={contacto.Obs}
+                                       onChange={(e) => handleContactChange(index, 'Obs', e.target.value)}
                                     />
 
                                     <TextInput
                                        label="Email"
                                        placeholder="Email do Contacto"
-                                       {...form.getInputProps(`Contactos[${index}].Email`)}
+                                       value={contacto.Email}
+                                       onChange={(e) => handleContactChange(index, 'Email', e.target.value)}
                                     />
+                                    <Button onClick={()=>{deleteContacto(index); console.log(`Deleted Contacto ${index}`)}} className='normalBtn' w={'100px'}>Remover</Button> 
                                  </Flex>
+                                 
                               </Fieldset>
-                           </React.Fragment>
-                        </Grid.Col>
-                     ))}
-                  </Grid>
+                           </Flex>
+                        ))}
+                     </Flex>
+                  </ScrollArea>
                </Fieldset>
+               )}
                {/* /Novo Contacto */}
 
-            </Stack> 
+            </Group> 
          </form>
          </Box>     
          

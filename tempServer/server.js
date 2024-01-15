@@ -96,7 +96,7 @@ function quickSort(arr, field) {
 // |----- ENDPOINTS DE BUSCA -----|
 
 // API endpoint para buscar dados de reparações
-app.get('/api/repar', async (req, res) => {
+app.get('/api/getrepar', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblRepairList.json'; // ------------------------------------ Busca ficheiro
       // const cacheKey = `${fileName}-sorted`; // ------------------------------------------------------- Prepara cache
@@ -138,7 +138,7 @@ app.get('/api/repar', async (req, res) => {
 });
 
 // API endpoint para buscar dados de clientes
-app.get('/api/clientes', async (req, res) => {
+app.get('/api/getclientes', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblClientes.json'; // -------------------------------------- Busca ficheiro
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
@@ -153,7 +153,7 @@ app.get('/api/clientes', async (req, res) => {
 });
 
 // API endpoint para buscar dados de avarias
-app.get('/api/avarias', async (req, res) => {
+app.get('/api/getavarias', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblAvarias.json'; // --------------------------------------- Busca ficheiro
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
@@ -167,20 +167,7 @@ app.get('/api/avarias', async (req, res) => {
    }
 });
 
-// API endpoint para buscar dados de clientes
-app.get('/api/clientes', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblClientes.json'; // -------------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Nome'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
-      // Retornar dados
-      res.json({ data: sortedData });
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de avarias - Servidor');
-   }
-});
+
 
 
 

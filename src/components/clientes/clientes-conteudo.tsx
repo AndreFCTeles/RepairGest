@@ -90,8 +90,8 @@ const ClientesConteudo: React.FC = () => {
       const fetchClientsAndRepairs = async () => {
          setIsLoading(true);
          try {
-            const clienteRes = await fetchData('clientes');
-            const reparRes = await fetchData('repar');
+            const clienteRes = await fetchData('getclientes');
+            const reparRes = await fetchData('getrepar');
             const reparClienteDados = reparRes.data.filter((repair: any) => repair.Cliente);
             if (reparClienteDados.length > 0) { setHeaders(Object.keys(reparClienteDados[0])); }
             setAllRepairsCache(reparRes.data);
