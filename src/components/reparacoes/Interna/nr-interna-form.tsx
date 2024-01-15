@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Text, Stack, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, Select, SegmentedControl } from '@mantine/core';
-// import { useForm } from '@mantine/form';
+import React, { useState, useEffect } from 'react';
+import { Text, Stack, Flex, TextInput, Textarea, Checkbox, Box, Select, Fieldset, Radio, Autocomplete, ScrollArea, SegmentedControl } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import fetchData from '../../../api/fetchData';
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 import 'dayjs/locale/pt';
 
@@ -10,10 +11,11 @@ const NRInternaForm: React.FC = () => {
    const [valorAcc, setValorAcc] = useState('nao');
    // inicialização da data
    const [data, setData] = useState<Date | null>(null);
-
+   // inicialização de lista de Avarias
+   const [avariasList, setAvariasList] = useState<any[]>([]);
+   const [selectedAvaria, setSelectedAvaria] = useState<string>('');
 
    // inicialização de estados para formulário
-   /*
    const [ordemRep, setOrdemRep] = useState("");
    const [numSerie, setNumSerie] = useState("");
    const [cliente, setCliente] = useState("");
@@ -21,40 +23,22 @@ const NRInternaForm: React.FC = () => {
    const [modelo, setModelo] = useState("");
    const [tipo, setTipo] = useState("");
    const [observa, setObserva] = useState("");
-   */
 
-   /*
-   const form = useForm({
-      initialValues: {
-         email: '',
-         termsOfService: false,
-      },
+   const filteredAvarias = selectedAvaria ? avariasList.filter((avaria) =>
+         avaria.Nome.toLowerCase().includes(selectedAvaria.toLowerCase())
+      ) : avariasList;
 
-      validate: {
-         email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      },
-   });
-   */
-   //const [formData, setFormData] = useState({});
-
-   /*
-   const handleSubmit = async (e:any) => {
-      e.preventDefault();
-      try {
-         const response = await fetch('http://localhost:5000/files', {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify(formData),
-         });
-         // Handle response as needed
-      } catch (error) {
-         console.error('Error submitting form:', error);
-      }
-   };
-   */
-
+   useEffect(() => {
+      const fetchAvarias = async () => {
+         try {
+            const avarias = await fetchData('tblAvarias.json'); // Fetch data from tblAvarias.json
+            setAvariasList(avarias.data);
+         } catch (error) {
+            console.error('Erro ao buscar dados - Aplicação:', error);
+         }
+      };
+      fetchAvarias();
+   }, []);
 
    return (
       <div className='p-5 h-full'>         
@@ -174,25 +158,16 @@ const NRInternaForm: React.FC = () => {
 
                   <Fieldset legend="Defeitos" className='lg-w-1/2 w-64'>
                      <Stack>
-                        <Checkbox
-                           mt="md"
-                           label="Defeito1"
-                        />
-                        <Checkbox
-                           label="Defeito2"
-                        />
-                        <Checkbox
-                           label="Defeito3"
-                        />
-                        <Checkbox
-                           label="Defeito4"
-                        />
-                        <Checkbox
-                           label="Defeito5"
-                        />
-                        <Checkbox
-                           label="Defeito6"
-                        />
+                        <Autocomplete
+                        className="procuraCliente"
+                        placeholder="Procurar"
+                        value={selectedAvaria}
+                        onChange={setSelectedAvaria}
+                        data={avariasList.map((avaria) => avaria.Nome)}
+                        dropdownOpened={false} />
+                        <ScrollArea>
+                           {filteredAvarias.map((avaria) => (<Checkbox key={avaria.ID} className="avaria-item" label={avaria.Nome} />))}
+                        </ScrollArea> 
                      </Stack>
                   </Fieldset>
                </Flex>

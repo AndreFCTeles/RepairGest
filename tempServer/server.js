@@ -159,7 +159,7 @@ app.get('/api/avarias', async (req, res) => {
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
       const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
       if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Nome'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      const sortedData = quickSort(dataCopy, 'Avaria'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
       // Retornar dados
       res.json({ data: sortedData });
    } catch (error) {

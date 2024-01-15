@@ -4,9 +4,9 @@ import { Flex, Stack, Image, AppShell,  Button, Group, Collapse, Container, Moda
 import { useDisclosure } from '@mantine/hooks';
 // Componentes
 import Banner from "./components/partilhado/banner";
-import RenderFiltros from './utils/filtros-renderer';
-import RenderConteudo from './utils/conteudo-renderer';
-import RenderFormulario from './utils/form-renderer';
+import RenderFiltros from './utils/renderers/filtros-renderer';
+import RenderConteudo from './utils/renderers/conteudo-renderer';
+import RenderFormulario from './utils/renderers/form-renderer';
 import LoginForm from './components/partilhado/login';
 // Sidebar - Logotipo
 import logo190x170 from './assets/logo190x170.png';
