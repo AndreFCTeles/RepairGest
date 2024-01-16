@@ -4,7 +4,7 @@ import ReparFiltros from '../../components/reparacoes/reparacoes-filtros';
 import ClientesFiltros from '../../components/clientes/clientes-filtros';
 import MainFiltros from '../../components/main/main-filtros';
 
-//determina que opção foi selecionada na sidebar para gerar conteúdos
+//determina que opção foi selecionada na sidebar para gerar filtros
 interface RenderFiltrosProps { opcaoSelecionada: string; }
 
 const RenderFiltros: React.FC<RenderFiltrosProps> = ({opcaoSelecionada}) => {

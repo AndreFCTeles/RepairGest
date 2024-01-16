@@ -3,7 +3,6 @@
 // Frameworks
 import React, { useRef, useState, useEffect } from 'react';
 import { Text, Flex, TextInput, Textarea,  Box, Fieldset, Button,  Group, ScrollArea} from '@mantine/core';
-import { useMantineAutofocus } from '@mantine/hooks'
 
 // Componentes
 import fetchData from '../../api/fetchData';
@@ -90,14 +89,14 @@ const NClienteForm: React.FC = () => {
 
    // Cálculo do tamanho dos elementos
    const getContactosWidth = (numContactos: number) => {
-      if (numContactos <= 2) { return `${CONTACTO_WIDTH * numContactos + CONTACTO_GAP * (numContactos - 1)}px`; }
-      return `${CONTACTO_WIDTH * 2 + CONTACTO_GAP}px`; // Width for two Contactos
+      if (numContactos <= 2) { return `${CONTACTO_WIDTH * numContactos + CONTACTO_GAP * (numContactos - 1)}px`; }  // Menos de dois contactos
+      return `${CONTACTO_WIDTH * 2 + CONTACTO_GAP}px`; // Largura de dois contactos
    };
 
    // Ajuste do tamanho do elemento de contactos
    const adjustContactosListSize = () => {
       if (contactosRef.current && contactosScrollAreaRef.current) {
-         const totalDeductions = 40; // Adjust this value as needed
+         const totalDeductions = 40; // Ajustes
          const availableHeight = contactosRef.current.clientHeight - totalDeductions;
          const finalHeight = availableHeight > 0 ? `${availableHeight}px` : '100%';
          contactosScrollAreaRef.current.style.height = finalHeight;
