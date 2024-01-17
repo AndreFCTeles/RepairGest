@@ -167,14 +167,57 @@ app.get('/api/getavarias', async (req, res) => {
    }
 });
 
+// API endpoint para buscar dados de máquinas
+app.get('/api/getmaquinas', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblMaquinas.json'; // --------------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'Maquina'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      // Retornar dados
+      res.json({ data: sortedData });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados de maquinas - Servidor');
+   }
+});
 
+// API endpoint para buscar dados de modelos Electrex
+app.get('/api/getmodelos', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblModelosElectrex.json'; // --------------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'ModeloElectrex'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      // Retornar dados
+      res.json({ data: sortedData });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados de modelos - Servidor');
+   }
+});
+
+// API endpoint para buscar dados de tipos de máquinas
+app.get('/api/gettipos', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblTipos.json'; // --------------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'Tipo'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      // Retornar dados
+      res.json({ data: sortedData });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados de tipos - Servidor');
+   }
+});
 
 
 
 // |----- ENDPOINTS DE ESCRITA -----|
 
 // API endpoint para escrever dados - WIP
-app.post('/api/', async (req, res) => {
+app.post('/api/novarepar', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblRepairList.json';
       const jsonData = await readJsonFile(fileName);

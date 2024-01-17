@@ -25,6 +25,7 @@ interface FormValues {
 
 
 
+
 /* |----- COMPONENTE -----| */
 
 const NClienteForm: React.FC = () => { 
@@ -46,7 +47,8 @@ const NClienteForm: React.FC = () => {
       Contactos: [{ Nome: '', Tel: '', Email: '', Obs: '' }],
    });
 
-   
+
+
 
 
 
@@ -85,6 +87,8 @@ const NClienteForm: React.FC = () => {
 
 
 
+
+
    /* |----- DIMENSÕES DINÂMICAS -----| */
 
    // Cálculo do tamanho dos elementos
@@ -116,8 +120,8 @@ const NClienteForm: React.FC = () => {
 
    // botão para ser exportado para barra de "filtros"
    // <Button onClick={() => formRef.current?.dispatchEvent(new Event('submit', { cancelable: true }))}>Submit Form from Outside</Button>
-   
-   
+
+
 
 
 
@@ -134,7 +138,7 @@ const NClienteForm: React.FC = () => {
       console.log('Form Data:', formData);
    };
 
-   
+
 
 
 

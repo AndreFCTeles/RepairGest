@@ -2,7 +2,7 @@
 
 // Frameworks
 import React, { useState, useEffect } from 'react';
-import { Pagination, Flex, Center } from '@mantine/core';
+import { Pagination, Flex, Center, Fieldset } from '@mantine/core';
 
 // Componentes
 import fetchData from '../../api/fetchData';
@@ -67,29 +67,38 @@ const ReparConteudo:React.FC = () => {
 
    return (    
       <div className="bg-gray-100 FIXContainer" >    
-         {isLoading ? (
-            // Display a loading spinner or message while data is being fetched
-            // <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
-            <div>Shit's loading, yo</div>
-         ) : (
-            <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer">
-               <Center>
-                  <Pagination
-                     total={totalPages}
-                     value={currentPage}
-                     onChange={handlePageChange}
-                     siblings={3}
-                     boundaries={2}
-                     withEdges
-                     className='m-1'
-                  />
-               </Center>
-               <GerarTabelaRepar 
-                  data={data} 
-                  headers={headers} 
-               />  
-            </Flex>
-         )}
+         <Flex
+         justify="left"
+         direction="row"
+         className='p-1 FIXContainer'
+         >
+            <Fieldset className='flex-1 ml-1 px-2 FIXContainer'>
+
+               {isLoading ? (
+                  // Display a loading spinner or message while data is being fetched
+                  // <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+                  <div>Shit's loading, yo</div>
+               ) : (
+                  <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer">
+                     <Center>
+                        <Pagination
+                           total={totalPages}
+                           value={currentPage}
+                           onChange={handlePageChange}
+                           siblings={3}
+                           boundaries={2}
+                           withEdges
+                           className='m-1'
+                        />
+                     </Center>
+                     <GerarTabelaRepar 
+                        data={data} 
+                        headers={headers} 
+                     />  
+                  </Flex>
+               )}
+            </Fieldset>
+         </Flex>
       </div>
    );
 };

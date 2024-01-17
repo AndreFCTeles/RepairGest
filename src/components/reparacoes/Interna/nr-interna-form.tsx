@@ -2,12 +2,39 @@
 
 // Frameworks
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, Stack, Flex, TextInput, Textarea, Checkbox, Box, Select, Fieldset, Autocomplete, ScrollArea, SegmentedControl } from '@mantine/core';
+import { Text, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, Autocomplete, ScrollArea, SegmentedControl } from '@mantine/core';
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
 import fetchData from '../../../api/fetchData';
+import postData from '../../../api/postData';
 import 'dayjs/locale/pt'; // Implementa calendário e formatação de data - Portugal
+
+// Tipos estruturados de valores para validação dos dados em fetch
+interface Cliente { Nome: string; }
+interface Maquina { Maquina: string; }
+interface Modelo { ModeloElectrex: string; }
+interface Tipo { Tipo: string; }
+interface Avaria { 
+   ID: number;
+   Avaria: string; 
+}
+
+// Tipos estruturados de valores para validação
+interface FormValues {
+   dataCalendario: Date | null;
+   ordemReparacao: string;
+   numeroSerie: string;
+   cliente: string;
+   marca: string;
+   modelo: string;
+   tipo: string;
+   valorGar: string;
+   acessorios: string;
+   observacoes: string;
+   defeitos: string[];
+}
+
 
 
 
@@ -18,71 +45,145 @@ const NRInternaForm: React.FC = () => {
 
    /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
 
-   
-   // Estado para cache e uso de dados
-   const [clientList, setClientList] = useState<any[]>([]);
-   const [allRepairsCache, setAllRepairsCache] = useState<any[]>([]);
-   const [filteredRepairsCache, setFilteredRepairsCache] = useState<any[]>([]);
-   // inicialização de valores para garantias e acessórios
-   const [valorGar, setValorGar] = useState('nao');
+   // Inicialização do formato dos dados em formulário
+   const [formValues, setFormValues] = useState<FormValues>({
+      dataCalendario: null,
+      ordemReparacao: '',
+      numeroSerie: '',
+      cliente: '',
+      marca: '',
+      modelo: '',
+      tipo: '',
+      valorGar: 'nao',
+      acessorios: 'nao',
+      observacoes: '',
+      defeitos: [],
+   });
    const [valorAcc, setValorAcc] = useState('nao');
 
-   // inicialização da data
-   const [dataCalendario, setDataCalendario] = useState<Date | null>(null);
+   // Estado para cache e uso de dados
+   const [clientesCache, setClientesCache] = useState<Cliente[]>([]);
+   const [maquinasCache, setMaquinasCache] = useState<Maquina[]>([]);
+   const [modelosCache, setModelosCache] = useState<Modelo[]>([]);
+   const [tiposCache, setTiposCache] = useState<Tipo[]>([]);
+   const [avariasCache, setAvariasCache] = useState<Avaria[]>([]);
 
-   // inicialização de lista de Avarias
-   const [avariasList, setAvariasList] = useState<any[]>([]);
-
-   // New state and ref for Autocomplete and dynamic sizing
+   // Estado da filtragem de defeitos
    const [autocompleteFilter, setAutocompleteFilter] = useState('');
+
+   // Referência para dimensões dinâmicas da lista de defeitos
    const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
-   // New function for handling autocomplete changes
-   const handleAutocompleteChange = (value: string) => { setAutocompleteFilter(value.toLowerCase()); };
-
-   
 
 
 
-   /* |----- FUNÇÕES "HELPER" - Separação de lógica -----| */
 
-   // Function to adjust the size of ScrollArea dynamically
+
+   /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
+
+   // Gestão de tamanhos dinâmicos de lista de defeitos
    const adjustListSize = () => {
       const scrollAreaParent = scrollAreaRef.current?.parentElement;
       if (scrollAreaParent) {
-         const otherElementsHeight = 24; // Adjust this value based on other elements' height
-         const availableHeight = scrollAreaParent.clientHeight - otherElementsHeight;
+         const totalDeductions = 24+8;
+         const availableHeight = scrollAreaParent.clientHeight - totalDeductions;
          const finalHeight = availableHeight > 0 ? `${availableHeight}px` : '100%';
          scrollAreaRef.current!.style.height = finalHeight;
       }
    };
+
+   // Gestão da filtragem da lista de avarias 
+   const handleAutocompleteChange = (value: string) => { setAutocompleteFilter(value.toLowerCase()); };
+   
+   // Handler de defeitos
+   const handleDefeitoChange = (avaria: string) => {
+      setFormValues(prevValues => ({
+         ...prevValues,
+         defeitos: prevValues.defeitos.includes(avaria) ? prevValues.defeitos.filter(d => d !== avaria) : [...prevValues.defeitos, avaria]
+      }));
+   };
+
+   // Handler para TextInputs
+   const handleInputChange = (field: keyof FormValues, value: any) => {
+      setFormValues(prevValues => ({
+         ...prevValues,
+         [field]: value,
+      }));
+   };
+
 
 
 
 
    /* |----- GESTÃO DE ESTADOS -----| */
 
+   // Busca de dados
    useEffect(() => {
-      const fetchAvarias = async () => {
+      const fetchDataAndPopulateCaches = async () => {
          try {
-            const avarias = await fetchData('getavarias'); // Fetch data from tblAvarias.json
-            setAvariasList(avarias.data);
+            // Fetch Avarias
+            let avariasData = avariasCache;
+            if (avariasData.length === 0) {
+               const res = await fetchData('getavarias');
+               avariasData = res.data;
+               setAvariasCache(avariasData);
+               adjustListSize();
+            }
+            // Fetch Clientes
+            let clientesData = clientesCache;
+            if (clientesData.length === 0) {
+               const res = await fetchData('getclientes');
+               clientesData = res.data;
+               setClientesCache(clientesData);
+            }
+            // Fetch Marcas
+            let maquinasData = maquinasCache;
+            if (maquinasData.length === 0) {
+               const res = await fetchData('getmaquinas');
+               maquinasData = res.data;
+               setMaquinasCache(maquinasData);
+            }
+            // Fetch Modelos
+            let modelosData = modelosCache;
+            if (modelosData.length === 0) {
+               const res = await fetchData('getmodelos');
+               modelosData = res.data;
+               setModelosCache(modelosData);
+            }
+            // Fetch Tipos
+            let tiposData = tiposCache;
+            if (tiposData.length === 0) {
+               const res = await fetchData('gettipos');
+               tiposData = res.data;
+               setTiposCache(tiposData);
+            }
          } catch (error) {
             console.error('Erro ao buscar dados - Aplicação:', error);
          }
-      };
-      fetchAvarias();
-      adjustListSize();
-   }, []);
+      }; 
+      fetchDataAndPopulateCaches();
+}, [avariasCache, clientesCache, maquinasCache, modelosCache, tiposCache]);
 
-   // useEffect to handle window resize for dynamic sizing
+   // Efeito para gerir tamanhos dinâmicos
    useEffect(() => {
       const resizeObserver = new ResizeObserver(() => { adjustListSize(); });
       if (scrollAreaRef.current) { resizeObserver.observe(scrollAreaRef.current); }
       return () => { if (scrollAreaRef.current) { resizeObserver.unobserve(scrollAreaRef.current); } };
-   }, []);
-   
-   
+   }, []);   
+
+   // Handler para submissão de dados
+   const handleSubmit = async (event: React.FormEvent) => {
+      event.preventDefault();
+      try {
+         const response = await postData('yourDataType', formValues);
+         console.log('Resposta:', response);
+      } catch (error) {
+         console.error('Erro ao submeter dados:', error);
+      }
+      // console.log(formValues); // caso precise de testar
+   };
+
+
 
 
 
@@ -92,20 +193,21 @@ const NRInternaForm: React.FC = () => {
       <div className='p-5 h-full'>         
          <Text className='font-bold' size="xl">Reparação Interna</Text>
                
-         <Box mx="auto"><form className='h-full'>{/*onSubmit=handleSubmit*/}
+         <Box mx="auto"><form className='h-full' onSubmit={handleSubmit}>
 
                <Flex
                justify="center"
-               align="center"
+               align="flex-start"
                direction="row"
                wrap="wrap">
                   <Fieldset legend="Detalhes" className='lg-w-1/2'>  
+                  
                      <Box className="w-1/2 mb-4">
                         <DatesProvider settings={{locale: 'pt', firstDayOfWeek: 0}}>
                            <DatePickerInput
                               label="Data"
-                              value={dataCalendario}
-                              onChange={setDataCalendario}
+                              value={formValues.dataCalendario}
+                              onChange={(date) => handleInputChange('dataCalendario', date)}
                               valueFormat='DD MMM YYYY'
                            />
                         </DatesProvider>
@@ -120,15 +222,15 @@ const NRInternaForm: React.FC = () => {
                      gap="xs">
                         <TextInput
                         label="Ordem de Reparação"
-                        placeholder="auto-gerar num"
-                        value={Math.floor(Math.random()*10000)}
-                        disabled
+                        placeholder=""
+                        value={formValues.ordemReparacao}
+                        onChange={(e) => handleInputChange('ordemReparacao', e.target.value)}
                         />
                         <TextInput
                         label="Número de série"
-                        placeholder="auto-gerar num"
-                        value={Math.floor(Math.random()*10000)}
-                        disabled
+                        placeholder=""
+                        value={formValues.numeroSerie}
+                        onChange={(e) => handleInputChange('numeroSerie', e.target.value)}
                         />
                      </Flex>
 
@@ -138,16 +240,17 @@ const NRInternaForm: React.FC = () => {
                      direction="row"
                      wrap="wrap"
                      gap="xs">
-                        <Select
+                        <Autocomplete
                         label="Cliente"
-                        data={['Castolin', 'Maquet Soudage', 'Morais & Câmara, Lda.', 'Gasidouro', 'Rexoldas', 'Gomes & Branco']}
-                        allowDeselect
+                        data={clientesCache.map(cliente => cliente.Nome)}
+                        value={formValues.cliente}
+                        onChange={(value) => handleInputChange('cliente', value)}
                         />
-                        <Select
+                        <Autocomplete
                         label="Marca"
-                        data={['Electrex', 'Castolin', 'Lincoln', 'Maquet Soudage', 'EWM']}
-                        allowDeselect
-                        withScrollArea
+                        data={maquinasCache.map(maquina => maquina.Maquina)}
+                        value={formValues.marca}
+                        onChange={(value) => handleInputChange('marca', value)}
                         />
                      </Flex>
 
@@ -158,16 +261,17 @@ const NRInternaForm: React.FC = () => {
                      direction="row"
                      wrap="wrap"
                      gap="xs">
-                        <Select
+                        <Autocomplete
                         label="Modelo"
-                        data={['TIG200', 'MIG600', 'DC203', 'TP252', 'ACDC304']}
-                        allowDeselect
-                        withScrollArea
+                        data={modelosCache.map(modelo => modelo.ModeloElectrex)}
+                        value={formValues.modelo}
+                        onChange={(value) => handleInputChange('modelo', value)}
                         />
-                        <Select
+                        <Autocomplete
                         label="Tipo de Máquina"
-                        data={['Alimentador', 'Inverter', 'MIG', 'Pontos', 'Refrigerador']}
-                        allowDeselect
+                        data={tiposCache.map(modelo => modelo.Tipo)}
+                        value={formValues.tipo}
+                        onChange={(value) => handleInputChange('tipo', value)}
                         />
                      </Flex>
 
@@ -179,8 +283,8 @@ const NRInternaForm: React.FC = () => {
                      gap="xs">
                         <Fieldset legend="Garantia" className='p-2'>
                            <SegmentedControl 
-                           value={valorGar}
-                           onChange={setValorGar}
+                           value={formValues.valorGar}
+                           onChange={(value) => handleInputChange('valorGar', value)}
                            data={[
                               {label:'Sim', value:'sim'},
                               {label:'Não', value:'nao'}
@@ -196,44 +300,55 @@ const NRInternaForm: React.FC = () => {
                            ]} />
                         </Fieldset>
                      </Flex>
+                     
+                     { valorAcc === 'sim' && (
+                        <Textarea
+                        size="md"
+                        label="Acessórios"
+                        placeholder=""
+                        value={formValues.acessorios}
+                        onChange={(e) => handleInputChange('acessorios', e.target.value)}
+                        />
+                     )}
 
                      <Textarea
                      size="md"
                      label="Observações"
                      placeholder=""
+                     value={formValues.observacoes}
+                     onChange={(e) => handleInputChange('observacoes', e.target.value)}
                      />
                   </Fieldset>
 
                   <Fieldset 
                   legend="Defeitos"  
                   w={'300px'} 
+                  h={'480px'}
                   className='h-full flex flex-col'
                   >
-                     <Stack>
-                        <Autocomplete
-                        className="procuraAvaria"
-                        placeholder="Procurar"
-                        value={autocompleteFilter}
-                        onChange={handleAutocompleteChange}
-                        data={avariasList.map((avaria) => avaria.Avaria)}
-                        dropdownOpened={false} />
-                        <ScrollArea className='flex-1 pt-3' ref={scrollAreaRef}>
-                           {avariasList
-                              .filter(avaria => avaria.Avaria.toLowerCase().includes(autocompleteFilter))
-                              .map((avaria) => (
-                                 <Checkbox 
-                                 className="avaria-item px-1" 
-                                 key={avaria.ID} 
-                                 value={avaria.Avaria} 
-                                 label={avaria.Avaria} 
-                                 />
-                              ))
-                           }
-                        </ScrollArea> 
-                     </Stack>
+                     <Autocomplete
+                     className="procuraAvaria"
+                     placeholder="Procurar"
+                     value={autocompleteFilter}
+                     onChange={handleAutocompleteChange}
+                     data={avariasCache.map((avaria) => avaria.Avaria)}
+                     dropdownOpened={false} />
+                     <ScrollArea className='flex-1 pb-1 px-1' ref={scrollAreaRef}>
+                        {avariasCache
+                           .filter(avaria => avaria.Avaria.toLowerCase().includes(autocompleteFilter))
+                           .map((avaria) => (
+                              <Checkbox 
+                              className="avaria-item px-1" 
+                              key={avaria.ID} 
+                              label={avaria.Avaria} 
+                              checked={formValues.defeitos.includes(avaria.Avaria)}
+                              onChange={() => handleDefeitoChange(avaria.Avaria)}
+                              />
+                           ))
+                        }
+                     </ScrollArea> 
                   </Fieldset>
                </Flex>
-
                            
          </form></Box>      
       </div>

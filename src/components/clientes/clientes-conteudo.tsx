@@ -11,6 +11,7 @@ import GerarTabelaCli from './tabela-clientes';
 
 
 
+
 /* |----- COMPONENTE -----| */
 
 const ClientesConteudo: React.FC = () => {
@@ -37,7 +38,7 @@ const ClientesConteudo: React.FC = () => {
    const radioGroupRef = useRef<HTMLDivElement | null>(null);
    const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
-   
+
 
 
 
@@ -51,7 +52,6 @@ const ClientesConteudo: React.FC = () => {
       setData(repairs.slice(startIndex, endIndex));
       setTotalPages(Math.ceil(repairs.length / pageSize));
    };
-
 
    // Dimensionamento de lista de clientes
    const adjustListSize = () => {
@@ -69,16 +69,17 @@ const ClientesConteudo: React.FC = () => {
          scrollAreaRef.current!.style.height = finalHeight;
       }
    };
+
    // Gestão da filtragem da lista de clientes 
    const handleAutocompleteChange = (value: string) => { setAutocompleteFilter(value.toLowerCase()); };
    const handleRadioChange = (value: string) => { setSelectedClient(value); };
-
 
    // Paginação - mudança de página
    const handlePageChange = (newPage: number) => { 
       setCurrentPage(newPage); 
       updateTableData(filteredRepairsCache, newPage);
    };
+
 
 
 
@@ -128,8 +129,8 @@ const ClientesConteudo: React.FC = () => {
       if (radioGroupRef.current) { resizeObserver.observe(radioGroupRef.current); }
       return () => { if (radioGroupRef.current) { resizeObserver.unobserve(radioGroupRef.current); } };
    }, []);
-   
-   
+
+
 
 
 
@@ -177,13 +178,13 @@ const ClientesConteudo: React.FC = () => {
             </Fieldset>
 
             {/* Tabela */}
-            <Fieldset className='h-full flex-1 ml-1 px-2 FIXContainer'>
+            <Fieldset className='flex-1 px-2 FIXContainer'>
                {isLoading ? (
                   // Display a loading spinner or message while data is being fetched
                   // <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
                   <div>Shit's loading, yo</div>
                ) : (
-                  <Flex className="flex-col px-1 pb-4 FIXContainer">
+                  <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer">
                      <Center>
                         <Pagination
                            total={totalPages}
