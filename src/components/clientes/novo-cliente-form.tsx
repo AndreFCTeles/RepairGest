@@ -157,10 +157,11 @@ const NClienteForm: React.FC = () => {
             justify="center"
             align="top">
 
-               <Fieldset legend="Dados do cliente" h={'315px'}>                  
+               <Fieldset legend="Dados do cliente" h={'345px'}>                  
                   <TextInput
                   label="Nome"
                   placeholder="Nome da Empresa"
+                  className='pb-2'
                   withAsterisk
                   value={formValues.Nome}
                   onChange={(e) => setFormValues({ ...formValues, Nome: e.target.value })}
@@ -168,6 +169,7 @@ const NClienteForm: React.FC = () => {
                   <Textarea
                   label="País"
                   placeholder="País"
+                  className='pb-2'
                   withAsterisk
                   value={formValues.Pais}
                   onChange={(e) => setFormValues({ ...formValues, Pais: e.target.value })}
@@ -175,6 +177,7 @@ const NClienteForm: React.FC = () => {
                   <Textarea
                   label="Morada"
                   placeholder="Endereço"
+                  className='pb-2'
                   withAsterisk
                   value={formValues.Morada}
                   onChange={(e) => setFormValues({ ...formValues, Morada: e.target.value })}
@@ -215,22 +218,24 @@ const NClienteForm: React.FC = () => {
                                     <TextInput
                                        label="Telefone"
                                        placeholder="Telefone do Contacto"
+                                       withAsterisk
                                        value={contacto.Tel}
                                        onChange={(e) => handleContactChange(index, 'Tel', e.target.value)}
-                                    />
-
-                                    <Textarea
-                                       label="Observações"
-                                       placeholder="Observações do Contacto"
-                                       value={contacto.Obs}
-                                       onChange={(e) => handleContactChange(index, 'Obs', e.target.value)}
                                     />
 
                                     <TextInput
                                        label="Email"
                                        placeholder="Email do Contacto"
+                                       withAsterisk
                                        value={contacto.Email}
                                        onChange={(e) => handleContactChange(index, 'Email', e.target.value)}
+                                    />
+
+                                    <Textarea
+                                       label="Observações"
+                                       placeholder="Observações"
+                                       value={contacto.Obs}
+                                       onChange={(e) => handleContactChange(index, 'Obs', e.target.value)}
                                     />
                                     <Button onClick={()=>{deleteContacto(index); console.log(`Deleted Contacto ${index}`)}} className='normalBtn' w={'100px'}>Remover</Button> 
                                  </Flex>

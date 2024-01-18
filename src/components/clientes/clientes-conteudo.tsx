@@ -190,8 +190,8 @@ const ClientesConteudo: React.FC = () => {
                            total={totalPages}
                            value={currentPage}
                            onChange={handlePageChange}
-                           siblings={3}
-                           boundaries={2}
+                           siblings={1}
+                           boundaries={1}
                            withEdges
                            className='m-1'
                         />

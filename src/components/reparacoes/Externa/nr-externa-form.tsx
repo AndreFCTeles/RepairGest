@@ -53,7 +53,7 @@ const NRExternaForm: React.FC = () => {
       modelo: '',
       tipo: '',
       valorGar: 'nao',
-      acessorios: 'nao',
+      acessorios: '',
       observacoes: '',
       defeitos: [],
    });

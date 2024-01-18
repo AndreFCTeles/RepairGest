@@ -55,7 +55,7 @@ const NRInternaForm: React.FC = () => {
       modelo: '',
       tipo: '',
       valorGar: 'nao',
-      acessorios: 'nao',
+      acessorios: '',
       observacoes: '',
       defeitos: [],
    });
@@ -175,7 +175,7 @@ const NRInternaForm: React.FC = () => {
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault();
       try {
-         const response = await postData('yourDataType', formValues);
+         const response = await postData('novarepar', formValues);
          console.log('Resposta:', response);
       } catch (error) {
          console.error('Erro ao submeter dados:', error);
