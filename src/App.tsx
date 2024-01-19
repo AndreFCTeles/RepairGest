@@ -27,6 +27,7 @@ const App: React.FC = () => {
    // Estados de dropdowns - menu
    const [reparacoesState, reparacoesActions] = useDisclosure(); // Reparações A
    const [botState, botActions] = useDisclosure(); // Reparações B
+   const [circuitoState, circuitoActions] = useDisclosure(); // Clientes
    const [clientesState, clientesActions] = useDisclosure(); // Clientes
 
 
@@ -86,11 +87,11 @@ const App: React.FC = () => {
                         className="navButton" 
                         onClick={() => {
                            reparacoesActions.toggle(); 
+                           circuitoActions.close();
                            clientesActions.close();
-                        }}>Reparações</Button>
+                        }}>Máquinas</Button>
                      </Group>
 
-                     {/* ${reparacoesState===true ? border-2: border-0} */}
                      <Collapse 
                      className='dropdown' 
                      in={reparacoesState}>
@@ -112,17 +113,11 @@ const App: React.FC = () => {
                                     setOpcaoFormSelecionada('reparInterna');
                                  }}>Interna</Button>
                                  <Button 
-                                 className="navButton mt-1" 
+                                 className="navButton mt-1 mb-2" 
                                  onClick={() => {
                                     setOpcaoSelecionada('formulario');
                                     setOpcaoFormSelecionada('reparExterna');
                                  }}>Externa</Button>
-                                 <Button 
-                                 className="navButton mt-1 mb-2" 
-                                 onClick={() => {
-                                    setOpcaoSelecionada('formulario');
-                                    setOpcaoFormSelecionada('reparCircuito');
-                                 }}>Circuitos</Button>
                               </div>
                            </Collapse>
                         </div>
@@ -130,12 +125,46 @@ const App: React.FC = () => {
                         className="navButton my-1" 
                         onClick={() => {
                            setOpcaoSelecionada('conteudo');
-                           setOpcaoContSelecionada('reparacoes');
+                           setOpcaoContSelecionada('reparMaquina');
                         }}>Consulta</Button>
                      </Collapse>
                   </div>
                   {/* /REPARAÇÕES */}
 
+                  {/* CIRCUITOS */}
+                  <div className='bg-opacity-30 bg-black'>
+                     <Group>
+                        <Button 
+                        className="navButton mt-1" 
+                        onClick={() => {
+                           reparacoesActions.close();
+                           botActions.close();
+                           clientesActions.close();
+                           circuitoActions.toggle();
+                        }}>Circuitos</Button>
+                     </Group>
+
+                     <Collapse 
+                     in={circuitoState} 
+                     className='dropdown'>
+                        <div>
+                           <Button 
+                           className="navButton mt-1" 
+                           onClick={() => {
+                              setOpcaoSelecionada('formulario');
+                              setOpcaoFormSelecionada('reparCircuito');
+                           }}>Nova Reparação</Button>
+                           <Button 
+                           className="navButton my-1" 
+                           onClick={()=>{
+                              setOpcaoSelecionada('conteudo');
+                              setOpcaoContSelecionada('reparCircuito');
+                           }}>Consulta</Button>
+                        </div>
+                     </Collapse>
+                  </div>
+                  {/* /CIRCUITOS */}
+                  
                   {/* CLIENTES */}
                   <div className='bg-opacity-30 bg-black'>
                      <Group>
@@ -144,6 +173,7 @@ const App: React.FC = () => {
                         onClick={() => {
                            reparacoesActions.close();
                            botActions.close();
+                           circuitoActions.close();
                            clientesActions.toggle();
                         }}>Clientes</Button>
                      </Group>
@@ -177,6 +207,7 @@ const App: React.FC = () => {
                         clientesActions.close();
                         reparacoesActions.close();
                         botActions.close();
+                        circuitoActions.close();
                         setOpcaoSelecionada('conteudo');
                         setOpcaoContSelecionada('principal');
                      }}>Voltar</Button>

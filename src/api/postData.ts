@@ -15,17 +15,3 @@ const postData = async (dataType: string, data: any) => {
 }
 
 export default postData;
-
-/* uso:
-
-   postData('yourDataType', yourData)
-   .then(responseData => {
-      // Handle success
-      console.log(responseData);
-   })
-   .catch(error => {
-      // Handle errors
-      console.error(error);
-   });
-
-*/

@@ -6,7 +6,7 @@ import { Pagination, Text, Flex, Center, Fieldset, Radio, Autocomplete, ScrollAr
 
 // Componentes
 import fetchData from '../../api/fetchData';
-import GerarTabelaCli from './tabela-clientes';
+import GerarTabelaCli from './clientes-tabela';
 
 
 

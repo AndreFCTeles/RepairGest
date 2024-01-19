@@ -1,9 +1,9 @@
 import React from 'react';
-//import Procura from '../partilhado/procura';
+//import Procura from '../partilhado/procura'
 import { Button, Flex, Menu } from '@mantine/core';
 
-const ReparFiltros:React.FC = () => {
-   return (    
+const ReparCirFiltros: React.FC = () => {
+   return (      
       <Flex gap="4">
          <p>Filtros</p>      
          <Menu shadow="md" width={200}>
@@ -120,4 +120,4 @@ const ReparFiltros:React.FC = () => {
    );
 };
 
-export default ReparFiltros;
+export default ReparCirFiltros;

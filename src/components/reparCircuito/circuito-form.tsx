@@ -1,11 +1,65 @@
-import React, { useState } from 'react';
-import { Text, Stack, Flex, TextInput, Box, Fieldset, Select, SegmentedControl } from '@mantine/core';
-// import { useForm } from '@mantine/form';
-//import { DatePickerInput , DatesProvider} from '@mantine/dates'
-import 'dayjs/locale/pt';
+/* |----- IMPORTAÇÕES -----| */
+
+// Frameworks
+import React, { useState, useEffect, useRef } from 'react';
+import { Select, Stack, Text, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, Autocomplete, ScrollArea, SegmentedControl } from '@mantine/core';
+import { DatePickerInput , DatesProvider} from '@mantine/dates'
+
+// Componentes
+import fetchData from '../../api/fetchData';
+import postData from '../../api/postData';
+import 'dayjs/locale/pt'; // Implementa calendário e formatação de data - Portugal
+
+// Tipos estruturados de valores para validação dos dados em fetch
+interface Cliente { Nome: string; }
+interface Maquina { Maquina: string; }
+interface Modelo { ModeloElectrex: string; }
+interface Tipo { Tipo: string; }
+interface Avaria { 
+   ID: number;
+   Avaria: string; 
+}
+
+// Tipos estruturados de valores para validação
+interface FormValues {
+   dataCalendario: Date | null;
+   ordemReparacao: string;
+   numeroSerie: string;
+   cliente: string;
+   marca: string;
+   modelo: string;
+   tipo: string;
+   valorGar: string;
+   acessorios: string;
+   observacoes: string;
+   defeitos: string[];
+}
+
+
+
+
+
+/* |----- COMPONENTE -----| */
 
 const NRCircuitoForm: React.FC = () => {   
-   const [valor, setValor] = useState('planeada');
+   
+   /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
+
+   // Inicialização do formato dos dados em formulário
+   const [formValues, setFormValues] = useState<FormValues>({
+      dataCalendario: null,
+      ordemReparacao: '',
+      numeroSerie: '',
+      cliente: '',
+      marca: '',
+      modelo: '',
+      tipo: '',
+      valorGar: 'nao',
+      acessorios: '',
+      observacoes: '',
+      defeitos: [],
+   });
+   const [valorAcc, setValorAcc] = useState('nao');
 
    return (
       <div className='p-5 h-full'>

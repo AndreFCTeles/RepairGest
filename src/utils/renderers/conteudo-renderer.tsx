@@ -2,14 +2,16 @@ import React from 'react';
 // Conteúdos principais
 import MainContent from '../../components/main/main-conteudo';
 import ClientesConteudo from '../../components/clientes/clientes-conteudo';
-import ReparConteudo from '../../components/reparacoes/reparacoes-conteudo';
+import ReparMaqConteudo from '../../components/reparMaquina/reparacoes-conteudo';
+import ReparCirConteudo from '../../components/reparCircuito/circuito-conteudo';
 
 //determina que opção foi selecionada na sidebar para gerar conteúdos
 interface RenderConteudoProps { opcaoSelecionada: string; }
 
 const RenderConteudo: React.FC<RenderConteudoProps> = ({opcaoSelecionada}) => {
    const conteudos: Record<string, React.FC> = {
-      reparacoes: ReparConteudo,
+      reparMaquina: ReparMaqConteudo,
+      reparCircuito: ReparCirConteudo,
       clientes: ClientesConteudo,
       principal: MainContent
    };

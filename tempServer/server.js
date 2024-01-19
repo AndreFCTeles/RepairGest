@@ -63,7 +63,7 @@ const stringCompareFunction = (a, b, field) => {
 
 // Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
 function quickSort(arr, field) {
-   if (arr.length < 2) return arr; // --------------- arr.length = 1 ou 0, aceitar valor simples em vez de array (=já ordenado)   
+   if (arr.length < 2) return arr; // --------------------------------------------------------------------- arr.length = 1 ou 0, aceitar valor simples em vez de array (=já ordenado)   
    // Determinar tipo de comparação dependendo do tipo de dados recebidos
    const compareFunction = field === 'DataTime' ? dateCompareFunction : stringCompareFunction;
    // Argumentos para funcionamento do algoritmo
@@ -159,7 +159,7 @@ app.get('/api/getavarias', async (req, res) => {
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
       const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
       if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Avaria'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      const sortedData = quickSort(dataCopy, 'Avaria'); // ----------------------------------------------- Ordenar dados por data sem guardar em cache
       // Retornar dados
       res.json({ data: sortedData });
    } catch (error) {
@@ -170,11 +170,11 @@ app.get('/api/getavarias', async (req, res) => {
 // API endpoint para buscar dados de máquinas
 app.get('/api/getmaquinas', async (req, res) => {
    try {
-      const fileName = req.query.fileName || 'tblMaquinas.json'; // --------------------------------------- Busca ficheiro
+      const fileName = req.query.fileName || 'tblMaquinas.json'; // -------------------------------------- Busca ficheiro
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
       const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
       if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Maquina'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      const sortedData = quickSort(dataCopy, 'Maquina'); // ---------------------------------------------- Ordenar dados por data sem guardar em cache
       // Retornar dados
       res.json({ data: sortedData });
    } catch (error) {
@@ -185,11 +185,11 @@ app.get('/api/getmaquinas', async (req, res) => {
 // API endpoint para buscar dados de modelos Electrex
 app.get('/api/getmodelos', async (req, res) => {
    try {
-      const fileName = req.query.fileName || 'tblModelosElectrex.json'; // --------------------------------------- Busca ficheiro
+      const fileName = req.query.fileName || 'tblModelosElectrex.json'; // ------------------------------- Busca ficheiro
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
       const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
       if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'ModeloElectrex'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      const sortedData = quickSort(dataCopy, 'ModeloElectrex'); // --------------------------------------- Ordenar dados por data sem guardar em cache
       // Retornar dados
       res.json({ data: sortedData });
    } catch (error) {
@@ -200,7 +200,7 @@ app.get('/api/getmodelos', async (req, res) => {
 // API endpoint para buscar dados de tipos de máquinas
 app.get('/api/gettipos', async (req, res) => {
    try {
-      const fileName = req.query.fileName || 'tblTipos.json'; // --------------------------------------- Busca ficheiro
+      const fileName = req.query.fileName || 'tblTipos.json'; // ----------------------------------------- Busca ficheiro
       const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
       const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
       if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
@@ -211,6 +211,23 @@ app.get('/api/gettipos', async (req, res) => {
       handleError(res, error, 400, 'Erro ao buscar dados de tipos - Servidor');
    }
 });
+
+// API endpoint para buscar dados de tipos de máquinas
+app.get('/api/getcircuitos', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblCircuitoList.json'; // --------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'Tipo'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      // Retornar dados
+      res.json({ data: sortedData });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados de tipos - Servidor');
+   }
+});
+
+
 
 
 
@@ -247,6 +264,7 @@ app.post('/api/login', async (req, res) => {
       handleError(res, error, 'Erro durante autenticação - Servidor');
    }
 });
+
 
 
 

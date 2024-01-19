@@ -11,16 +11,16 @@ interface NomesColunasRepar {
    [key: string]: string;
 }
 
-const GerarTabelaRepar: React.FC<GerarTabelaProps> = ({ data, headers }) => {
+const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers }) => {
    // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
 
    // Inicializar campos mostrados/filtrados
    const colunasMostradasRepar: string[] = [
-      'OrdemReparacao',
-      'NumMaquina', 
-      'Marca', 
-      'Maquina',
+      'OrdemRep',
+      'Numero', 
+      'Circuito', 
+      'Revisao',
       'ModeloElectrex',
       'Tipo', 
       'Avarias',
@@ -33,10 +33,10 @@ const GerarTabelaRepar: React.FC<GerarTabelaProps> = ({ data, headers }) => {
 
    // Tornar campos mais legíveis
    const nomesColunasRepar: NomesColunasRepar = {      
-      'OrdemReparacao':'Ordem Reparação',
-      'NumMaquina':'Num. Série', 
-      'Marca':'Marca', 
-      'Maquina':'Maquina',
+      'OrdemRep':'Ordem Rep.',
+      'Numero':'Num. Série', 
+      'Circuito':'Circuito', 
+      'Revisao':'Revisão',
       'ModeloElectrex':'Modelo Electrex',
       'Tipo':'Tipo', 
       'Avarias':'Avarias',
@@ -92,4 +92,4 @@ const GerarTabelaRepar: React.FC<GerarTabelaProps> = ({ data, headers }) => {
    );
 };
 
-export default GerarTabelaRepar;
+export default GerarTabelaReparCir;

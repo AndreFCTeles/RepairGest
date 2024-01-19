@@ -6,14 +6,14 @@ import { Pagination, Flex, Center, Fieldset } from '@mantine/core';
 
 // Componentes
 import fetchData from '../../api/fetchData';
-import GerarTabelaRepar from './tabela-reparacoes';
+import GerarTabelaReparMaq from './reparacoes-tabela';
 
 
 
 
 /* |----- COMPONENTE -----| */
 
-const ReparConteudo:React.FC = () => {   
+const ReparMaqConteudo:React.FC = () => {   
 
    /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
 
@@ -91,7 +91,7 @@ const ReparConteudo:React.FC = () => {
                            className='m-1'
                         />
                      </Center>
-                     <GerarTabelaRepar 
+                     <GerarTabelaReparMaq 
                         data={data} 
                         headers={headers} 
                      />  
@@ -103,4 +103,4 @@ const ReparConteudo:React.FC = () => {
    );
 };
 
-export default ReparConteudo;
+export default ReparMaqConteudo;
