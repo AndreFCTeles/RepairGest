@@ -21,14 +21,10 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers }) => {
       'Numero', 
       'Circuito', 
       'Revisao',
-      'ModeloElectrex',
-      'Tipo', 
-      'Avarias',
       'Observacoes', 
       'DataTime', 
-      'Cliente',
-      'Acessorios', 
-      'Actualizada'
+      'Origem',
+      'Estado'
    ]
 
    // Tornar campos mais legíveis
@@ -37,14 +33,10 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers }) => {
       'Numero':'Num. Série', 
       'Circuito':'Circuito', 
       'Revisao':'Revisão',
-      'ModeloElectrex':'Modelo Electrex',
-      'Tipo':'Tipo', 
-      'Avarias':'Avarias',
+      'Origem':'Origem',
       'Observacoes':'Observações', 
-      'DataTime':'Data', 
-      'Cliente':'Cliente',
-      'Acessorios':'Acessórios', 
-      'Actualizada':'Atualizada'
+      'DataTime':'Data',
+      'Estado':'Estado' 
    }
 
    // Tornar "Observações" em botão para visualizar os dados de maneira menos intrusiva

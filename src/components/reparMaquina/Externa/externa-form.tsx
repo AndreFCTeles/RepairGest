@@ -173,7 +173,7 @@ const NRExternaForm: React.FC = () => {
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault();
       try {
-         const response = await postData('novarepar', formValues); 
+         const response = await postData('novareparmaq', formValues); 
          console.log('Resposta:', response); 
       } catch (error) {
          console.error('Erro ao submeter dados:', error);

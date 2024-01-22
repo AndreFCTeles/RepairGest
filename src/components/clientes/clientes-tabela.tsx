@@ -41,14 +41,27 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers }) => {
       'Observacoes':'Observações', 
    }
 
+   // Function to create an excerpt from a long text
+   const criarExcerto = (text:string, maxLength = 50) => {
+      if (text.length > maxLength) { return text.substring(0, maxLength) + '...'; }
+      return text;
+   };
+
    // Tornar "Observações" em botão para visualizar os dados de maneira menos intrusiva
    const observacoes = (obData:string) => (
       <Menu shadow="md" width={200}>
          <Menu.Target>
-               <Button className="navButton">Ver</Button>
+            <div style={{ 
+               cursor: 'pointer',
+               whiteSpace: 'nowrap',
+               overflow: 'hidden',
+               textOverflow: 'ellipsis' 
+            }}>
+               {criarExcerto(obData)}
+            </div>
          </Menu.Target>
          <Menu.Dropdown>
-               <Menu.Item>{obData}</Menu.Item>
+            <Menu.Item>{obData}</Menu.Item>
          </Menu.Dropdown>
       </Menu>
    );
@@ -77,10 +90,10 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers }) => {
    return (
       <ScrollArea>
          <Table stickyHeader stickyHeaderOffset={0} striped highlightOnHover withTableBorder withColumnBorders>
-               <Table.Thead>
-                  <Table.Tr>{tableHeaders}</Table.Tr>
-               </Table.Thead>
-               <Table.Tbody>{tableRows}</Table.Tbody>
+            <Table.Thead>
+               <Table.Tr>{tableHeaders}</Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>{tableRows}</Table.Tbody>
          </Table>
       </ScrollArea>
    );

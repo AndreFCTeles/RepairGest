@@ -79,18 +79,21 @@ const ReparCirConteudo:React.FC = () => {
                   // <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
                   <div>Shit's loading, yo</div>
                ) : (
-                  <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer">
-                     <Center>
-                        <Pagination
-                           total={totalPages}
-                           value={currentPage}
-                           onChange={handlePageChange}
-                           siblings={3}
-                           boundaries={2}
-                           withEdges
-                           className='m-1'
-                        />
-                     </Center>
+                  <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer" justify={totalPages <= 1 ? 'center' : ''}>
+                     
+                     {totalPages <= 1 ? null : (
+                        <Center>
+                           <Pagination
+                              total={totalPages}
+                              value={currentPage}
+                              onChange={handlePageChange}
+                              siblings={3}
+                              boundaries={2}
+                              withEdges
+                              className='m-1'
+                           />
+                        </Center>
+                     )}
                      <GerarTabelaReparCir 
                         data={data} 
                         headers={headers} 

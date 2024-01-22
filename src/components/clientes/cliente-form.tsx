@@ -15,6 +15,7 @@ interface Contacto {
    Email: string;
 }
 
+// Tipos estruturados de valores para validação / estados
 interface FormValues {
    Nome: string;
    Pais: string;

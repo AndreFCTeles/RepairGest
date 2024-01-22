@@ -2,7 +2,7 @@
 
 // Frameworks
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, Autocomplete, ScrollArea, SegmentedControl } from '@mantine/core';
+import { ComboboxChevron, Text, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, Autocomplete, ScrollArea, SegmentedControl } from '@mantine/core';
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
@@ -10,7 +10,7 @@ import fetchData from '../../../api/fetchData';
 import postData from '../../../api/postData';
 import 'dayjs/locale/pt'; // Implementa calendário e formatação de data - Portugal
 
-// Tipos estruturados de valores para validação dos dados em fetch
+// Tipos estruturados de valores para validação dos dados em fetch / dropdowns
 interface Cliente { Nome: string; }
 interface Maquina { Maquina: string; }
 interface Modelo { ModeloElectrex: string; }
@@ -20,7 +20,7 @@ interface Avaria {
    Avaria: string; 
 }
 
-// Tipos estruturados de valores para validação
+// Tipos estruturados de valores para validação / estados do formulário
 interface FormValues {
    dataCalendario: Date | null;
    ordemReparacao: string;
@@ -175,7 +175,7 @@ const NRInternaForm: React.FC = () => {
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault();
       try {
-         const response = await postData('novarepar', formValues);
+         const response = await postData('novareparmaq', formValues);
          console.log('Resposta:', response);
       } catch (error) {
          console.error('Erro ao submeter dados:', error);
@@ -245,12 +245,16 @@ const NRInternaForm: React.FC = () => {
                         data={clientesCache.map(cliente => cliente.Nome)}
                         value={formValues.cliente}
                         onChange={(value) => handleInputChange('cliente', value)}
+                        pointer
+                        rightSection={<ComboboxChevron />}
                         />
                         <Autocomplete
                         label="Marca"
                         data={maquinasCache.map(maquina => maquina.Maquina)}
                         value={formValues.marca}
                         onChange={(value) => handleInputChange('marca', value)}
+                        pointer
+                        rightSection={<ComboboxChevron />}
                         />
                      </Flex>
 
@@ -266,12 +270,16 @@ const NRInternaForm: React.FC = () => {
                         data={modelosCache.map(modelo => modelo.ModeloElectrex)}
                         value={formValues.modelo}
                         onChange={(value) => handleInputChange('modelo', value)}
+                        pointer
+                        rightSection={<ComboboxChevron />}
                         />
                         <Autocomplete
                         label="Tipo de Máquina"
                         data={tiposCache.map(modelo => modelo.Tipo)}
                         value={formValues.tipo}
                         onChange={(value) => handleInputChange('tipo', value)}
+                        pointer
+                        rightSection={<ComboboxChevron />}
                         />
                      </Flex>
 
@@ -332,7 +340,9 @@ const NRInternaForm: React.FC = () => {
                      value={autocompleteFilter}
                      onChange={handleAutocompleteChange}
                      data={avariasCache.map((avaria) => avaria.Avaria)}
-                     dropdownOpened={false} />
+                     dropdownOpened={false}
+                     pointer
+                     rightSection={<ComboboxChevron />} />
                      <ScrollArea className='flex-1 pb-1 px-1' ref={scrollAreaRef}>
                         {avariasCache
                            .filter(avaria => avaria.Avaria.toLowerCase().includes(autocompleteFilter))

@@ -61,6 +61,31 @@ const stringCompareFunction = (a, b, field) => {
    return 0;
 };
 
+// Paginar data caso seja pedido no frontend
+function paginateData(data, page, pageSize) {
+
+   // Contagem de items/páginas
+   // const totalItems = cache[cacheKey].length; // ------------------------------------------------------- Buscar numero total de items da cache
+   const totalItems = data.length; // --------------------------------------------------------------------- Buscar numero total de items sem cache
+   const totalPages = Math.ceil(totalItems / pageSize);
+
+   // Calcular inicio e fim baseado em parâmetros de paginação
+   const startIndex = (page - 1) * pageSize;
+   const endIndex = startIndex + pageSize;
+
+   // Fetch, retornar subset consoante paginação
+   // const paginatedData = cache[cacheKey].slice(startIndex, endIndex); // ------------------------------- Buscar dados da cache
+   const paginatedData = data.slice(startIndex, endIndex); // --------------------------------------------- Buscar dados sem cache
+
+   return {
+      data: paginatedData,
+      totalItems,
+      totalPages,
+      currentPage: page
+   };
+}
+
+
 // Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
 function quickSort(arr, field) {
    if (arr.length < 2) return arr; // --------------------------------------------------------------------- arr.length = 1 ou 0, aceitar valor simples em vez de array (=já ordenado)   
@@ -113,27 +138,40 @@ app.get('/api/getrepar', async (req, res) => {
       const page = parseInt(req.query.page, 10);
       const pageSize = parseInt(req.query.pageSize, 10);
 
-      // Contagem de items/páginas
-      const totalItems = sortedData.length; // ----------------------------------------------------------- Buscar numero total de items sem cache
-      // const totalItems = cache[cacheKey].length; // --------------------------------------------------- Buscar numero total de items da cache
-      const totalPages = Math.ceil(totalItems / pageSize);
-
-      // Calcular inicio e fim baseado em parâmetros de paginação
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-
-      // Fetch, retornar subset consoante paginação
-      // const paginatedData = cache[cacheKey].slice(startIndex, endIndex); // --------------------------- Buscar dados da cache
-      const paginatedData = sortedData.slice(startIndex, endIndex); // ----------------------------------- Buscar dados sem cache
-
       // Retornar dados
       if (Number.isInteger(page) && Number.isInteger(pageSize) && page > 0 && pageSize > 0) { // --------- Caso seja necessária paginação dos dados
-         res.json({ data: paginatedData, totalItems, totalPages, currentPage: page });
+         const paginatedResult = paginateData(sortedData, page, pageSize);
+         res.json(paginatedResult);
       } else {
          res.json({ data: sortedData });
       }
    } catch (error) {
       handleError(res, error, 400, 'Erro ao buscar dados de reparações - Servidor');
+   }
+});
+
+// API endpoint para buscar dados de reparações de circuitos
+app.get('/api/getcircuitos', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblCircuitoList.json'; // ---------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'DataTime'); // --------------------------------------------- Ordenar dados por data sem guardar em cache
+
+      // Declarar paginação pretendida
+      const page = parseInt(req.query.page, 10);
+      const pageSize = parseInt(req.query.pageSize, 10);
+
+      // Retornar dados
+      if (Number.isInteger(page) && Number.isInteger(pageSize) && page > 0 && pageSize > 0) { // --------- Caso seja necessária paginação dos dados
+         const paginatedResult = paginateData(sortedData, page, pageSize);
+         res.json(paginatedResult);
+      } else {
+         res.json({ data: sortedData });
+      }
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados de circuitos - Servidor');
    }
 });
 
@@ -145,6 +183,21 @@ app.get('/api/getclientes', async (req, res) => {
       const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
       if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
       const sortedData = quickSort(dataCopy, 'Nome'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
+      // Retornar dados
+      res.json({ data: sortedData });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar dados de clientes - Servidor');
+   }
+});
+
+// API endpoint para buscar dados de componentes / CI
+app.get('/api/getci', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblCI.json'; // -------------------------------------------- Busca ficheiro
+      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
+      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
+      const sortedData = quickSort(dataCopy, 'Circuito'); // --------------------------------------------- Ordenar dados por data sem guardar em cache
       // Retornar dados
       res.json({ data: sortedData });
    } catch (error) {
@@ -212,21 +265,6 @@ app.get('/api/gettipos', async (req, res) => {
    }
 });
 
-// API endpoint para buscar dados de tipos de máquinas
-app.get('/api/getcircuitos', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblCircuitoList.json'; // --------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Tipo'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
-      // Retornar dados
-      res.json({ data: sortedData });
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de tipos - Servidor');
-   }
-});
-
 
 
 
@@ -234,9 +272,24 @@ app.get('/api/getcircuitos', async (req, res) => {
 // |----- ENDPOINTS DE ESCRITA -----|
 
 // API endpoint para escrever dados - WIP
-app.post('/api/novarepar', async (req, res) => {
+app.post('/api/novareparmaq', async (req, res) => {
    try {
       const fileName = req.query.fileName || 'tblRepairList.json';
+      const jsonData = await readJsonFile(fileName);
+      const newRepar = req.body;
+      jsonData.push(newRepar);
+      const filePath = path.join(dataFilePath, fileName);
+      await fs.writeFile(filePath, JSON.stringify(jsonData, null, 2), 'utf8');
+      res.status(201).json({ success: true, data: newRepar });
+   } catch (error) {
+      handleError(res, error, 'Erro ao escrever dados - Servidor');
+   }
+});
+
+// API endpoint para escrever dados - WIP
+app.post('/api/novareparcir', async (req, res) => {
+   try {
+      const fileName = req.query.fileName || 'tblCircuitoList.json';
       const jsonData = await readJsonFile(fileName);
       const newRepar = req.body;
       jsonData.push(newRepar);
