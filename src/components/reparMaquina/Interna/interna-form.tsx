@@ -2,7 +2,7 @@
 
 // Frameworks
 import React, { useState, useEffect, useRef } from 'react';
-import { ComboboxChevron, Text, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, Autocomplete, ScrollArea, SegmentedControl } from '@mantine/core';
+import { ComboboxChevron, Text, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, Autocomplete, ScrollArea, SegmentedControl, Divider } from '@mantine/core';
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
@@ -41,7 +41,7 @@ interface FormValues {
 
 /* |----- COMPONENTE -----| */
 
-const NRInternaForm: React.FC = () => {
+const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
 
    /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
 
@@ -54,12 +54,32 @@ const NRInternaForm: React.FC = () => {
       marca: '',
       modelo: '',
       tipo: '',
-      valorGar: 'nao',
+      valorGar: '',
       acessorios: '',
       observacoes: '',
       defeitos: [],
    });
    const [valorAcc, setValorAcc] = useState('nao');
+   
+   // transfere os dados da tabela como dados iniciais do formulário
+   useEffect(() => {
+      if (initialData) { 
+         console.log(initialData);
+         setFormValues({
+            dataCalendario: initialData.DataTime ? new Date(initialData.DataTime) : null,
+            ordemReparacao: initialData.OrdemReparacao ? initialData.OrdemReparacao : '',
+            numeroSerie: initialData.NumMaquina ? initialData.NumMaquina : '',
+            cliente: initialData.Cliente ? initialData.Cliente : '',
+            marca: initialData.Marca ? initialData.Marca : '',
+            modelo: initialData.ModeloElectrex ? initialData.ModeloElectrex : '',
+            tipo: initialData.Tipo ? initialData.Tipo : '',
+            valorGar: initialData.Garantia ? initialData.Garantia : 'nao',
+            acessorios: initialData.Acessorios ? initialData.Acessorios : '',
+            observacoes: initialData.Observacoes ? initialData.Observacoes : '',
+            defeitos: initialData.Avarias ? initialData.Avarias : [],
+         });
+      }
+   }, [initialData]);
 
    // Estado para cache e uso de dados
    const [clientesCache, setClientesCache] = useState<Cliente[]>([]);
@@ -162,7 +182,24 @@ const NRInternaForm: React.FC = () => {
          }
       }; 
       fetchDataAndPopulateCaches();
-}, [avariasCache, clientesCache, maquinasCache, modelosCache, tiposCache]);
+   }, [avariasCache, clientesCache, maquinasCache, modelosCache, tiposCache]);
+
+   // Inicialização da data
+   useEffect(() => {
+      const fetchDateTime = async () => {
+         try {
+            const currentDateTime = await fetchData('currentDateTime');
+            const dateObject = new Date(currentDateTime.dateTime);
+            setFormValues(prevValues => ({
+               ...prevValues,
+               dataCalendario: dateObject
+            }));
+         } catch (error) {
+            console.error('Erro ao buscar data/hora - Aplicação:', error);
+         }
+      };
+      fetchDateTime();
+   }, []);
 
    // Efeito para gerir tamanhos dinâmicos
    useEffect(() => {
@@ -209,6 +246,8 @@ const NRInternaForm: React.FC = () => {
                               value={formValues.dataCalendario}
                               onChange={(date) => handleInputChange('dataCalendario', date)}
                               valueFormat='DD MMM YYYY'
+                              pointer
+                              rightSection={<ComboboxChevron />}
                            />
                         </DatesProvider>
                      </Box>
@@ -233,6 +272,8 @@ const NRInternaForm: React.FC = () => {
                         onChange={(e) => handleInputChange('numeroSerie', e.target.value)}
                         />
                      </Flex>
+
+                     <Divider className='my-10' variant='dotted' />
 
                      <Flex
                      justify="center"

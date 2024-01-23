@@ -265,6 +265,16 @@ app.get('/api/gettipos', async (req, res) => {
    }
 });
 
+// API endpoint para buscar data/hora
+app.get('/api/currentDateTime', (req, res) => {
+   try {
+      const currentDateTime = new Date();
+      res.json({ dateTime: currentDateTime.toISOString() });
+   } catch (error) {
+      handleError(res, error, 400, 'Erro ao buscar data/hora - Servidor');
+   }
+});
+
 
 
 

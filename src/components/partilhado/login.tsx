@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextInput, Button, Center, PasswordInput } from '@mantine/core';
 
-interface LoginProps {
-   onLoginSuccess: () => void;
-}
+interface LoginProps { onLoginSuccess: () => void; }
 
 const LoginForm: React.FC<LoginProps> = ({onLoginSuccess}) => {
    const [user, setUser] = useState('');

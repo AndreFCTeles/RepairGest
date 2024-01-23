@@ -2,11 +2,18 @@
 
 // Frameworks
 import React, { useState, useEffect } from 'react';
-import { Pagination, Flex, Center, Fieldset } from '@mantine/core';
+import { Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
 // Componentes
 import fetchData from '../../api/fetchData';
 import GerarTabelaReparMaq from './reparacoes-tabela';
+import NRInternaForm from './Interna/interna-form';
+import NRExternaForm from './Externa/externa-form';
+
+// Inicialização do tipo de formulário para edição de dados
+interface SelectedRowData { IntExt?: string; }
+
 
 
 
@@ -25,6 +32,9 @@ const ReparMaqConteudo:React.FC = () => {
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
+   const [opened, { open, close }] = useDisclosure(false);
+   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
+
 
 
 
@@ -55,10 +65,24 @@ const ReparMaqConteudo:React.FC = () => {
       return () => {}; // cleanup
    }, [currentPage]);
 
+
+
+
+   
+   /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
+
    // Paginação - mudança de página
    const handlePageChange = (newPage: number) => { setCurrentPage(newPage); }
    
-   
+   // Duplo-click e edição de dados
+   const handleRowDoubleClick = (index: number) => {
+      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
+      setSelectedRowData(rowData);
+      //console.log(rowData.DateTime); // testar objeto
+      open();
+   };
+
+
 
 
 
@@ -67,6 +91,21 @@ const ReparMaqConteudo:React.FC = () => {
 
    return (    
       <div className="bg-gray-100 FIXContainer" >    
+         {/* Drawer para formulário / edição de dados */}
+         <Drawer 
+            opened={opened} 
+            onClose={close} 
+            padding="md" 
+            size="xl" 
+            position='right' 
+            withCloseButton={false}>
+            {selectedRowData && (
+               selectedRowData.IntExt === "2" ? 
+               <NRExternaForm initialData={selectedRowData} /> : 
+               <NRInternaForm initialData={selectedRowData} />
+            )}
+         </Drawer>
+
          <Flex
          justify="left"
          direction="row"
@@ -94,6 +133,7 @@ const ReparMaqConteudo:React.FC = () => {
                      <GerarTabelaReparMaq 
                         data={data} 
                         headers={headers} 
+                        onRowDoubleClick={handleRowDoubleClick}
                      />  
                   </Flex>
                )}

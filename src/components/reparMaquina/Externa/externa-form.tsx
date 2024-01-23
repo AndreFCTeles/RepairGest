@@ -2,7 +2,7 @@
 
 // Frameworks
 import React, { useState, useEffect, useRef } from 'react';
-import { Autocomplete, ScrollArea, Text, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, SegmentedControl } from '@mantine/core';
+import { Autocomplete, ComboboxChevron, ScrollArea, Text, Flex, TextInput, Textarea, Checkbox, Box, Fieldset, SegmentedControl, Divider } from '@mantine/core';
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
@@ -40,7 +40,7 @@ interface FormValues {
 
 /* |----- COMPONENTE -----| */
 
-const NRExternaForm: React.FC = () => {
+const NRExternaForm: React.FC<{initialData: any}> = ({initialData}) => {
 
    /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
 
@@ -58,6 +58,25 @@ const NRExternaForm: React.FC = () => {
       defeitos: [],
    });
    const [valorAcc, setValorAcc] = useState('nao');
+
+   // transfere os dados da tabela como dados iniciais do formulário
+   useEffect(() => {
+      if (initialData) { 
+         console.log(initialData);
+         setFormValues({
+            dataCalendario: initialData.DataTime ? new Date(initialData.DataTime) : null,
+            numeroSerie: initialData.NumMaquina ? initialData.NumMaquina : '',
+            cliente: initialData.Cliente ? initialData.Cliente : '',
+            marca: initialData.Marca ? initialData.Marca : '',
+            modelo: initialData.ModeloElectrex ? initialData.ModeloElectrex : '',
+            tipo: initialData.Tipo ? initialData.Tipo : '',
+            valorGar: initialData.Garantia ? initialData.Garantia : 'nao',
+            acessorios: initialData.Acessorios ? initialData.Acessorios : '',
+            observacoes: initialData.Observacoes ? initialData.Observacoes : '',
+            defeitos: initialData.Avarias ? initialData.Avarias : [],
+         });
+      }
+   }, [initialData]);
 
    // Estado para cache e uso de dados
    const [clientesCache, setClientesCache] = useState<Cliente[]>([]);
@@ -162,6 +181,23 @@ const NRExternaForm: React.FC = () => {
       fetchDataAndPopulateCaches();
 }, [avariasCache, clientesCache, maquinasCache, modelosCache, tiposCache]); 
 
+   // Inicialização da data
+   useEffect(() => {
+      const fetchDateTime = async () => {
+         try {
+            const currentDateTime = await fetchData('currentDateTime');
+            const dateObject = new Date(currentDateTime.dateTime);
+            setFormValues(prevValues => ({
+               ...prevValues,
+               dataCalendario: dateObject
+            }));
+         } catch (error) {
+            console.error('Erro ao buscar data/hora - Aplicação:', error);
+         }
+      };
+      fetchDateTime();
+   }, []);
+
    // Efeito para gerir tamanhos dinâmicos
    useEffect(() => {
       const resizeObserver = new ResizeObserver(() => { adjustListSize(); });
@@ -207,16 +243,23 @@ const NRExternaForm: React.FC = () => {
                               value={formValues.dataCalendario}
                               onChange={(date) => handleInputChange('dataCalendario', date)}
                               valueFormat='DD MMM YYYY'
+                              pointer
+                              rightSection={<ComboboxChevron />}
                            />
                         </DatesProvider>
                      </Box>
 
                      <Flex
-                     justify="right"
+                     justify="center"
                      align="center"
                      direction="row"
                      wrap="wrap"
                      gap="xs">
+                        <TextInput
+                        label="Ordem de Reparação"
+                        placeholder=""
+                        disabled
+                        />
                         <TextInput
                         label="Número de série"
                         placeholder=""
@@ -224,6 +267,8 @@ const NRExternaForm: React.FC = () => {
                         onChange={(e) => handleInputChange('numeroSerie', e.target.value)}
                         />
                      </Flex>
+
+                     <Divider className='my-10' variant='dotted' />
 
                      <Flex
                      justify="center"
@@ -236,12 +281,16 @@ const NRExternaForm: React.FC = () => {
                         data={clientesCache.map(cliente => cliente.Nome)}
                         value={formValues.cliente}
                         onChange={(value) => handleInputChange('cliente', value)}
+                        pointer
+                        rightSection={<ComboboxChevron />}
                         />
                         <Autocomplete
                         label="Marca"
                         data={maquinasCache.map(maquina => maquina.Maquina)}
                         value={formValues.marca}
                         onChange={(value) => handleInputChange('marca', value)}
+                        pointer
+                        rightSection={<ComboboxChevron />}
                         />
                      </Flex>
 
@@ -257,12 +306,16 @@ const NRExternaForm: React.FC = () => {
                         data={modelosCache.map(modelo => modelo.ModeloElectrex)}
                         value={formValues.modelo}
                         onChange={(value) => handleInputChange('modelo', value)}
+                        pointer
+                        rightSection={<ComboboxChevron />}
                         />
                         <Autocomplete
                         label="Tipo de Máquina"
                         data={tiposCache.map(modelo => modelo.Tipo)}
                         value={formValues.tipo}
                         onChange={(value) => handleInputChange('tipo', value)}
+                        pointer
+                        rightSection={<ComboboxChevron />}
                         />
                      </Flex>
 

@@ -1,6 +1,6 @@
 // Frameworks
 import React, { useState }  from 'react';
-import { Flex, Stack, Image, AppShell,  Button, Group, Collapse, Container, Modal } from '@mantine/core';
+import { Flex, Image, AppShell,  Button, Group, Collapse, Container, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 // Componentes
 import Banner from "./components/partilhado/banner";
@@ -75,7 +75,7 @@ const App: React.FC = () => {
          
          <AppShell.Navbar>            
             {showLoginModal ? null : (
-               <Stack gap={0} justify='start' className="navbar p-4 h-full ">
+               <Flex gap={0} direction='column' className="navbar p-4 h-full ">
                   <Flex id="logoContainer">
                      <Image src={logo190x170} className='pb-4 self-auto mx-auto'  />
                   </Flex>
@@ -164,20 +164,24 @@ const App: React.FC = () => {
                      </Collapse>
                   </div>
                   {/* /CIRCUITOS */}
-                  
-                  {/* CLIENTES */}
-                  <div className='bg-opacity-30 bg-black'>
-                     <Group>
-                        <Button 
-                        className="navButton mt-1" 
-                        onClick={() => {
-                           reparacoesActions.close();
-                           botActions.close();
-                           circuitoActions.close();
-                           clientesActions.toggle();
-                        }}>Clientes</Button>
-                     </Group>
 
+                  {/* VOLTAR */}
+                  {(opcaoSelecionada === 'formulario' || opcaoContSelecionada !== 'principal') && (
+                     <Button 
+                     className="navButton mt-1"
+                     onClick={() => {
+                        clientesActions.close();
+                        reparacoesActions.close();
+                        botActions.close();
+                        circuitoActions.close();
+                        setOpcaoSelecionada('conteudo');
+                        setOpcaoContSelecionada('principal');
+                     }}>Voltar</Button>
+                  )}
+                  {/* /VOLTAR */}
+
+                  {/* CLIENTES */}
+                  <div style={{/*justifySelf: 'flex-end'*/ marginTop: 'auto'}} className='bg-opacity-30 bg-black'>
                      <Collapse 
                      in={clientesState} 
                      className='dropdown'>
@@ -196,23 +200,21 @@ const App: React.FC = () => {
                            }}>Consulta</Button>
                         </div>
                      </Collapse>
+
+                     <Group>
+                        <Button 
+                        className="navButton" 
+                        onClick={() => {
+                           reparacoesActions.close();
+                           botActions.close();
+                           circuitoActions.close();
+                           clientesActions.toggle();
+                        }}>Clientes</Button>
+                     </Group>
                   </div>
                   {/* /CLIENTES */}
-
-                  {/* VOLTAR */}
-                  {(opcaoSelecionada === 'formulario' || opcaoContSelecionada !== 'principal') && (
-                     <Button 
-                     className="navButton mt-1"
-                     onClick={() => {
-                        clientesActions.close();
-                        reparacoesActions.close();
-                        botActions.close();
-                        circuitoActions.close();
-                        setOpcaoSelecionada('conteudo');
-                        setOpcaoContSelecionada('principal');
-                     }}>Voltar</Button>
-                  )}
-               </Stack>
+                  
+               </Flex>
             )}
          </AppShell.Navbar>
 

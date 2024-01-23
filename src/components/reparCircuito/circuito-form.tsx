@@ -2,7 +2,7 @@
 
 // Frameworks
 import React, { useState, useEffect } from 'react';
-import { ComboboxChevron, Text, TextInput, Textarea, Flex, Box, Fieldset, Autocomplete, SegmentedControl } from '@mantine/core';
+import { ComboboxChevron, Text, TextInput, Textarea, Flex, Box, Fieldset, Autocomplete, SegmentedControl, Divider } from '@mantine/core';
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
@@ -50,17 +50,10 @@ const NRCircuitoForm: React.FC = () => {
    // Estado para cache e uso de dados
    const [circuitosCache, setCircuitosCache] = useState<Circuito[]>([]);
    
-   /* |----- FUNÇÕES "HELPER" - Separação de lógica -----| */
 
-   // Handler para TextInputs
-   const handleInputChange = (field: keyof FormValues, value: any) => {
-      setFormValues(prevValues => ({
-         ...prevValues,
-         [field]: value,
-      }));
-   };
 
-   
+
+
    /* |----- GESTÃO DE ESTADOS -----| */
 
    // Busca de dados
@@ -78,7 +71,48 @@ const NRCircuitoForm: React.FC = () => {
          }
       }; 
       fetchDataAndPopulateCache();
-}, [circuitosCache]);
+   }, [circuitosCache]);
+
+   // Inicialização da data
+   useEffect(() => {
+      const fetchDateTime = async () => {
+         try {
+            const currentDateTime = await fetchData('currentDateTime');
+            const dateObject = new Date(currentDateTime.dateTime);
+            setFormValues(prevValues => ({
+               ...prevValues,
+               dataCalendario: dateObject
+            }));
+         } catch (error) {
+            console.error('Erro ao buscar data/hora - Aplicação:', error);
+         }
+      };
+      fetchDateTime();
+   }, []);
+
+
+
+
+
+   /* |----- FUNÇÕES "HELPER" - Separação de lógica -----| */
+
+   // Handler para TextInputs
+   const handleInputChange = (field: keyof FormValues, value: any) => {
+      setFormValues(prevValues => ({
+         ...prevValues,
+         [field]: value,
+      }));
+   };
+   // Handler específico para DatePicker
+   const handleDateChange = (date: Date) => {
+      setFormValues(prevValues => ({
+         ...prevValues,
+         dataCalendario: date,
+      }));
+   };
+
+
+
 
 
    /* |----- SUBMETER DADOS -----| */
@@ -97,8 +131,9 @@ const NRCircuitoForm: React.FC = () => {
 
    
 
-   /* |----- JSX / GERAR ELEMENTO -----| */
 
+
+   /* |----- JSX / GERAR ELEMENTO -----| */
 
    return (
       <div className='p-5 h-full'>
@@ -117,15 +152,37 @@ const NRCircuitoForm: React.FC = () => {
                         <DatePickerInput
                            label="Data"
                            value={formValues.dataCalendario}
-                           onChange={(date) => handleInputChange('dataCalendario', date)}
+                           onChange={(date) => {handleInputChange('dataCalendario', date)}}
                            valueFormat='DD MMM YYYY'
+                           pointer
+                           rightSection={<ComboboxChevron />}
                         />
                      </DatesProvider>
                   </Box>
 
+                  <Flex
+                  justify="center"
+                  align="center"
+                  direction="row"
+                  wrap="wrap"
+                  gap="xs">
+                     <TextInput
+                     label="Ordem de Reparação"
+                     placeholder=""
+                     value={formValues.ordemReparacao}
+                     onChange={(e) => handleInputChange('ordemReparacao', e.target.value)}
+                     />
+                     <TextInput
+                     label="Número de série"
+                     placeholder=""
+                     value={formValues.numeroSerie}
+                     onChange={(e) => handleInputChange('numeroSerie', e.target.value)}
+                     />
+                  </Flex>
+
+                  <Divider className='my-10' variant='dotted' />
 
                   <Flex
-                  className='pb-5'
                   justify="flex-start"
                   align="center"
                   direction="row"
@@ -150,27 +207,6 @@ const NRCircuitoForm: React.FC = () => {
                         ]} />
                      </Fieldset>
                   </Flex>
-
-                  <Flex
-                  justify="center"
-                  align="center"
-                  direction="row"
-                  wrap="wrap"
-                  gap="xs">
-                     <TextInput
-                     label="Ordem de Reparação"
-                     placeholder=""
-                     value={formValues.ordemReparacao}
-                     onChange={(e) => handleInputChange('ordemReparacao', e.target.value)}
-                     />
-                     <TextInput
-                     label="Número de série"
-                     placeholder=""
-                     value={formValues.numeroSerie}
-                     onChange={(e) => handleInputChange('numeroSerie', e.target.value)}
-                     />
-                  </Flex>
-
 
                   <Flex       
                   justify="center"
@@ -206,8 +242,7 @@ const NRCircuitoForm: React.FC = () => {
                </Fieldset>
             </Flex>   
 
-         </form></Box>     
-         
+         </form></Box>
       </div>
    );
 }

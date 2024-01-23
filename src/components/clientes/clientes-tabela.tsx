@@ -1,7 +1,8 @@
 import React from 'react';
-import { Table, Menu, Button, ScrollArea } from '@mantine/core';
+import { Table, ScrollArea } from '@mantine/core';
 import formatarData from '../../utils/formatar-data';
 import separarArray from '../../utils/separar-arrays';
+import Observacoes from '../partilhado/observacoes';
 
 interface GerarTabelaProps {
    data: any[];
@@ -41,31 +42,6 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers }) => {
       'Observacoes':'Observações', 
    }
 
-   // Function to create an excerpt from a long text
-   const criarExcerto = (text:string, maxLength = 50) => {
-      if (text.length > maxLength) { return text.substring(0, maxLength) + '...'; }
-      return text;
-   };
-
-   // Tornar "Observações" em botão para visualizar os dados de maneira menos intrusiva
-   const observacoes = (obData:string) => (
-      <Menu shadow="md" width={200}>
-         <Menu.Target>
-            <div style={{ 
-               cursor: 'pointer',
-               whiteSpace: 'nowrap',
-               overflow: 'hidden',
-               textOverflow: 'ellipsis' 
-            }}>
-               {criarExcerto(obData)}
-            </div>
-         </Menu.Target>
-         <Menu.Dropdown>
-            <Menu.Item>{obData}</Menu.Item>
-         </Menu.Dropdown>
-      </Menu>
-   );
-
    // Gerar Headers
    const tableHeaders = colunasMostradasCliente
    .filter(header => colunasMostradasCliente.includes(header)) // filtrar campos desnecessários
@@ -79,7 +55,7 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers }) => {
             <Table.Td key={header}>
                {
                   header === 'DataTime' ? formatarData(item[header]) : 
-                  header === 'Observacoes' ? observacoes(item[header]) : 
+                  header === 'Observacoes' ? <Observacoes obData={item[header]} /> : 
                   separarArray(item[header])
                }
             </Table.Td>

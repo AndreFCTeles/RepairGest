@@ -1,17 +1,19 @@
 import React from 'react';
-import { Table, Menu, Button, ScrollArea } from '@mantine/core';
+import { Table, ScrollArea } from '@mantine/core';
 import formatarData from '../../utils/formatar-data';
 import separarArray from '../../utils/separar-arrays';
+import Observacoes from '../partilhado/observacoes';
 
 interface GerarTabelaProps {
    data: any[];
    headers: string[];
+   onRowDoubleClick: (rowId: any) => void;
 }
 interface NomesColunasRepar {
    [key: string]: string;
 }
 
-const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers }) => {
+const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowDoubleClick }) => {
    // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
 
@@ -45,19 +47,11 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers }) => {
       'Cliente':'Cliente',
       'Acessorios':'Acessórios', 
       'Actualizada':'Atualizada'
-   }
+   } 
+   const handleDoubleClick = (index: number) => {
+      onRowDoubleClick(index); // Directly pass the index
+   };
 
-   // Tornar "Observações" em botão para visualizar os dados de maneira menos intrusiva
-   const observacoes = (obData:string) => (
-      <Menu shadow="md" width={200}>
-         <Menu.Target>
-               <Button className="navButton">Ver</Button>
-         </Menu.Target>
-         <Menu.Dropdown>
-               <Menu.Item>{obData}</Menu.Item>
-         </Menu.Dropdown>
-      </Menu>
-   );
 
    // Gerar Headers
    const tableHeaders = colunasMostradasRepar
@@ -66,13 +60,13 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers }) => {
 
    // Gerar células
    const tableRows = data.map((item, index) => (
-      <Table.Tr key={index}>
+      <Table.Tr key={index} data-index={index} onDoubleClick={()=>handleDoubleClick(index)}>
          {colunasMostradasRepar.map((header) => (
             colunasMostradasRepar.includes(header) && 
             <Table.Td key={header}>
                {
                   header === 'DataTime' ? formatarData(item[header]) : 
-                  header === 'Observacoes' ? observacoes(item[header]) : 
+                  header === 'Observacoes' ? <Observacoes obData={item[header]} /> : 
                   separarArray(item[header])
                }
             </Table.Td>

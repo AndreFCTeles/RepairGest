@@ -1,7 +1,8 @@
 import React from 'react';
-import { Table, Menu, Button, ScrollArea } from '@mantine/core';
+import { Table, ScrollArea } from '@mantine/core';
 import formatarData from '../../utils/formatar-data';
 import separarArray from '../../utils/separar-arrays';
+import Observacoes from '../partilhado/observacoes';
 
 interface GerarTabelaProps {
    data: any[];
@@ -39,17 +40,6 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers }) => {
       'Estado':'Estado' 
    }
 
-   // Tornar "Observações" em botão para visualizar os dados de maneira menos intrusiva
-   const observacoes = (obData:string) => (
-      <Menu shadow="md" width={200}>
-         <Menu.Target>
-               <Button className="navButton">Ver</Button>
-         </Menu.Target>
-         <Menu.Dropdown>
-               <Menu.Item>{obData}</Menu.Item>
-         </Menu.Dropdown>
-      </Menu>
-   );
 
    // Gerar Headers
    const tableHeaders = colunasMostradasRepar
@@ -63,8 +53,8 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers }) => {
             colunasMostradasRepar.includes(header) && 
             <Table.Td key={header}>
                {
-                  header === 'DataTime' ? formatarData(item[header]) : 
-                  header === 'Observacoes' ? observacoes(item[header]) : 
+                  header === 'DataTime' ? formatarData(item[header]): 
+                  header === 'Observacoes' ? <Observacoes obData={item[header]} /> : 
                   separarArray(item[header])
                }
             </Table.Td>
