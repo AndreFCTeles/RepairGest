@@ -3,10 +3,16 @@
 // Frameworks
 import React, { useRef, useState, useEffect } from 'react';
 import { Pagination, Text, Flex, Center, Fieldset, Radio, Autocomplete, ScrollArea } from '@mantine/core';
+// import { useDisclosure } from '@mantine/hooks';
 
 // Componentes
 import fetchData from '../../api/fetchData';
 import GerarTabelaCli from './clientes-tabela';
+// import NRInternaForm from '../reparMaquina/Interna/interna-form';
+// import NRExternaForm from '../reparMaquina/Externa/externa-form';
+
+// Inicialização do tipo de formulário para edição de dados
+// interface SelectedRowData { IntExt?: string; }
 
 
 
@@ -33,6 +39,10 @@ const ClientesConteudo: React.FC = () => {
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
    const [autocompleteFilter, setAutocompleteFilter] = useState('');
+   /*
+   const [opened, { open, close }] = useDisclosure(false);
+   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
+   */
 
    // Dimensionamento dinâmico de elementos
    const radioGroupRef = useRef<HTMLDivElement | null>(null);
@@ -80,6 +90,16 @@ const ClientesConteudo: React.FC = () => {
       updateTableData(filteredRepairsCache, newPage);
    };
 
+   // Duplo-click e edição de dados
+   /*
+   const handleRowDoubleClick = (index: number) => {
+      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
+      setSelectedRowData(rowData);
+      //console.log(rowData.DateTime); // testar objeto
+      open();
+   };
+   */
+
 
 
 
@@ -100,7 +120,7 @@ const ClientesConteudo: React.FC = () => {
             setClientList(clienteRes.data);
             updateTableData(reparClienteDados, 1);
          } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Erro ao buscar e atualizar dados - Aplicação:', error);
          } finally {
             setIsLoading(false);
          }
@@ -121,7 +141,6 @@ const ClientesConteudo: React.FC = () => {
       updateTableData(newFilteredRepairs, 1); // Reverter para página 1 mudando de filtragem
       setCurrentPage(1);
    }, [selectedClient, allRepairsCache]);
-   
 
    // Lógica para dimensionamento caso a janela mude de tamanho
    useEffect(() => {
@@ -137,7 +156,24 @@ const ClientesConteudo: React.FC = () => {
    /* |----- JSX / GERAR ELEMENTO -----| */
 
    return (  
-      <div className="bg-gray-100 FIXContainer" >    
+      <div className="bg-gray-100 FIXContainer" >          
+         {/* Drawer para formulário / edição de dados */}
+         {/*
+         <Drawer 
+            opened={opened} 
+            onClose={close} 
+            padding="md" 
+            size="xl" 
+            position='right' 
+            withCloseButton={false}>
+            {selectedRowData && (
+               selectedRowData.IntExt === "2" ? 
+               <NRExternaForm initialData={selectedRowData} /> : 
+               <NRInternaForm initialData={selectedRowData} />
+            )}
+         </Drawer>
+         */}
+
          <Flex
          justify="left"
          direction="row"
@@ -165,12 +201,12 @@ const ClientesConteudo: React.FC = () => {
                      {clientList
                         .filter(client => client.Nome.toLowerCase().includes(autocompleteFilter))
                         .map(client => (
-                              <Radio 
-                              key={client.ID} 
-                              value={client.Nome} 
-                              label={client.Nome}
-                              className='p-1'
-                              />                              
+                           <Radio 
+                           key={client.ID} 
+                           value={client.Nome} 
+                           label={client.Nome}
+                           className='p-1'
+                           />                              
                         ))
                      }           
                   </ScrollArea>
@@ -187,19 +223,20 @@ const ClientesConteudo: React.FC = () => {
                   <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer">
                      <Center>
                         <Pagination
-                           total={totalPages}
-                           value={currentPage}
-                           onChange={handlePageChange}
-                           siblings={2}
-                           boundaries={1}
-                           withEdges
-                           className='m-1'
+                        total={totalPages}
+                        value={currentPage}
+                        onChange={handlePageChange}
+                        siblings={2}
+                        boundaries={1}
+                        withEdges
+                        className='m-1'
                         />
                      </Center>
                      <GerarTabelaCli 
-                        data={data} 
-                        headers={headers} 
+                     data={data} 
+                     headers={headers} 
                      />  
+                        {/* onRowDoubleClick={handleRowDoubleClick} */}
                   </Flex>
                )}
             </Fieldset>

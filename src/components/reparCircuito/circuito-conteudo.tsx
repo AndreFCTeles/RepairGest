@@ -2,11 +2,17 @@
 
 // Frameworks
 import React, { useState, useEffect } from 'react';
-import { Pagination, Flex, Center, Fieldset } from '@mantine/core';
+import { Button, Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
 // Componentes
 import fetchData from '../../api/fetchData';
 import GerarTabelaReparCir from './circuito-tabela';
+import NRCircuitoForm from './circuito-form';
+
+// Inicialização do tipo de formulário para edição de dados
+interface SelectedRowData { IntExt?: string; }
+
 
 
 
@@ -25,6 +31,16 @@ const ReparCirConteudo:React.FC = () => {
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
+   const [opened, { open, close }] = useDisclosure(false);
+   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
+
+   // Toggle para edição de dados
+   const [isFormEditable, setIsFormEditable] = useState(false);
+   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
+
+   // Gravar dados após edição
+   //const [isFormChanged, setIsFormChanged] = useState(false);
+
 
 
 
@@ -55,18 +71,61 @@ const ReparCirConteudo:React.FC = () => {
       return () => {}; // cleanup
    }, [currentPage]);
 
+   // Repõe "disabled" nos elementos de formulário quando Drawer é fechado
+   useEffect(() => { if (!opened) { setIsFormEditable(false); } }, [opened]);
+
+
+
+
+
+   /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
+
    // Paginação - mudança de página
    const handlePageChange = (newPage: number) => { setCurrentPage(newPage); }
    
-   
+   // Duplo-click e edição de dados
+   const handleRowDoubleClick = (index: number) => {
+      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
+      setSelectedRowData(rowData);
+      //console.log(rowData.DateTime); // testar objeto
+      open();
+   };
+
+   // Handler para guardar dados alterados
+   const handleFormSave = () => {
+      // 
+   };
+
+
 
 
 
    /* |----- JSX / GERAR ELEMENTO -----| */
 
-
    return (    
       <div className="bg-gray-100 FIXContainer" >    
+         {/* Drawer para formulário / edição de dados */}
+         <Drawer 
+         opened={opened} 
+         onClose={()=>{
+            setIsFormEditable(false);
+            close();
+         }} 
+         padding="md" 
+         size="xl" 
+         position='right' 
+         withCloseButton={true}>
+            <Flex direction='row' justify='center'>
+               <Button className='normalBtn' onClick={toggleFormEditability}>
+                  {isFormEditable ? "Cancelar" : "Editar"}
+               </Button>
+               <Button className='normalBtn' onClick={handleFormSave}>
+                  Guardar
+               </Button>
+            </Flex>
+            <NRCircuitoForm initialData={selectedRowData} isEditable={isFormEditable} /> 
+         </Drawer>
+
          <Flex
          justify="left"
          direction="row"
@@ -84,19 +143,20 @@ const ReparCirConteudo:React.FC = () => {
                      {totalPages <= 1 ? null : (
                         <Center>
                            <Pagination
-                              total={totalPages}
-                              value={currentPage}
-                              onChange={handlePageChange}
-                              siblings={3}
-                              boundaries={2}
-                              withEdges
-                              className='m-1'
+                           total={totalPages}
+                           value={currentPage}
+                           onChange={handlePageChange}
+                           siblings={3}
+                           boundaries={2}
+                           withEdges
+                           className='m-1'
                            />
                         </Center>
                      )}
                      <GerarTabelaReparCir 
-                        data={data} 
-                        headers={headers} 
+                     data={data} 
+                     headers={headers} 
+                     onRowDoubleClick={handleRowDoubleClick}
                      />  
                   </Flex>
                )}

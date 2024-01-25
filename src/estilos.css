@@ -31,6 +31,11 @@ main {
   overflow-x: hidden;
 }
 
+input {
+  padding: 3px 10px 3px 10px;
+}
+
+/* Conteúdo = tabelas de dados */
 #Content {
   background-color: rgb(243 244 246);
   height: 100% !important;
@@ -39,6 +44,7 @@ main {
   max-width: 100% !important;
 }
 
+/* Força o container a ter dimensões 100% */
 .FIXContainer {
   width: 100% !important;
   max-width: 100% !important;
@@ -46,13 +52,7 @@ main {
   max-height: 100% !important;
 }
 
-#clientesScroll {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: 100% !important;
-  max-height: 100% !important;
-}
-
+/* Barra de topo da aplicação (onde se encontra o nome da app) */
 .flavourDiv {
   width: 100%;
   padding-left: 1em;
@@ -62,20 +62,24 @@ main {
   background-color: #C5101A;
 }
 
-input {
-  padding: 3px 10px 3px 10px;
-}
-
+/* Pequena alteração a elementos Input do Mantine */
 .mantine-TextInput-root {
   border: 1px;
   border-radius: 5px;
 }
 
+/* Sidebar de navegação */
 .navbar {
   background-color: #2D2D2D;
 }
 
+/* pequeno ajuste para Autocompletes */
+.clickThrough,
+.mantine-Autocomplete-section {
+  pointer-events: none;
+}
 
+/* ajustes para dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 0, 0, 0;

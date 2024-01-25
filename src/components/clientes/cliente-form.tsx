@@ -7,7 +7,7 @@ import { Text, Flex, TextInput, Textarea,  Box, Fieldset, Button,  Group, Scroll
 // Componentes
 import fetchData from '../../api/fetchData';
 
-// Inicialização do formato dos dados em formulário
+// Tipos estruturados de valores para validação / estados - Contacto
 interface Contacto {
    Nome: string;
    Tel: string;
@@ -15,7 +15,7 @@ interface Contacto {
    Email: string;
 }
 
-// Tipos estruturados de valores para validação / estados
+// Tipos estruturados de valores para validação / estados - Formulário
 interface FormValues {
    Nome: string;
    Pais: string;
@@ -29,6 +29,7 @@ interface FormValues {
 
 /* |----- COMPONENTE -----| */
 
+// const NClienteForm: React.FC<{initialData: any}> = ({initialData}) => { 
 const NClienteForm: React.FC = () => { 
    
    /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
@@ -47,7 +48,27 @@ const NClienteForm: React.FC = () => {
       Pais: '',
       Contactos: [{ Nome: '', Tel: '', Email: '', Obs: '' }],
    });
-
+   
+   /*
+   // transfere os dados da tabela como dados iniciais do formulário
+   useEffect(() => {
+      if (initialData) { 
+         console.log(initialData);
+         setFormValues({
+            dataCalendario: initialData.DataTime ? new Date(initialData.DataTime) : null,
+            numeroSerie: initialData.NumMaquina ? initialData.NumMaquina : '',
+            cliente: initialData.Cliente ? initialData.Cliente : '',
+            marca: initialData.Marca ? initialData.Marca : '',
+            modelo: initialData.ModeloElectrex ? initialData.ModeloElectrex : '',
+            tipo: initialData.Tipo ? initialData.Tipo : '',
+            valorGar: initialData.Garantia ? initialData.Garantia : 'nao',
+            acessorios: initialData.Acessorios ? initialData.Acessorios : '',
+            observacoes: initialData.Observacoes ? initialData.Observacoes : '',
+            defeitos: initialData.Avarias ? initialData.Avarias : [],
+         });
+      }
+   }, [initialData]);
+*/
 
 
 

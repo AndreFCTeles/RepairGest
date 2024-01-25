@@ -35,15 +35,21 @@ interface FormValues {
    defeitos: string[];
 }
 
+// Propriedades do componente
+interface NRInternaFormProps {
+   initialData: any;
+   isEditable?: boolean;
+}
+
 
 
 
 
 /* |----- COMPONENTE -----| */
 
-const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
+const NRInternaForm: React.FC<NRInternaFormProps> = ({initialData, isEditable=true}) => {
 
-   /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
+   /* |----- INICIALIZAÇÃO DE ESTADOS / VARIÁVEIS -----| */
 
    // Inicialização do formato dos dados em formulário
    const [formValues, setFormValues] = useState<FormValues>({
@@ -64,7 +70,7 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
    // transfere os dados da tabela como dados iniciais do formulário
    useEffect(() => {
       if (initialData) { 
-         console.log(initialData);
+         // console.log(initialData); // Debugging
          setFormValues({
             dataCalendario: initialData.DataTime ? new Date(initialData.DataTime) : null,
             ordemReparacao: initialData.OrdemReparacao ? initialData.OrdemReparacao : '',
@@ -135,6 +141,7 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
 
 
 
+
    /* |----- GESTÃO DE ESTADOS -----| */
 
    // Busca de dados
@@ -186,19 +193,21 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
 
    // Inicialização da data
    useEffect(() => {
-      const fetchDateTime = async () => {
-         try {
-            const currentDateTime = await fetchData('currentDateTime');
-            const dateObject = new Date(currentDateTime.dateTime);
-            setFormValues(prevValues => ({
-               ...prevValues,
-               dataCalendario: dateObject
-            }));
-         } catch (error) {
-            console.error('Erro ao buscar data/hora - Aplicação:', error);
-         }
-      };
-      fetchDateTime();
+      if (!initialData) { 
+         const fetchDateTime = async () => {
+            try {
+               const currentDateTime = await fetchData('currentDateTime');
+               const dateObject = new Date(currentDateTime.dateTime);
+               setFormValues(prevValues => ({
+                  ...prevValues,
+                  dataCalendario: dateObject
+               }));
+            } catch (error) {
+               console.error('Erro ao buscar data/hora - Aplicação:', error);
+            }
+         };
+         fetchDateTime();
+      }
    }, []);
 
    // Efeito para gerir tamanhos dinâmicos
@@ -207,6 +216,12 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
       if (scrollAreaRef.current) { resizeObserver.observe(scrollAreaRef.current); }
       return () => { if (scrollAreaRef.current) { resizeObserver.unobserve(scrollAreaRef.current); } };
    }, []);   
+
+
+
+
+
+   /* |----- SUBMETER DADOS -----| */
 
    // Handler para submissão de dados
    const handleSubmit = async (event: React.FormEvent) => {
@@ -236,18 +251,20 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                justify="center"
                align="flex-start"
                direction="row"
-               wrap="wrap">
+               wrap="wrap"
+               >
                   <Fieldset legend="Detalhes" className='lg-w-1/2'>  
                   
                      <Box className="w-1/2 mb-4">
                         <DatesProvider settings={{locale: 'pt', firstDayOfWeek: 0}}>
                            <DatePickerInput
-                              label="Data"
-                              value={formValues.dataCalendario}
-                              onChange={(date) => handleInputChange('dataCalendario', date)}
-                              valueFormat='DD MMM YYYY'
-                              pointer
-                              rightSection={<ComboboxChevron />}
+                           label="Data"
+                           value={formValues.dataCalendario}
+                           onChange={(date) => handleInputChange('dataCalendario', date)}
+                           valueFormat='DD MMM YYYY'
+                           pointer
+                           rightSection={<ComboboxChevron className='clickThrough' />}
+                           disabled={!isEditable}
                            />
                         </DatesProvider>
                      </Box>
@@ -258,18 +275,21 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                      align="center"
                      direction="row"
                      wrap="wrap"
-                     gap="xs">
+                     gap="xs"
+                     >
                         <TextInput
                         label="Ordem de Reparação"
                         placeholder=""
                         value={formValues.ordemReparacao}
                         onChange={(e) => handleInputChange('ordemReparacao', e.target.value)}
+                        disabled={!isEditable}
                         />
                         <TextInput
                         label="Número de série"
                         placeholder=""
                         value={formValues.numeroSerie}
                         onChange={(e) => handleInputChange('numeroSerie', e.target.value)}
+                        disabled={!isEditable}
                         />
                      </Flex>
 
@@ -280,14 +300,16 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                      align="center"
                      direction="row"
                      wrap="wrap"
-                     gap="xs">
+                     gap="xs"
+                     >
                         <Autocomplete
                         label="Cliente"
                         data={clientesCache.map(cliente => cliente.Nome)}
                         value={formValues.cliente}
                         onChange={(value) => handleInputChange('cliente', value)}
                         pointer
-                        rightSection={<ComboboxChevron />}
+                        rightSection={<ComboboxChevron className='clickThrough' />}
+                        disabled={!isEditable}
                         />
                         <Autocomplete
                         label="Marca"
@@ -295,7 +317,8 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                         value={formValues.marca}
                         onChange={(value) => handleInputChange('marca', value)}
                         pointer
-                        rightSection={<ComboboxChevron />}
+                        rightSection={<ComboboxChevron className='clickThrough' />}
+                        disabled={!isEditable}
                         />
                      </Flex>
 
@@ -305,14 +328,16 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                      align="center"
                      direction="row"
                      wrap="wrap"
-                     gap="xs">
+                     gap="xs"
+                     >
                         <Autocomplete
                         label="Modelo"
                         data={modelosCache.map(modelo => modelo.ModeloElectrex)}
                         value={formValues.modelo}
                         onChange={(value) => handleInputChange('modelo', value)}
                         pointer
-                        rightSection={<ComboboxChevron />}
+                        rightSection={<ComboboxChevron className='clickThrough' />}
+                        disabled={!isEditable}
                         />
                         <Autocomplete
                         label="Tipo de Máquina"
@@ -320,7 +345,8 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                         value={formValues.tipo}
                         onChange={(value) => handleInputChange('tipo', value)}
                         pointer
-                        rightSection={<ComboboxChevron />}
+                        rightSection={<ComboboxChevron className='clickThrough' />}
+                        disabled={!isEditable}
                         />
                      </Flex>
 
@@ -329,24 +355,29 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                      align="center"
                      direction="row"
                      wrap="wrap"
-                     gap="xs">
+                     gap="xs"
+                     >
                         <Fieldset legend="Garantia" className='p-2'>
                            <SegmentedControl 
                            value={formValues.valorGar}
                            onChange={(value) => handleInputChange('valorGar', value)}
                            data={[
-                              {label:'Sim', value:'sim'},
-                              {label:'Não', value:'nao'}
-                           ]} />
+                              {label:'Não', value:'nao'},
+                              {label:'Sim', value:'sim'}
+                           ]}
+                           disabled={!isEditable}
+                           />
                         </Fieldset>
                         <Fieldset legend="Acessórios" className='p-2'>
                            <SegmentedControl 
                            value={valorAcc}
                            onChange={setValorAcc}
                            data={[
-                              {label:'Sim', value:'sim'},
-                              {label:'Não', value:'nao'}
-                           ]} />
+                              {label:'Não', value:'nao'},
+                              {label:'Sim', value:'sim'}
+                           ]}
+                           disabled={!isEditable} 
+                           />
                         </Fieldset>
                      </Flex>
                      
@@ -357,6 +388,7 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                         placeholder=""
                         value={formValues.acessorios}
                         onChange={(e) => handleInputChange('acessorios', e.target.value)}
+                        disabled={!isEditable}
                         />
                      )}
 
@@ -366,6 +398,7 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                      placeholder=""
                      value={formValues.observacoes}
                      onChange={(e) => handleInputChange('observacoes', e.target.value)}
+                     disabled={!isEditable}
                      />
                   </Fieldset>
 
@@ -383,7 +416,8 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                      data={avariasCache.map((avaria) => avaria.Avaria)}
                      dropdownOpened={false}
                      pointer
-                     rightSection={<ComboboxChevron />} />
+                     rightSection={<ComboboxChevron className='clickThrough' />} 
+                     />
                      <ScrollArea className='flex-1 pb-1 px-1' ref={scrollAreaRef}>
                         {avariasCache
                            .filter(avaria => avaria.Avaria.toLowerCase().includes(autocompleteFilter))
@@ -394,6 +428,7 @@ const NRInternaForm: React.FC<{initialData: any}> = ({initialData}) => {
                               label={avaria.Avaria} 
                               checked={formValues.defeitos.includes(avaria.Avaria)}
                               onChange={() => handleDefeitoChange(avaria.Avaria)}
+                              disabled={!isEditable}
                               />
                            ))
                         }

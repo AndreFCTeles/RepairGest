@@ -1,21 +1,35 @@
+/* |----- IMPORTAÇÕES -----| */
+
+// Frameworks
 import React from 'react';
 import { Table, ScrollArea } from '@mantine/core';
+
+// Componentes
 import formatarData from '../../utils/formatar-data';
 import separarArray from '../../utils/separar-arrays';
 import Observacoes from '../partilhado/observacoes';
 
+// Inicialização do tipo de dados da tabela
 interface GerarTabelaProps {
    data: any[];
    headers: string[];
    onRowDoubleClick: (rowId: any) => void;
 }
-interface NomesColunasRepar {
-   [key: string]: string;
-}
+interface NomesColunasRepar { [key: string]: string; }
+
+
+
+
+
+/* |----- COMPONENTE -----| */
 
 const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowDoubleClick }) => {
+
    // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
+
+
+   /* |----- INICIALIZAÇÃO DE VARIÁVEIS -----| */
 
    // Inicializar campos mostrados/filtrados
    const colunasMostradasRepar: string[] = [
@@ -48,10 +62,12 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
       'Acessorios':'Acessórios', 
       'Actualizada':'Atualizada'
    } 
-   const handleDoubleClick = (index: number) => {
-      onRowDoubleClick(index); // Directly pass the index
-   };
 
+
+
+
+
+   /* |----- LÓGICA -----| */
 
    // Gerar Headers
    const tableHeaders = colunasMostradasRepar
@@ -60,7 +76,7 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
 
    // Gerar células
    const tableRows = data.map((item, index) => (
-      <Table.Tr key={index} data-index={index} onDoubleClick={()=>handleDoubleClick(index)}>
+      <Table.Tr key={index} data-index={index} onDoubleClick={()=>handleDoubleClick(index)} >
          {colunasMostradasRepar.map((header) => (
             colunasMostradasRepar.includes(header) && 
             <Table.Td key={header}>
@@ -74,13 +90,22 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
       </Table.Tr>
    ));
 
+   // Duplo-click para edição de dados
+   const handleDoubleClick = (index: number) => { onRowDoubleClick(index); };
+
+
+
+
+
+   /* |----- JSX / GERAR ELEMENTO -----| */
+
    return (
       <ScrollArea>
          <Table stickyHeader stickyHeaderOffset={0} striped highlightOnHover withTableBorder withColumnBorders>
-               <Table.Thead>
-                  <Table.Tr>{tableHeaders}</Table.Tr>
-               </Table.Thead>
-               <Table.Tbody>{tableRows}</Table.Tbody>
+            <Table.Thead>
+               <Table.Tr>{tableHeaders}</Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>{tableRows}</Table.Tbody>
          </Table>
       </ScrollArea>
    );

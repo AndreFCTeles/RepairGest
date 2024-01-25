@@ -48,14 +48,14 @@ const handleError = (res, error, message = 'Erro') => {
 const dateCompareFunction = (a, b) => {
    const dateA = new Date(a.DataTime || 0);
    const dateB = new Date(b.DataTime || 0);
-   //console.log(`A comparar: ${dateA} e ${dateB}`);
+   //console.log(`A comparar: ${dateA} e ${dateB}`); // debug
    return dateB - dateA;
 }
 // Comparar dois valores para sorting - ordenar por string
 const stringCompareFunction = (a, b, field) => {
    const strA = a[field] || "";
    const strB = b[field] || "";
-   //console.log(`A comparar: ${strA} e ${strB}`);
+   //console.log(`A comparar: ${strA} e ${strB}`); // debug
    if (strA < strB) { return -1; }
    if (strA > strB) { return 1; }
    return 0;
@@ -89,8 +89,7 @@ function paginateData(data, page, pageSize) {
 // Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
 function quickSort(arr, field) {
    if (arr.length < 2) return arr; // --------------------------------------------------------------------- arr.length = 1 ou 0, aceitar valor simples em vez de array (=já ordenado)   
-   // Determinar tipo de comparação dependendo do tipo de dados recebidos
-   const compareFunction = field === 'DataTime' ? dateCompareFunction : stringCompareFunction;
+   const compareFunction = field === 'DataTime' ? dateCompareFunction : stringCompareFunction; // --------- Determinar tipo de comparação dependendo do tipo de dados recebidos
    // Argumentos para funcionamento do algoritmo
    const pivotIndex = Math.floor(arr.length / 2);
    const pivot = arr[pivotIndex];

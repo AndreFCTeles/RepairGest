@@ -6,6 +6,7 @@ const MainFiltros:React.FC = () => {
    return (   
       <Flex gap="4">
          <p>Filtros</p>      
+         {/*
          <Menu shadow="md" width={200}>
             <Menu.Target><Button className='navButton'>Filtro</Button></Menu.Target>      
 
@@ -116,6 +117,7 @@ const MainFiltros:React.FC = () => {
                </Menu.Item>
             </Menu.Dropdown>   
          </Menu>
+         */}
       </Flex>
    );
 };

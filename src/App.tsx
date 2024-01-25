@@ -1,38 +1,50 @@
+/* |----- IMPORTAÇÕES -----| */
+
 // Frameworks
 import React, { useState }  from 'react';
 import { Flex, Image, AppShell,  Button, Group, Collapse, Container, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+
 // Componentes
 import Banner from "./components/partilhado/banner";
 import RenderFiltros from './utils/renderers/filtros-renderer';
 import RenderConteudo from './utils/renderers/conteudo-renderer';
 import RenderFormulario from './utils/renderers/form-renderer';
 import LoginForm from './components/partilhado/login';
+
 // Sidebar - Logotipo
 import logo190x170 from './assets/logo190x170.png';
 
 
 
 
+
+/* |----- COMPONENTE -----| */
+
 const App: React.FC = () => {
+
+   /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
+
    // Estado do login
    //const [authenticated, setAuthenticated] = useState(false);
    const [showLoginModal, setShowLoginModal] = useState(true);
 
    // Estados para conteúdo
-   const [opcaoSelecionada, setOpcaoSelecionada] = useState<string>('conteudo'); // Tipo de conteúdo: Formulário/Tabela
-   const [opcaoContSelecionada, setOpcaoContSelecionada] = useState<string>('principal'); // Conteúdo de Tabela
-   const [opcaoFormSelecionada, setOpcaoFormSelecionada] = useState<string>(''); // Conteúdo de Formulário
+   const [opcaoSelecionada, setOpcaoSelecionada] = useState<string>('conteudo'); // ------------ Tipo de conteúdo: Formulário/Tabela
+   const [opcaoContSelecionada, setOpcaoContSelecionada] = useState<string>('principal'); // --- Conteúdo de Tabela
+   const [opcaoFormSelecionada, setOpcaoFormSelecionada] = useState<string>(''); // ------------ Conteúdo de Formulário
 
    // Estados de dropdowns - menu
-   const [reparacoesState, reparacoesActions] = useDisclosure(); // Reparações A
-   const [botState, botActions] = useDisclosure(); // Reparações B
-   const [circuitoState, circuitoActions] = useDisclosure(); // Clientes
-   const [clientesState, clientesActions] = useDisclosure(); // Clientes
+   const [reparacoesState, reparacoesActions] = useDisclosure(); // ---------------------------- Reparações A
+   const [botState, botActions] = useDisclosure(); // ------------------------------------------ Reparações B
+   const [circuitoState, circuitoActions] = useDisclosure(); // -------------------------------- Circuitos
+   const [clientesState, clientesActions] = useDisclosure(); // -------------------------------- Clientes
 
 
 
 
+
+   /* |----- LÓGICA -----| */
 
    // Tipo de conteúdo a apresentar [Tabela, Formulario]
    const renderContent = () => {
@@ -54,6 +66,9 @@ const App: React.FC = () => {
 
 
 
+
+   /* |----- JSX / GERAR ELEMENTO -----| */
+
    return (
       <AppShell
       layout='alt'
@@ -65,9 +80,7 @@ const App: React.FC = () => {
          <AppShell.Header>            
             <Group h="100%" w="100%">
                <Banner>
-                  <Group align='center' className='pl-0 pr-4'>
-                     <Container hiddenFrom="sm">Menu</Container>
-                  </Group>
+                  <Group align='center' className='pl-0 pr-4'> <Container hiddenFrom="sm">Menu</Container> </Group>
                   {renderFiltros()}
                </Banner>
             </Group>
@@ -105,7 +118,7 @@ const App: React.FC = () => {
                            </Group>
 
                            <Collapse in={botState} className='dropdown mx-7'>
-                              <div>
+                              <>
                                  <Button 
                                  className="navButton mt-1" 
                                  onClick={() => {
@@ -118,7 +131,7 @@ const App: React.FC = () => {
                                     setOpcaoSelecionada('formulario');
                                     setOpcaoFormSelecionada('reparExterna');
                                  }}>Externa</Button>
-                              </div>
+                              </>
                            </Collapse>
                         </div>
                         <Button  
@@ -147,7 +160,7 @@ const App: React.FC = () => {
                      <Collapse 
                      in={circuitoState} 
                      className='dropdown'>
-                        <div>
+                        <>
                            <Button 
                            className="navButton mt-1" 
                            onClick={() => {
@@ -160,7 +173,7 @@ const App: React.FC = () => {
                               setOpcaoSelecionada('conteudo');
                               setOpcaoContSelecionada('reparCircuito');
                            }}>Consulta</Button>
-                        </div>
+                        </>
                      </Collapse>
                   </div>
                   {/* /CIRCUITOS */}
@@ -185,7 +198,7 @@ const App: React.FC = () => {
                      <Collapse 
                      in={clientesState} 
                      className='dropdown'>
-                        <div>
+                        <>
                            <Button 
                            className="navButton mt-1" 
                            onClick={() => {
@@ -198,7 +211,7 @@ const App: React.FC = () => {
                               setOpcaoSelecionada('conteudo');
                               setOpcaoContSelecionada('clientes');
                            }}>Consulta</Button>
-                        </div>
+                        </>
                      </Collapse>
 
                      <Group>
@@ -231,10 +244,10 @@ const App: React.FC = () => {
                }}
                >
                   <LoginForm
-                     onLoginSuccess={() => {
-                        setShowLoginModal(false);
-                        //setAuthenticated(true);
-                     }}
+                  onLoginSuccess={() => {
+                     setShowLoginModal(false);
+                     //setAuthenticated(true);
+                  }}
                   />
                </Modal>
             ) : (

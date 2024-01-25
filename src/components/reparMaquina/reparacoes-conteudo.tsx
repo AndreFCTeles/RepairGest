@@ -2,7 +2,7 @@
 
 // Frameworks
 import React, { useState, useEffect } from 'react';
-import { Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/core';
+import { Button, Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 // Componentes
@@ -35,6 +35,13 @@ const ReparMaqConteudo:React.FC = () => {
    const [opened, { open, close }] = useDisclosure(false);
    const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
 
+   // Toggle para edição de dados
+   const [isFormEditable, setIsFormEditable] = useState(false);
+   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
+
+   // Gravar dados após edição
+   //const [isFormChanged, setIsFormChanged] = useState(false);
+
 
 
 
@@ -65,14 +72,17 @@ const ReparMaqConteudo:React.FC = () => {
       return () => {}; // cleanup
    }, [currentPage]);
 
+   // Repõe "disabled" nos elementos de formulário quando Drawer é fechado
+   useEffect(() => { if (!opened) { setIsFormEditable(false); } }, [opened]);
 
 
 
-   
+
+
    /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
 
    // Paginação - mudança de página
-   const handlePageChange = (newPage: number) => { setCurrentPage(newPage); }
+   const handlePageChange = (newPage: number) => { setCurrentPage(newPage); };
    
    // Duplo-click e edição de dados
    const handleRowDoubleClick = (index: number) => {
@@ -82,27 +92,42 @@ const ReparMaqConteudo:React.FC = () => {
       open();
    };
 
+   // Handler para guardar dados alterados
+   const handleFormSave = () => {
+      // 
+   };
+
 
 
 
 
    /* |----- JSX / GERAR ELEMENTO -----| */
 
-
    return (    
       <div className="bg-gray-100 FIXContainer" >    
          {/* Drawer para formulário / edição de dados */}
          <Drawer 
             opened={opened} 
-            onClose={close} 
+            onClose={()=>{
+               setIsFormEditable(false);
+               close();
+            }} 
             padding="md" 
             size="xl" 
             position='right' 
             withCloseButton={false}>
+            <Flex direction='row' justify='center'>
+               <Button className='normalBtn' onClick={toggleFormEditability}>
+                  {isFormEditable ? "Cancelar" : "Editar"}
+               </Button>
+               <Button className='normalBtn' onClick={handleFormSave}>
+                  Guardar
+               </Button>
+            </Flex>
             {selectedRowData && (
                selectedRowData.IntExt === "2" ? 
-               <NRExternaForm initialData={selectedRowData} /> : 
-               <NRInternaForm initialData={selectedRowData} />
+               <NRExternaForm initialData={selectedRowData} isEditable={isFormEditable} /> : 
+               <NRInternaForm initialData={selectedRowData} isEditable={isFormEditable} />
             )}
          </Drawer>
 
@@ -121,19 +146,19 @@ const ReparMaqConteudo:React.FC = () => {
                   <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer">
                      <Center>
                         <Pagination
-                           total={totalPages}
-                           value={currentPage}
-                           onChange={handlePageChange}
-                           siblings={3}
-                           boundaries={2}
-                           withEdges
-                           className='m-1'
+                        total={totalPages}
+                        value={currentPage}
+                        onChange={handlePageChange}
+                        siblings={3}
+                        boundaries={2}
+                        withEdges
+                        className='m-1'
                         />
                      </Center>
                      <GerarTabelaReparMaq 
-                        data={data} 
-                        headers={headers} 
-                        onRowDoubleClick={handleRowDoubleClick}
+                     data={data} 
+                     headers={headers} 
+                     onRowDoubleClick={handleRowDoubleClick}
                      />  
                   </Flex>
                )}

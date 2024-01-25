@@ -13,9 +13,9 @@ import Observacoes from '../partilhado/observacoes';
 interface GerarTabelaProps {
    data: any[];
    headers: string[];
-   // onRowDoubleClick: (rowId: any) => void;
+   onRowDoubleClick: (rowId: any) => void;
 }
-interface NomesColunasCliente { [key: string]: string; }
+interface NomesColunasMain { [key: string]: string; }
 
 
 
@@ -23,7 +23,7 @@ interface NomesColunasCliente { [key: string]: string; }
 
 /* |----- COMPONENTE -----| */
 
-const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDoubleClick*/ }) => {
+const GerarTabelaMain: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDoubleClick*/ }) => {
 
    // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
@@ -32,30 +32,8 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDou
    /* |----- INICIALIZAÇÃO DE CAMPOS -----| */
 
    // Inicializar campos mostrados/filtrados
-   const colunasMostradasCliente: string[] = [
-      'Cliente',
-      'OrdemReparacao',
-      'Marca', 
-      'Maquina',
-      'ModeloElectrex',
-      'Tipo', 
-      'DataTime', 
-      'Avarias',
-      'Observacoes'
-   ]
 
    // Tornar campos mais legíveis
-   const nomesColunasCliente: NomesColunasCliente = {      
-      'Cliente':'Cliente',     
-      'OrdemReparacao':'Ordem Reparação',
-      'Marca':'Marca', 
-      'Maquina':'Maquina',
-      'ModeloElectrex':'Modelo Electrex',
-      'Tipo':'Tipo', 
-      'DataTime':'Data', 
-      'Avarias':'Avarias',
-      'Observacoes':'Observações', 
-   }
 
 
 
@@ -64,11 +42,14 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDou
    /* |----- LÓGICA -----| */
 
    // Gerar Headers
+   /*
    const tableHeaders = colunasMostradasCliente
    .filter(header => colunasMostradasCliente.includes(header)) // filtrar campos desnecessários
    .map((header) => ( <Table.Th key={header}>{nomesColunasCliente[header] || header}</Table.Th> ));
+   */
 
    // Gerar células
+   /*
    const tableRows = data.map((item, index) => (
       //<Table.Tr key={index} data-index={index} onDoubleClick={()=>handleDoubleClick(index)} >
       <Table.Tr key={index}>
@@ -84,6 +65,7 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDou
          ))}
       </Table.Tr>
    ));
+   */
 
    // Duplo-click para edição de dados
    // const handleDoubleClick = (index: number) => { onRowDoubleClick(index); };
@@ -106,4 +88,4 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDou
    );
 };
 
-export default GerarTabelaCli;
+export default GerarTabelaMain;

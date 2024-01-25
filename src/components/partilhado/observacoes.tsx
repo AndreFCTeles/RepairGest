@@ -6,8 +6,8 @@ interface ObservacoesProps{ obData?: string | null; }
 
 
 const Observacoes: React.FC<ObservacoesProps> = ({obData}) => {   
-  const safeObData = obData ? obData.trim() : ''; // Handle null, undefined, or empty string values
-   if (!safeObData) { return <div></div>; }; // Render a placeholder for empty data
+  const safeObData = obData ? obData.trim() : ''; // Trata de valores undefined, null ou vazios
+   if (!safeObData) { return <div></div>; }; // Placeholder para dados vazios
 
    return(
       <Menu shadow="md" width={200}>

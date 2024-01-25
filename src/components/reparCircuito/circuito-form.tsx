@@ -25,31 +25,67 @@ interface FormValues {
    observacoes: string;
 }
 
+// Propriedades do componente
+interface NRCircuitoFormProps {
+   initialData: any;
+   isEditable?: boolean;
+}
+
 
 
 
 
 /* |----- COMPONENTE -----| */
 
-const NRCircuitoForm: React.FC = () => {   
-   
-   /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
+const NRCircuitoForm: React.FC<NRCircuitoFormProps> = ({initialData, isEditable=true}) => {   
+
+   /* |----- INICIALIZAÇÃO DE ESTADOS / VARIÁVEIS -----| */
 
    // Inicialização do formato dos dados em formulário
    const [formValues, setFormValues] = useState<FormValues>({
       dataCalendario: null,
-      circuito: '',
-      estado: 'plan',
       ordemReparacao: '',
       numeroSerie: '',
+      circuito: '',
       origem: '',
       revisao: '',
+      estado: 'plan',
       observacoes: ''
    });
 
+   // transfere os dados da tabela como dados iniciais do formulário
+   useEffect(() => {
+      if (initialData) { 
+         // console.log(initialData); // Debugging
+         setFormValues({
+            dataCalendario: initialData.DataTime ? new Date(initialData.DataTime) : null,
+            ordemReparacao: initialData.OrdemReparacao ? initialData.OrdemReparacao : '',
+            numeroSerie: initialData.Numero ? initialData.Numero : '',
+            circuito: initialData.Circuito ? initialData.Circuito : '',
+            origem: initialData.Origem ? initialData.Origem : '',
+            revisao: initialData.Revisao ? initialData.Revisao : '',
+            estado: initialData.Estado ? initialData.Estado : 'plan',
+            observacoes: initialData.Observacoes ? initialData.Observacoes : ''
+         });
+      }
+   }, [initialData]);
+
    // Estado para cache e uso de dados
    const [circuitosCache, setCircuitosCache] = useState<Circuito[]>([]);
-   
+
+
+
+
+
+   /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
+
+   // Handler para TextInputs
+   const handleInputChange = (field: keyof FormValues, value: any) => {
+      setFormValues(prevValues => ({
+         ...prevValues,
+         [field]: value,
+      }));
+   };
 
 
 
@@ -74,42 +110,23 @@ const NRCircuitoForm: React.FC = () => {
    }, [circuitosCache]);
 
    // Inicialização da data
-   useEffect(() => {
-      const fetchDateTime = async () => {
-         try {
-            const currentDateTime = await fetchData('currentDateTime');
-            const dateObject = new Date(currentDateTime.dateTime);
-            setFormValues(prevValues => ({
-               ...prevValues,
-               dataCalendario: dateObject
-            }));
-         } catch (error) {
-            console.error('Erro ao buscar data/hora - Aplicação:', error);
-         }
-      };
-      fetchDateTime();
+   useEffect(() => {      
+      if (!initialData) { 
+         const fetchDateTime = async () => {
+            try {
+               const currentDateTime = await fetchData('currentDateTime');
+               const dateObject = new Date(currentDateTime.dateTime);
+               setFormValues(prevValues => ({
+                  ...prevValues,
+                  dataCalendario: dateObject
+               }));
+            } catch (error) {
+               console.error('Erro ao buscar data/hora - Aplicação:', error);
+            }
+         };
+         fetchDateTime();
+      }
    }, []);
-
-
-
-
-
-   /* |----- FUNÇÕES "HELPER" - Separação de lógica -----| */
-
-   // Handler para TextInputs
-   const handleInputChange = (field: keyof FormValues, value: any) => {
-      setFormValues(prevValues => ({
-         ...prevValues,
-         [field]: value,
-      }));
-   };
-   // Handler específico para DatePicker
-   const handleDateChange = (date: Date) => {
-      setFormValues(prevValues => ({
-         ...prevValues,
-         dataCalendario: date,
-      }));
-   };
 
 
 
@@ -129,7 +146,7 @@ const NRCircuitoForm: React.FC = () => {
       // console.log(formValues); // caso precise de testar
    };
 
-   
+
 
 
 
@@ -150,12 +167,13 @@ const NRCircuitoForm: React.FC = () => {
                   <Box className="w-1/2 mb-4">
                      <DatesProvider settings={{locale: 'pt', firstDayOfWeek: 0}}>
                         <DatePickerInput
-                           label="Data"
-                           value={formValues.dataCalendario}
-                           onChange={(date) => {handleInputChange('dataCalendario', date)}}
-                           valueFormat='DD MMM YYYY'
-                           pointer
-                           rightSection={<ComboboxChevron />}
+                        label="Data"
+                        value={formValues.dataCalendario}
+                        onChange={(date) => {handleInputChange('dataCalendario', date)}}
+                        valueFormat='DD MMM YYYY'
+                        pointer
+                        rightSection={<ComboboxChevron className='clickThrough' />}
+                        disabled={!isEditable}
                         />
                      </DatesProvider>
                   </Box>
@@ -171,12 +189,14 @@ const NRCircuitoForm: React.FC = () => {
                      placeholder=""
                      value={formValues.ordemReparacao}
                      onChange={(e) => handleInputChange('ordemReparacao', e.target.value)}
+                     disabled={!isEditable}
                      />
                      <TextInput
                      label="Número de série"
                      placeholder=""
                      value={formValues.numeroSerie}
                      onChange={(e) => handleInputChange('numeroSerie', e.target.value)}
+                     disabled={!isEditable}
                      />
                   </Flex>
 
@@ -195,7 +215,8 @@ const NRCircuitoForm: React.FC = () => {
                      data={circuitosCache.map(circuito => circuito.Circuito)}
                      onChange={(value) => handleInputChange('circuito', value)}
                      pointer
-                     rightSection={<ComboboxChevron />}
+                     rightSection={<ComboboxChevron className='clickThrough' />}
+                     disabled={!isEditable}
                      />
                      <Fieldset legend="Estado" className='p-2'>
                         <SegmentedControl 
@@ -204,7 +225,9 @@ const NRCircuitoForm: React.FC = () => {
                         data={[
                            {label:'Planeada', value:'plan'},
                            {label:'Concluída', value:'conc'}
-                        ]} />
+                        ]}
+                        disabled={!isEditable}
+                        />
                      </Fieldset>
                   </Flex>
 
@@ -220,7 +243,8 @@ const NRCircuitoForm: React.FC = () => {
                      data={['Rev1.0', 'Rev2.0', 'Rev3.0', 'Rev4.0', 'Rev5.0', 'Rev6.0', 'Rev7.0', 'Rev8.0', 'Rev9.0']}
                      onChange={(value) => handleInputChange('revisao', value)}
                      pointer
-                     rightSection={<ComboboxChevron />}
+                     rightSection={<ComboboxChevron className='clickThrough' />}
+                     disabled={!isEditable}
                      />
                      <Autocomplete
                      label="Origem"
@@ -228,7 +252,8 @@ const NRCircuitoForm: React.FC = () => {
                      data={['Linha de Produção', 'Recolha Externa', 'Reparação Interna']}
                      onChange={(value) => handleInputChange('origem', value)}
                      pointer
-                     rightSection={<ComboboxChevron />}
+                     rightSection={<ComboboxChevron className='clickThrough' />}
+                     disabled={!isEditable}
                      />
                   </Flex>
                      
@@ -238,6 +263,7 @@ const NRCircuitoForm: React.FC = () => {
                   placeholder=""
                   value={formValues.observacoes}
                   onChange={(e) => handleInputChange('observacoes', e.target.value)}
+                  disabled={!isEditable}
                   />
                </Fieldset>
             </Flex>   
