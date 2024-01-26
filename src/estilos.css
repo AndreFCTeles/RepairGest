@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/*@layer mantine, mantine-contextmenu;*/
 
 :root {
   --foreground-rgb: 0, 0, 0;

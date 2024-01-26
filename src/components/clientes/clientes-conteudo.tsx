@@ -2,17 +2,11 @@
 
 // Frameworks
 import React, { useRef, useState, useEffect } from 'react';
-import { Pagination, Text, Flex, Center, Fieldset, Radio, Autocomplete, ScrollArea } from '@mantine/core';
-// import { useDisclosure } from '@mantine/hooks';
+import { Pagination, Button, Text, Flex, Center, Fieldset, Radio, Autocomplete, ScrollArea } from '@mantine/core';
 
 // Componentes
 import fetchData from '../../api/fetchData';
 import GerarTabelaCli from './clientes-tabela';
-// import NRInternaForm from '../reparMaquina/Interna/interna-form';
-// import NRExternaForm from '../reparMaquina/Externa/externa-form';
-
-// Inicialização do tipo de formulário para edição de dados
-// interface SelectedRowData { IntExt?: string; }
 
 
 
@@ -39,10 +33,7 @@ const ClientesConteudo: React.FC = () => {
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
    const [autocompleteFilter, setAutocompleteFilter] = useState('');
-   /*
-   const [opened, { open, close }] = useDisclosure(false);
-   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
-   */
+   const [resetTrigger, setResetTrigger] = useState(false);
 
    // Dimensionamento dinâmico de elementos
    const radioGroupRef = useRef<HTMLDivElement | null>(null);
@@ -90,15 +81,12 @@ const ClientesConteudo: React.FC = () => {
       updateTableData(filteredRepairsCache, newPage);
    };
 
-   // Duplo-click e edição de dados
-   /*
-   const handleRowDoubleClick = (index: number) => {
-      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
-      setSelectedRowData(rowData);
-      //console.log(rowData.DateTime); // testar objeto
-      open();
-   };
-   */
+   // "Limpar" seleções
+   const handleReset = () => {
+      setAutocompleteFilter('');
+      setSelectedClient('');
+      setResetTrigger(prev => !prev);
+   }
 
 
 
@@ -149,6 +137,15 @@ const ClientesConteudo: React.FC = () => {
       return () => { if (radioGroupRef.current) { resizeObserver.unobserve(radioGroupRef.current); } };
    }, []);
 
+   // Lógica para reset da interface
+   useEffect(() => {
+      if (resetTrigger) {
+         updateTableData(allRepairsCache, 1);
+         setCurrentPage(1);
+         setResetTrigger(false);
+      }
+   }, [resetTrigger, allRepairsCache]);
+
 
 
 
@@ -157,23 +154,6 @@ const ClientesConteudo: React.FC = () => {
 
    return (  
       <div className="bg-gray-100 FIXContainer" >          
-         {/* Drawer para formulário / edição de dados */}
-         {/*
-         <Drawer 
-            opened={opened} 
-            onClose={close} 
-            padding="md" 
-            size="xl" 
-            position='right' 
-            withCloseButton={false}>
-            {selectedRowData && (
-               selectedRowData.IntExt === "2" ? 
-               <NRExternaForm initialData={selectedRowData} /> : 
-               <NRInternaForm initialData={selectedRowData} />
-            )}
-         </Drawer>
-         */}
-
          <Flex
          justify="left"
          direction="row"
@@ -182,12 +162,19 @@ const ClientesConteudo: React.FC = () => {
 
             {/* Campo de pesquisa */}            
             <Fieldset w={'300px'} className='h-full flex flex-col'>
-               <Text className='font-bold clientesListaTitulo' size="xl">Clientes</Text>
+               <Flex direction='row' align='center' justify='space-between'>
+                  <Text className='font-bold clientesListaTitulo' size="xl">Clientes</Text>
+                  <Button 
+                  onClick={handleReset} 
+                  className='normalBtn' 
+                  w={100}>Apagar</Button>
+               </Flex>
                <Radio.Group 
                name="clientes" 
                className='pt-2 flex flex-col flex-1 h-full FIXContainer'
                onChange={handleRadioChange}
                ref={radioGroupRef}
+               value={selectedClient}
                >
                   <Autocomplete
                   className="procuraCliente"
@@ -205,7 +192,14 @@ const ClientesConteudo: React.FC = () => {
                            key={client.ID} 
                            value={client.Nome} 
                            label={client.Nome}
+                           checked={selectedClient === client.Nome}
+                           onChange={()=> handleRadioChange(client.Nome)}
                            className='p-1'
+                           style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'left'
+                           }}
                            />                              
                         ))
                      }           
@@ -236,7 +230,6 @@ const ClientesConteudo: React.FC = () => {
                      data={data} 
                      headers={headers} 
                      />  
-                        {/* onRowDoubleClick={handleRowDoubleClick} */}
                   </Flex>
                )}
             </Fieldset>

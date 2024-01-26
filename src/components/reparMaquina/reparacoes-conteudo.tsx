@@ -6,10 +6,13 @@ import { Button, Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/cor
 import { useDisclosure } from '@mantine/hooks';
 
 // Componentes
-import fetchData from '../../api/fetchData';
 import GerarTabelaReparMaq from './reparacoes-tabela';
 import NRInternaForm from './Interna/interna-form';
 import NRExternaForm from './Externa/externa-form';
+
+// Utils
+import fetchData from '../../api/fetchData';
+import quickSort from '../../utils/quickSort';
 
 // Inicialização do tipo de formulário para edição de dados
 interface SelectedRowData { IntExt?: string; }
@@ -29,6 +32,11 @@ const ReparMaqConteudo:React.FC = () => {
    const [headers, setHeaders] = useState<string[]>([]);
    const [currentPage, setCurrentPage] = useState(1);
    const [totalPages, setTotalPages] = useState(0);
+
+   // Estados de cache/sorting
+   const [cachedData, setCachedData] = useState<any[]>([]);
+   const [sortField, setSortField] = useState<string | null>(null);
+   const [sortOrder, setSortOrder] = useState('asc');
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
@@ -62,6 +70,7 @@ const ReparMaqConteudo:React.FC = () => {
                setTotalPages(fetchedData.totalPages);
             }
             setData(fetchedData.data);
+            setCachedData(fetchedData.data);
          } catch (error) {
             console.error('Erro ao buscar e atualizar dados - Aplicação:', error);
          } finally {
@@ -86,10 +95,26 @@ const ReparMaqConteudo:React.FC = () => {
    
    // Duplo-click e edição de dados
    const handleRowDoubleClick = (index: number) => {
-      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
+      const rowData = cachedData[index]; // dados correspondentes à linha onde o ID é clickado
       setSelectedRowData(rowData);
       //console.log(rowData.DateTime); // testar objeto
       open();
+   };
+
+   // Ordenar dados
+   const sortData = (field: string) => {
+      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+      const sortedData = quickSort(cachedData, field, order);
+      setSortOrder(order);
+      setSortField(field);
+      setCachedData(sortedData);
+   };
+
+   // Reset à ordem/aos dados
+   const resetData = () => {
+      setCachedData(data);
+      setSortField(null);
+      setSortOrder('asc');
    };
 
    // Handler para guardar dados alterados
@@ -143,7 +168,11 @@ const ReparMaqConteudo:React.FC = () => {
                   // <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
                   <div>Shit's loading, yo</div>
                ) : (
-                  <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer">
+                  <Flex 
+                  className="flex-col mb-1 px-4 pb-4 FIXContainer" 
+                  align={totalPages <= 1 ? 'center' : ''}
+                  justify={totalPages <= 1 ? 'center' : ''}
+                  >
                      <Center>
                         <Pagination
                         total={totalPages}
@@ -156,8 +185,10 @@ const ReparMaqConteudo:React.FC = () => {
                         />
                      </Center>
                      <GerarTabelaReparMaq 
-                     data={data} 
+                     data={cachedData} 
                      headers={headers} 
+                     onHeaderClick={sortData}
+                     resetData={resetData}
                      onRowDoubleClick={handleRowDoubleClick}
                      />  
                   </Flex>

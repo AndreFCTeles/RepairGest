@@ -1,49 +1,53 @@
 // Inicialização do tipo de valores a ordenar
-interface SortableItem {
-   DataTime?: string; // Caso seja data
-   [key: string]: any; // Qualquer outro tipo de dados
-}
+interface SortableItem {[key: string]: any;}
 
-// Comparar dois valores para sorting - ordenar por data
-const dateCompareFunction = (a: SortableItem, b: SortableItem): number => {
-   const dateA = new Date(a.DataTime || 0);
-   const dateB = new Date(b.DataTime || 0);
-   //console.log(`A comparar: ${dateA} e ${dateB}`); // debug
-   return dateB.getTime() - dateA.getTime();
-}
 
-// Comparar dois valores para sorting - ordenar por string
-const stringCompareFunction = (a: SortableItem, b: SortableItem, field: string): number => {
-   const strA = a[field] || "";
-   const strB = b[field] || "";
-   //console.log(`A comparar: ${strA} e ${strB}`); // debug
-   if (strA < strB) { return -1; }
-   if (strA > strB) { return 1; }
-   return 0;
+   /* |----- TIPOS DE COMPARAÇÃO -----| */
+
+// Comparar dois valores para sorting - DATA
+const dateCompare = (a: Date, b: Date, order: string): number => {
+   return order === 'asc' ? a.getTime() - b.getTime() : b.getTime() - a.getTime();
 };
 
+// Comparar dois valores para sorting - STRING
+const stringCompare = (a: string, b: string, order: string): number => {
+   return order === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
+};
+
+// Comparar dois valores para sorting - NUMBER
+const numberCompare = (a: number, b: number, order: string): number => {
+   return order === 'asc' ? a - b : b - a;
+};
+
+
+
+   /* |----- ALGORITMO -----| */
+
 // Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
-const quickSort = (arr: SortableItem[], field: string): SortableItem[] => {
-   if (arr.length < 2) return arr; // --------------------------------------------------------------------- arr.length = 1 ou 0, aceitar valor simples em vez de array (=já ordenado)   
-   const compareFunction = field === 'DataTime' ? dateCompareFunction : stringCompareFunction; // --------- Determinar tipo de comparação dependendo do tipo de dados recebidos
-   // Argumentos para funcionamento do algoritmo
-   const pivotIndex = Math.floor(arr.length / 2);
-   const pivot = arr[pivotIndex];
-   const    
-      left: SortableItem[] = [], 
-      right: SortableItem[] = [], 
-      equal: SortableItem[] = [];
+const quickSort = (items: SortableItem[], field: string, order: string = 'asc'): SortableItem[] => {
+   if (items.length < 2) { return items; }
 
-   for (let element of arr) {
-      const comparison = compareFunction(element, pivot, field);
-      if (comparison < 0) left.push(element);
-      else if (comparison > 0) right.push(element);
-      else equal.push(element);
-   }
-   const sortedLeft = quickSort(left, field);
-   const sortedRight = quickSort(right, field);
+   const pivot = items[0];
+   const lesser: SortableItem[] = [];
+   const greater: SortableItem[] = [];
 
-   return [...sortedLeft, ...equal, ...sortedRight];
-}
+   items.slice(1).forEach(item => {
+      let comparison = 0;
+
+      // Verificar se field é data
+      if (field === 'DataTime' && item[field] instanceof Date && pivot[field] instanceof Date) {
+         comparison = dateCompare(item[field], pivot[field], order); // Usar comparação de datas
+      } else if (typeof item[field] === 'string' && typeof pivot[field] === 'string') {
+         comparison = stringCompare(item[field], pivot[field], order); // Usar comparação de strings
+      } else if (typeof item[field] === 'number' && typeof pivot[field] === 'number') {
+         comparison = numberCompare(item[field], pivot[field], order); // Usar comparação de números
+      }
+
+      if (comparison < 0) { lesser.push(item); } 
+      else { greater.push(item); }
+   });
+
+   return [...quickSort(lesser, field, order), pivot, ...quickSort(greater, field, order)];
+};
 
 export default quickSort;

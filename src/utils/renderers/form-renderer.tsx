@@ -9,7 +9,7 @@ import NClienteForm from '../../components/clientes/cliente-form';
 interface RenderFormularioProps { opcaoSelecionada: string; }
 
 const RenderFormulario: React.FC<RenderFormularioProps> = ({opcaoSelecionada}) => {
-   const conteudos: Record<string, React.FC> = {
+   const conteudos: Record<string, React.FC<any>> = {
       reparInterna: NRInternaForm,
       reparExterna: NRExternaForm,
       reparCircuito: NRCircuitoForm,

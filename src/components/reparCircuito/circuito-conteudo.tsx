@@ -6,9 +6,12 @@ import { Button, Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/cor
 import { useDisclosure } from '@mantine/hooks';
 
 // Componentes
-import fetchData from '../../api/fetchData';
 import GerarTabelaReparCir from './circuito-tabela';
 import NRCircuitoForm from './circuito-form';
+
+// Utils
+import fetchData from '../../api/fetchData';
+import quickSort from '../../utils/quickSort';
 
 // Inicialização do tipo de formulário para edição de dados
 interface SelectedRowData { IntExt?: string; }
@@ -28,6 +31,12 @@ const ReparCirConteudo:React.FC = () => {
    const [headers, setHeaders] = useState<string[]>([]);
    const [currentPage, setCurrentPage] = useState(1);
    const [totalPages, setTotalPages] = useState(0);
+
+   // Estados de cache/sorting
+   const [cachedData, setCachedData] = useState<any[]>([]);
+   const [sortField, setSortField] = useState<string | null>(null);
+   const [sortOrder, setSortOrder] = useState('asc');
+
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
@@ -61,6 +70,7 @@ const ReparCirConteudo:React.FC = () => {
                setTotalPages(fetchedData.totalPages);
             }
             setData(fetchedData.data);
+            setCachedData(fetchedData.data);
          } catch (error) {
             console.error('Erro ao buscar e atualizar dados - Aplicação:', error);
          } finally {
@@ -89,6 +99,22 @@ const ReparCirConteudo:React.FC = () => {
       setSelectedRowData(rowData);
       //console.log(rowData.DateTime); // testar objeto
       open();
+   };
+
+   // Ordenar dados
+   const sortData = (field: string) => {
+      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+      const sortedData = quickSort(cachedData, field, order);
+      setSortOrder(order);
+      setSortField(field);
+      setCachedData(sortedData);
+   };
+
+   // Reset à ordem/aos dados
+   const resetData = () => {
+      setCachedData(data);
+      setSortField(null);
+      setSortOrder('asc');
    };
 
    // Handler para guardar dados alterados
@@ -138,7 +164,11 @@ const ReparCirConteudo:React.FC = () => {
                   // <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
                   <div>Shit's loading, yo</div>
                ) : (
-                  <Flex className="flex-col mb-1 px-4 pb-4 FIXContainer" justify={totalPages <= 1 ? 'center' : ''}>
+                  <Flex 
+                  className="flex-col mb-1 px-4 pb-4 FIXContainer" 
+                  align={totalPages <= 1 ? 'center' : ''}
+                  justify={totalPages <= 1 ? 'center' : ''}
+                  >
                      
                      {totalPages <= 1 ? null : (
                         <Center>
@@ -156,6 +186,8 @@ const ReparCirConteudo:React.FC = () => {
                      <GerarTabelaReparCir 
                      data={data} 
                      headers={headers} 
+                     onHeaderClick={sortData}
+                     resetData={resetData}
                      onRowDoubleClick={handleRowDoubleClick}
                      />  
                   </Flex>

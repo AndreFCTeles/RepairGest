@@ -3,6 +3,7 @@
 // Frameworks
 import React from 'react';
 import { Table, ScrollArea } from '@mantine/core';
+import { useContextMenu } from 'mantine-contextmenu';
 
 // Componentes
 import formatarData from '../../utils/formatar-data';
@@ -14,6 +15,8 @@ interface GerarTabelaProps {
    data: any[];
    headers: string[];
    onRowDoubleClick: (rowId: any) => void;
+   onHeaderClick: (header: string) => void;
+   resetData: () => void;
 }
 interface NomesColunasRepar { [key: string]: string; }
 
@@ -23,13 +26,16 @@ interface NomesColunasRepar { [key: string]: string; }
 
 /* |----- COMPONENTE -----| */
 
-const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowDoubleClick }) => {
+const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowDoubleClick, onHeaderClick, resetData }) => {
 
     // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
 
 
    /* |----- INICIALIZAÇÃO DE CAMPOS -----| */
+
+   // Menu de contexto (botão direito do rato)
+   const {showContextMenu} = useContextMenu();
 
    // Inicializar campos mostrados/filtrados
    const colunasMostradasRepar: string[] = [
@@ -64,11 +70,34 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
    // Gerar Headers
    const tableHeaders = colunasMostradasRepar
    .filter(header => colunasMostradasRepar.includes(header)) // filtrar campos desnecessários
-   .map((header) => ( <Table.Th key={header}>{nomesColunasRepar[header] || header}</Table.Th> ));
+   .map((header) => ( 
+      <Table.Th 
+      key={header}
+      onClick={()=>onHeaderClick(header)}
+      >
+         {nomesColunasRepar[header] || header}
+      </Table.Th> 
+   ));
 
    // Gerar células
    const tableRows = data.map((item, index) => (
-      <Table.Tr key={index} data-index={index} onDoubleClick={()=>handleDoubleClick(index)} >
+      <Table.Tr 
+      key={index} 
+      data-index={index} 
+      onDoubleClick={()=> onRowDoubleClick(index)} 
+      onContextMenu={showContextMenu([
+         {
+            key: 'reset',
+            onClick: resetData,
+            title: 'Ordenar por data',
+         },
+         {
+            key: 'editar',
+            onClick: () => onRowDoubleClick(index),
+            title: 'Editar dados',
+         }
+      ])}
+      >
          {colunasMostradasRepar.map((header) => (
             colunasMostradasRepar.includes(header) && 
             <Table.Td key={header}>
@@ -81,9 +110,6 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
          ))}
       </Table.Tr>
    ));
-
-   // Duplo-click para edição de dados
-   const handleDoubleClick = (index: number) => { onRowDoubleClick(index); };
 
 
 
