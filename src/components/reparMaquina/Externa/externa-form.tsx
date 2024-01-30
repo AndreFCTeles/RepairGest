@@ -414,6 +414,19 @@ const NRExternaForm: React.FC<NRExternaFormProps> = ({initialData, isEditable=tr
                               checked={formValues.defeitos.includes(avaria.Avaria)}
                               onChange={() => handleDefeitoChange(avaria.Avaria)}
                               disabled={!isEditable}
+                              styles={{
+                                 root:{
+                                    paddingTop:'4px'
+                                 },
+                                 inner: {
+                                    display: 'flex',
+                                    marginLeft: 8, 
+                                    alignItems: 'center'
+                                 },
+                                 icon:{                                 
+                                    display: 'none'
+                                 }
+                              }}
                               />
                            ))
                         }

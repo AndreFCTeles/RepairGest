@@ -20,11 +20,18 @@
   -webkit-text-size-adjust: 100%;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+/* ajustes para dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+#root,
+nav {
+  height: 100%;
 }
 
 main {
@@ -32,8 +39,16 @@ main {
   overflow-x: hidden;
 }
 
-input {
-  padding: 3px 10px 3px 10px;
+body,
+main {
+  height: 100vh;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
 /* Conteúdo = tabelas de dados */
@@ -63,12 +78,6 @@ input {
   background-color: #C5101A;
 }
 
-/* Pequena alteração a elementos Input do Mantine */
-.mantine-TextInput-root {
-  border: 1px;
-  border-radius: 5px;
-}
-
 /* Sidebar de navegação */
 .navbar {
   background-color: #2D2D2D;
@@ -80,27 +89,14 @@ input {
   pointer-events: none;
 }
 
-/* ajustes para dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* Pequena alteração a elementos Input do Mantine */
+.mantine-TextInput-root {
+  border: 1px;
+  border-radius: 5px;
 }
 
+
 @layer components {
-
-  #root,
-  nav {
-    @apply h-full
-  }
-
-  body,
-  main {
-    @apply h-screen
-  }
-
   #logo {
     @apply max-w-[190px] sm:max-w-[190px] md:max-w-sm
   }

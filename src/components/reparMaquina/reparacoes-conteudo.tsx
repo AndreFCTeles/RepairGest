@@ -1,7 +1,7 @@
 /* |----- IMPORTAÇÕES -----| */
 
 // Frameworks
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button, Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
@@ -28,27 +28,70 @@ const ReparMaqConteudo:React.FC = () => {
    /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
 
    // Estados da tabela
-   const [data, setData] = useState<any[]>([]);
    const [headers, setHeaders] = useState<string[]>([]);
    const [currentPage, setCurrentPage] = useState(1);
    const [totalPages, setTotalPages] = useState(0);
+   const [paginatedData, setPaginatedData] = useState<any[]>([]);
 
-   // Estados de cache/sorting
+   // Estados de cache
    const [cachedData, setCachedData] = useState<any[]>([]);
+   const [displayData, setDisplayData] = useState<any[]>([]);
+
+   // Estados de ordem de dados
    const [sortField, setSortField] = useState<string | null>(null);
-   const [sortOrder, setSortOrder] = useState('asc');
+   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
-   const [opened, { open, close }] = useDisclosure(false);
-   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
 
-   // Toggle para edição de dados
+   // Edição de dados
+   const [opened, { open, close }] = useDisclosure(false);
    const [isFormEditable, setIsFormEditable] = useState(false);
+   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
    const toggleFormEditability = () => { setIsFormEditable(current => !current); };
 
    // Gravar dados após edição
    //const [isFormChanged, setIsFormChanged] = useState(false);
+
+
+
+
+
+   /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
+
+   // Paginação - mudança de página
+   const handlePageChange = (newPage: number) => { setCurrentPage(newPage); };
+
+   // Duplo-click e edição de dados
+   const handleRowDoubleClick = (index: number) => {
+      setSelectedRowData(displayData ? displayData[index] : cachedData[index]);
+      //console.log(rowData.DateTime); // testar objeto
+      open();
+   };
+
+   // Reset à ordem/aos dados
+   const resetData = () => {
+      setDisplayData(cachedData);
+      setSortField(null);
+      setSortOrder('asc');
+   };
+
+   // Handler para guardar dados alterados
+   const handleFormSave = () => {
+      // 
+   };
+
+   // Determinar o que ordenar, em que ordem
+   const sortData = (field: string) => {
+      const isSameField = field === sortField;
+      setSortField(field);
+      setSortOrder(isSameField && sortOrder === 'asc' ? 'desc' : 'asc');
+   };
+
+   // Usar a memória em vez de operações estáticas para ordenar dados
+   const sortedData = useMemo(() => {
+      return sortField ? quickSort([...displayData], sortField, sortOrder) : displayData;
+   }, [displayData, sortField, sortOrder]);
 
 
 
@@ -59,23 +102,17 @@ const ReparMaqConteudo:React.FC = () => {
    // Buscar dados e atualizar tabela
    useEffect(() => {
       const fetchDataAndUpdateState = async () => {
+         setIsLoading(true);
          try {
-            setIsLoading(true);
             const fetchedData = await fetchData('getrepar', currentPage, 30);
-
             if (fetchedData.totalPages > 0) {
-               const primeiroItem = fetchedData.data[0];
-               const headerKeys = Object.keys(primeiroItem);
-               setHeaders(headerKeys);
+               setHeaders(Object.keys(fetchedData.data[0]));
                setTotalPages(fetchedData.totalPages);
             }
-            setData(fetchedData.data);
             setCachedData(fetchedData.data);
-         } catch (error) {
-            console.error('Erro ao buscar e atualizar dados - Aplicação:', error);
-         } finally {
-            setIsLoading(false);
-         }
+            setDisplayData(fetchedData.data);
+         } catch (error) { console.error('Erro ao buscar e atualizar dados - Aplicação:', error); } 
+         finally { setIsLoading(false); }
       }
       fetchDataAndUpdateState();      
       return () => {}; // cleanup
@@ -84,45 +121,39 @@ const ReparMaqConteudo:React.FC = () => {
    // Repõe "disabled" nos elementos de formulário quando Drawer é fechado
    useEffect(() => { if (!opened) { setIsFormEditable(false); } }, [opened]);
 
+   // Guardar dados ordenados em cache
+   //useEffect(() => { updateTableData(sortedData); }, [sortedData]);
 
+   // Refrescar dados da Tabela consoante a página escolhida
+   useEffect(() => {
+      const pageSize = 30;
+      const totalItems = sortedData.length;
+      const startIndex = (currentPage - 1) * pageSize;
+      let endIndex = startIndex + pageSize;
+      endIndex = endIndex > totalItems ? totalItems : endIndex;
 
+      if (startIndex < totalItems) {
+         setPaginatedData(sortedData.slice(startIndex, endIndex));
+      } else if (currentPage > 1) {
+         setCurrentPage(prevPage => prevPage - 1);
+      } else {
+         setPaginatedData([]);
+      }
+   }, [sortedData, currentPage]);
 
+   /*
+   const updateTableData = (data: any[]) => {
+      const pageSize = 30;
+      const totalItems = data.length;
+      const startIndex = (currentPage - 1) * pageSize;
+      let endIndex = startIndex + pageSize;
+      endIndex = endIndex > totalItems ? totalItems : endIndex;
 
-   /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
-
-   // Paginação - mudança de página
-   const handlePageChange = (newPage: number) => { setCurrentPage(newPage); };
-   
-   // Duplo-click e edição de dados
-   const handleRowDoubleClick = (index: number) => {
-      const rowData = cachedData[index]; // dados correspondentes à linha onde o ID é clickado
-      setSelectedRowData(rowData);
-      //console.log(rowData.DateTime); // testar objeto
-      open();
+      if (startIndex < totalItems) { setPaginatedData(data.slice(startIndex, endIndex)); } 
+      else if (currentPage > 1) { setCurrentPage(currentPage - 1); } 
+      else { setPaginatedData([]); }
    };
-
-   // Ordenar dados
-   const sortData = (field: string) => {
-      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
-      const sortedData = quickSort(cachedData, field, order);
-      setSortOrder(order);
-      setSortField(field);
-      setCachedData(sortedData);
-   };
-
-   // Reset à ordem/aos dados
-   const resetData = () => {
-      setCachedData(data);
-      setSortField(null);
-      setSortOrder('asc');
-   };
-
-   // Handler para guardar dados alterados
-   const handleFormSave = () => {
-      // 
-   };
-
-
+   */
 
 
 
@@ -185,11 +216,13 @@ const ReparMaqConteudo:React.FC = () => {
                         />
                      </Center>
                      <GerarTabelaReparMaq 
-                     data={cachedData} 
+                     data={paginatedData} 
                      headers={headers} 
                      onHeaderClick={sortData}
                      resetData={resetData}
                      onRowDoubleClick={handleRowDoubleClick}
+                     sortField={sortField}
+                     sortOrder={sortOrder}
                      />  
                   </Flex>
                )}

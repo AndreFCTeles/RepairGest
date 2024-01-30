@@ -2,8 +2,9 @@
 
 // Frameworks
 import React from 'react';
-import { Table, ScrollArea } from '@mantine/core';
+import { Table, ScrollArea, Flex } from '@mantine/core';
 import { useContextMenu } from 'mantine-contextmenu';
+import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
 
 // Componentes
 import formatarData from '../../utils/formatar-data';
@@ -17,6 +18,8 @@ interface GerarTabelaProps {
    onRowDoubleClick: (rowId: any) => void;
    onHeaderClick: (header: string) => void;
    resetData: () => void;
+   sortField: string | null;
+   sortOrder: 'asc' | 'desc';
 }
 interface NomesColunasRepar { [key: string]: string; }
 
@@ -26,15 +29,20 @@ interface NomesColunasRepar { [key: string]: string; }
 
 /* |----- COMPONENTE -----| */
 
-const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowDoubleClick, onHeaderClick, resetData }) => {
+const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowDoubleClick, onHeaderClick, resetData, sortField, sortOrder }) => {
+
+   /* |----- INICIALIZAÇÃO DE ESTADOS / VARIÁVEIS -----| */
 
    // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
 
-   /* |----- INICIALIZAÇÃO DE VARIÁVEIS -----| */
-
    // Menu de contexto (botão direito do rato)
    const {showContextMenu} = useContextMenu();
+
+   // Render sort icons for table headers
+   const renderSortIcon = (field: string) => {
+      return field === sortField && (sortOrder === 'asc' ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />);
+   };
 
    // Inicializar campos mostrados/filtrados
    const colunasMostradasRepar: string[] = [
@@ -76,13 +84,13 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
 
    // Gerar Headers
    const tableHeaders = colunasMostradasRepar
-   .filter(header => colunasMostradasRepar.includes(header)) // filtrar campos desnecessários
-   .map((header) => ( 
-      <Table.Th 
-      key={header} 
-      onClick={()=>onHeaderClick(header)}
-      >
-         {nomesColunasRepar[header] || header}
+   .filter(header => colunasMostradasRepar.includes(header)) // Filtrar campos desnecessários
+   .map((header) => ( // Gear headers da tabela dinamicamente
+      <Table.Th key={header} onClick={()=>onHeaderClick(header)} >
+         <Flex direction='row' align='center'>
+            {nomesColunasRepar[header] || header}  
+            {renderSortIcon(header)} 
+         </Flex>
       </Table.Th> 
    ));
 
@@ -91,7 +99,9 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
       <Table.Tr 
       key={index} 
       data-index={index} 
+      // Edição de dados (duplo click)
       onDoubleClick={() => onRowDoubleClick(index)} 
+      // Menu de contexto (botão direito do rato)
       onContextMenu={showContextMenu([
          {
             key: 'reset',
@@ -105,6 +115,7 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
          }
       ])}
       >
+         {/* Gerar tabela dinamicamente */}
          {colunasMostradasRepar.map((header) => (
             colunasMostradasRepar.includes(header) && 
             <Table.Td key={header}>

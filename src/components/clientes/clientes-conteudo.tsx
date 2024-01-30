@@ -18,22 +18,21 @@ const ClientesConteudo: React.FC = () => {
 
    /* |----- ESTADOS / INICIALIZAÇÃO DE VARIÁVEIS -----| */
 
+   // Estados da tabela
+   const [headers, setHeaders] = useState<string[]>([]);
+   const [currentPage, setCurrentPage] = useState(1);
+   const [totalPages, setTotalPages] = useState(0);
+
    // Estado para cache e uso de dados
+   const [data, setData] = useState<any[]>([]);
    const [clientList, setClientList] = useState<any[]>([]);
    const [allRepairsCache, setAllRepairsCache] = useState<any[]>([]);
    const [filteredRepairsCache, setFilteredRepairsCache] = useState<any[]>([]);
    const [selectedClient, setSelectedClient] = useState<string>('');
 
-   // Estados da tabela
-   const [data, setData] = useState<any[]>([]);
-   const [headers, setHeaders] = useState<string[]>([]);
-   const [currentPage, setCurrentPage] = useState(1);
-   const [totalPages, setTotalPages] = useState(0);
-
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
    const [autocompleteFilter, setAutocompleteFilter] = useState('');
-   const [resetTrigger, setResetTrigger] = useState(false);
 
    // Dimensionamento dinâmico de elementos
    const radioGroupRef = useRef<HTMLDivElement | null>(null);
@@ -85,7 +84,10 @@ const ClientesConteudo: React.FC = () => {
    const handleReset = () => {
       setAutocompleteFilter('');
       setSelectedClient('');
-      setResetTrigger(prev => !prev);
+      const filteredRepairs = allRepairsCache.filter(repair => repair.Cliente);
+      setFilteredRepairsCache(filteredRepairs);
+      updateTableData(filteredRepairs, 1);
+      setCurrentPage(1);
    }
 
 
@@ -137,14 +139,6 @@ const ClientesConteudo: React.FC = () => {
       return () => { if (radioGroupRef.current) { resizeObserver.unobserve(radioGroupRef.current); } };
    }, []);
 
-   // Lógica para reset da interface
-   useEffect(() => {
-      if (resetTrigger) {
-         updateTableData(allRepairsCache, 1);
-         setCurrentPage(1);
-         setResetTrigger(false);
-      }
-   }, [resetTrigger, allRepairsCache]);
 
 
 
@@ -195,10 +189,15 @@ const ClientesConteudo: React.FC = () => {
                            checked={selectedClient === client.Nome}
                            onChange={()=> handleRadioChange(client.Nome)}
                            className='p-1'
-                           style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'left'
+                           styles={{
+                              inner: {
+                                 display: 'flex',
+                                 marginLeft: 8, 
+                                 alignItems: 'center'
+                              },
+                              icon:{                                 
+                                 display: 'none'
+                              }
                            }}
                            />                              
                         ))

@@ -19,6 +19,17 @@ const numberCompare = (a: number, b: number, order: string): number => {
    return order === 'asc' ? a - b : b - a;
 };
 
+// Comparar dois valores para sorting - ARRAY
+const arrayCompare = (a: any[], b: any[], order: string): number => {
+   // Caso algum array esteja vazio
+   if (a.length === 0) return order === 'asc' ? -1 : 1;
+   if (b.length === 0) return order === 'asc' ? 1 : -1;
+   // Extrair o primeiro element, assumindo que sejam strings
+   const firstA = typeof a[0] === 'string' ? a[0] : '';
+   const firstB = typeof b[0] === 'string' ? b[0] : '';
+   return stringCompare(firstA.charAt(0), firstB.charAt(0), order);
+};
+
 
 
    /* |----- ALGORITMO -----| */
@@ -34,13 +45,15 @@ const quickSort = (items: SortableItem[], field: string, order: string = 'asc'):
    items.slice(1).forEach(item => {
       let comparison = 0;
 
-      // Verificar se field é data
+      // Verificar tipo de campo
       if (field === 'DataTime' && item[field] instanceof Date && pivot[field] instanceof Date) {
          comparison = dateCompare(item[field], pivot[field], order); // Usar comparação de datas
       } else if (typeof item[field] === 'string' && typeof pivot[field] === 'string') {
          comparison = stringCompare(item[field], pivot[field], order); // Usar comparação de strings
       } else if (typeof item[field] === 'number' && typeof pivot[field] === 'number') {
          comparison = numberCompare(item[field], pivot[field], order); // Usar comparação de números
+      } else if (Array.isArray(item[field]) && Array.isArray(pivot[field])) {
+         comparison = arrayCompare(item[field], pivot[field], order);
       }
 
       if (comparison < 0) { lesser.push(item); } 

@@ -416,7 +416,6 @@ const NRInternaForm: React.FC<NRInternaFormProps> = ({initialData, isEditable=tr
                      data={avariasCache.map((avaria) => avaria.Avaria)}
                      dropdownOpened={false}
                      pointer
-                     rightSection={<ComboboxChevron className='clickThrough' />} 
                      />
                      <ScrollArea className='flex-1 pb-1 px-1' ref={scrollAreaRef}>
                         {avariasCache
@@ -429,6 +428,19 @@ const NRInternaForm: React.FC<NRInternaFormProps> = ({initialData, isEditable=tr
                               checked={formValues.defeitos.includes(avaria.Avaria)}
                               onChange={() => handleDefeitoChange(avaria.Avaria)}
                               disabled={!isEditable}
+                              styles={{
+                                 root:{
+                                    paddingTop:'4px'
+                                 },
+                                 inner: {
+                                    display: 'flex',
+                                    marginLeft: 8, 
+                                    alignItems: 'center'
+                                 },
+                                 icon:{                                 
+                                    display: 'none'
+                                 }
+                              }}
                               />
                            ))
                         }
