@@ -44,23 +44,6 @@ const handleError = (res, error, message = 'Erro') => {
    res.status(500).json({ error: message });
 };
 
-// Comparar dois valores para sorting - ordenar por data
-const dateCompareFunction = (a, b) => {
-   const dateA = new Date(a.DataTime || 0);
-   const dateB = new Date(b.DataTime || 0);
-   //console.log(`A comparar: ${dateA} e ${dateB}`); // debug
-   return dateB - dateA;
-}
-// Comparar dois valores para sorting - ordenar por string
-const stringCompareFunction = (a, b, field) => {
-   const strA = a[field] || "";
-   const strB = b[field] || "";
-   //console.log(`A comparar: ${strA} e ${strB}`); // debug
-   if (strA < strB) { return -1; }
-   if (strA > strB) { return 1; }
-   return 0;
-};
-
 // Paginar data caso seja pedido no frontend
 function paginateData(data, page, pageSize) {
 
@@ -85,8 +68,28 @@ function paginateData(data, page, pageSize) {
    };
 }
 
+/* |----- FUNÇÕES PARA COMPARAÇÃO/ORDENAÇÃO DE VALORES -----| */
+/*
+// Comparar dois valores para sorting - ordenar por data
+const dateCompareFunction = (a, b) => {
+   const dateA = new Date(a.DataTime || 0);
+   const dateB = new Date(b.DataTime || 0);
+   //console.log(`A comparar: ${dateA} e ${dateB}`); // debug
+   return dateB - dateA;
+}
+// Comparar dois valores para sorting - ordenar por string
+const stringCompareFunction = (a, b, field) => {
+   const strA = a[field] || "";
+   const strB = b[field] || "";
+   //console.log(`A comparar: ${strA} e ${strB}`); // debug
+   if (strA < strB) { return -1; }
+   if (strA > strB) { return 1; }
+   return 0;
+};
+*/
 
 // Algoritmo QuickSort - https://pt.wikipedia.org/wiki/Quicksort
+/*
 function quickSort(arr, field) {
    if (arr.length < 2) return arr; // --------------------------------------------------------------------- arr.length = 1 ou 0, aceitar valor simples em vez de array (=já ordenado)   
    const compareFunction = field === 'DataTime' ? dateCompareFunction : stringCompareFunction; // --------- Determinar tipo de comparação dependendo do tipo de dados recebidos
@@ -106,9 +109,30 @@ function quickSort(arr, field) {
 
    return [...sortedLeft, ...equal, ...sortedRight];
 }
+*/
 
+// Algoritmo Timsort - https://pt.wikipedia.org/wiki/Timsort
+const compareValues = (a, b, field, sortOrder) => {
+   let valueA = a[field], valueB = b[field];
 
+   // Comparar datas
+   if (valueA instanceof Date && valueB instanceof Date) {
+      valueA = valueA.getTime();
+      valueB = valueB.getTime();
+   }
 
+   // Comparar arrays
+   if (Array.isArray(valueA) && Array.isArray(valueB)) {
+      valueA = valueA[0]?.toString().charAt(0) || "";
+      valueB = valueB[0]?.toString().charAt(0) || "";
+   }
+
+   // Comparação standard
+   if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
+   if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
+
+   return 0;
+};
 
 
 
@@ -119,149 +143,29 @@ function quickSort(arr, field) {
 
 // |----- ENDPOINTS DE BUSCA -----|
 
-// API endpoint para buscar dados de reparações
-app.get('/api/getrepar', async (req, res) => {
+// API endpoint para buscar dados
+app.get('/api/getdata', async (req, res) => {
    try {
-      const fileName = req.query.fileName || 'tblRepairList.json'; // ------------------------------------ Busca ficheiro
-      // const cacheKey = `${fileName}-sorted`; // ------------------------------------------------------- Prepara cache
-
-      // if (!cache[cacheKey]) { // ---------------------------------------------------------------------- Verificar se existe o ficheiro organizado em cache
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      // cache[cacheKey] = quickSort(dataCopy, 'DataTime'); // ------------------------------------------- Ordenar dados por data e guardar em cache
-      const sortedData = quickSort(dataCopy, 'DataTime'); // --------------------------------------------- Ordenar dados por data sem guardar em cache
-      // }
-
-      // Declarar paginação pretendida
-      const page = parseInt(req.query.page, 10);
+      const dataType = req.query.dataType;
+      const fileName = `${dataType}.json` || "_id" || "ID";
+      const sortField = req.query.sortField;
+      const sortOrder = req.query.sortOrder || 'desc';
+      const page = parseInt(req.query.page, 10) || 1;
       const pageSize = parseInt(req.query.pageSize, 10);
 
-      // Retornar dados
-      if (Number.isInteger(page) && Number.isInteger(pageSize) && page > 0 && pageSize > 0) { // --------- Caso seja necessária paginação dos dados
-         const paginatedResult = paginateData(sortedData, page, pageSize);
+      const jsonData = await readJsonFile(fileName);
+      const dataCopy = JSON.parse(JSON.stringify(jsonData));
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); }
+
+      dataCopy.sort((a, b) => compareValues(a, b, sortField, sortOrder));
+
+      if (Number.isInteger(page) && Number.isInteger(pageSize) && page > 0 && pageSize > 0) {
+         const paginatedResult = paginateData(dataCopy, page, pageSize);
          res.json(paginatedResult);
       } else {
-         res.json({ data: sortedData });
+         res.json({ data: dataCopy });
       }
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de reparações - Servidor');
-   }
-});
-
-// API endpoint para buscar dados de reparações de circuitos
-app.get('/api/getcircuitos', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblCircuitoList.json'; // ---------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'DataTime'); // --------------------------------------------- Ordenar dados por data sem guardar em cache
-
-      // Declarar paginação pretendida
-      const page = parseInt(req.query.page, 10);
-      const pageSize = parseInt(req.query.pageSize, 10);
-
-      // Retornar dados
-      if (Number.isInteger(page) && Number.isInteger(pageSize) && page > 0 && pageSize > 0) { // --------- Caso seja necessária paginação dos dados
-         const paginatedResult = paginateData(sortedData, page, pageSize);
-         res.json(paginatedResult);
-      } else {
-         res.json({ data: sortedData });
-      }
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de circuitos - Servidor');
-   }
-});
-
-// API endpoint para buscar dados de clientes
-app.get('/api/getclientes', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblClientes.json'; // -------------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Nome'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
-      // Retornar dados
-      res.json({ data: sortedData });
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de clientes - Servidor');
-   }
-});
-
-// API endpoint para buscar dados de componentes / CI
-app.get('/api/getci', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblCI.json'; // -------------------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Circuito'); // --------------------------------------------- Ordenar dados por data sem guardar em cache
-      // Retornar dados
-      res.json({ data: sortedData });
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de clientes - Servidor');
-   }
-});
-
-// API endpoint para buscar dados de avarias
-app.get('/api/getavarias', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblAvarias.json'; // --------------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Avaria'); // ----------------------------------------------- Ordenar dados por data sem guardar em cache
-      // Retornar dados
-      res.json({ data: sortedData });
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de avarias - Servidor');
-   }
-});
-
-// API endpoint para buscar dados de máquinas
-app.get('/api/getmaquinas', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblMaquinas.json'; // -------------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Maquina'); // ---------------------------------------------- Ordenar dados por data sem guardar em cache
-      // Retornar dados
-      res.json({ data: sortedData });
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de maquinas - Servidor');
-   }
-});
-
-// API endpoint para buscar dados de modelos Electrex
-app.get('/api/getmodelos', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblModelosElectrex.json'; // ------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'ModeloElectrex'); // --------------------------------------- Ordenar dados por data sem guardar em cache
-      // Retornar dados
-      res.json({ data: sortedData });
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de modelos - Servidor');
-   }
-});
-
-// API endpoint para buscar dados de tipos de máquinas
-app.get('/api/gettipos', async (req, res) => {
-   try {
-      const fileName = req.query.fileName || 'tblTipos.json'; // ----------------------------------------- Busca ficheiro
-      const jsonData = await readJsonFile(fileName); // -------------------------------------------------- Prepara dados do ficheiro
-      const dataCopy = JSON.parse(JSON.stringify(jsonData)); // ------------------------------------------ Deep copy para não alterar jsonData
-      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); } // --- Verificar erros de estrutura de dados
-      const sortedData = quickSort(dataCopy, 'Tipo'); // ------------------------------------------------- Ordenar dados por data sem guardar em cache
-      // Retornar dados
-      res.json({ data: sortedData });
-   } catch (error) {
-      handleError(res, error, 400, 'Erro ao buscar dados de tipos - Servidor');
-   }
+   } catch (error) { handleError(res, error, 400, 'Erro ao buscar dados - Servidor'); }
 });
 
 // API endpoint para buscar data/hora

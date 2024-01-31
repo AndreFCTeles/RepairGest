@@ -61,7 +61,7 @@ const ClientesConteudo: React.FC = () => {
          const procuraClienteHeight = radioGroupParent.querySelector('.procuraCliente')?.clientHeight || 0;
          const clientesListaTituloHeight = radioGroupParent.querySelector('.clientesListaTitulo')?.clientHeight || 0;
 
-         const totalDeductions = procuraClienteHeight + clientesListaTituloHeight + 24; // Adicionar margens ou padding (24)
+         const totalDeductions = procuraClienteHeight + clientesListaTituloHeight + 32; // Adicionar margens ou padding (24)
          const availableHeight = radioGroupParent.clientHeight - totalDeductions;
 
          const finalHeight = availableHeight > 0 ? `${availableHeight}px` : '100%';
@@ -101,8 +101,8 @@ const ClientesConteudo: React.FC = () => {
       const fetchClientsAndRepairs = async () => {
          setIsLoading(true);
          try {
-            const clienteRes = await fetchData('getclientes');
-            const reparRes = await fetchData('getrepar');
+            const clienteRes = await fetchData('tblClientes');
+            const reparRes = await fetchData('tblRepairList');
             const reparClienteDados = reparRes.data.filter((repair: any) => repair.Cliente);
             if (reparClienteDados.length > 0) { setHeaders(Object.keys(reparClienteDados[0])); }
             setAllRepairsCache(reparRes.data);
@@ -178,7 +178,7 @@ const ClientesConteudo: React.FC = () => {
                   onChange={handleAutocompleteChange}
                   data={clientList.map(client => client.Nome)}
                   />
-                  <ScrollArea className='flex-1 pt-3' ref={scrollAreaRef}>
+                  <ScrollArea className='flex-1 pt-3 pb-2' ref={scrollAreaRef}>
                      {clientList
                         .filter(client => client.Nome.toLowerCase().includes(autocompleteFilter))
                         .map(client => (

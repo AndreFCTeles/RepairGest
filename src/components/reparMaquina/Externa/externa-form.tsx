@@ -6,7 +6,7 @@ import { Autocomplete, ComboboxChevron, ScrollArea, Text, Flex, TextInput, Texta
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
-import fetchData from '../../../api/fetchData';
+import fetchData from '../../../api/fetchDataBU';
 import postData from '../../../api/postData';
 import 'dayjs/locale/pt';
 

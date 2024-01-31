@@ -1,7 +1,7 @@
 /* |----- IMPORTAÇÕES -----| */
 
 // Frameworks
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
@@ -12,7 +12,6 @@ import NRExternaForm from './Externa/externa-form';
 
 // Utils
 import fetchData from '../../api/fetchData';
-import quickSort from '../../utils/quickSort';
 
 // Inicialização do tipo de formulário para edição de dados
 interface SelectedRowData { IntExt?: string; }
@@ -31,15 +30,9 @@ const ReparMaqConteudo:React.FC = () => {
    const [headers, setHeaders] = useState<string[]>([]);
    const [currentPage, setCurrentPage] = useState(1);
    const [totalPages, setTotalPages] = useState(0);
-   const [paginatedData, setPaginatedData] = useState<any[]>([]);
 
    // Estados de cache
    const [cachedData, setCachedData] = useState<any[]>([]);
-   const [displayData, setDisplayData] = useState<any[]>([]);
-
-   // Estados de ordem de dados
-   const [sortField, setSortField] = useState<string | null>(null);
-   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
@@ -81,18 +74,20 @@ const ReparMaqConteudo:React.FC = () => {
       // 
    };
 
+   /*
    // Determinar o que ordenar, em que ordem
    const sortData = (field: string) => {
       const isSameField = field === sortField;
       setSortField(field);
       setSortOrder(isSameField && sortOrder === 'asc' ? 'desc' : 'asc');
    };
-
+*/
    // Usar a memória em vez de operações estáticas para ordenar dados
+   /*
    const sortedData = useMemo(() => {
       return sortField ? quickSort([...displayData], sortField, sortOrder) : displayData;
    }, [displayData, sortField, sortOrder]);
-
+*/
 
 
 
@@ -125,6 +120,7 @@ const ReparMaqConteudo:React.FC = () => {
    //useEffect(() => { updateTableData(sortedData); }, [sortedData]);
 
    // Refrescar dados da Tabela consoante a página escolhida
+   /*
    useEffect(() => {
       const pageSize = 30;
       const totalItems = sortedData.length;
@@ -140,6 +136,7 @@ const ReparMaqConteudo:React.FC = () => {
          setPaginatedData([]);
       }
    }, [sortedData, currentPage]);
+   */
 
    /*
    const updateTableData = (data: any[]) => {

@@ -5,7 +5,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Text, Flex, TextInput, Textarea,  Box, Fieldset, Button,  Group, ScrollArea} from '@mantine/core';
 
 // Componentes
-import fetchData from '../../api/fetchData';
+import fetchData from '../../api/fetchDataBU';
 
 // Tipos estruturados de valores para validação / estados - Contacto
 interface Contacto {

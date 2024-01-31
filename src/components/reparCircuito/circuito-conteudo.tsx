@@ -61,7 +61,7 @@ const ReparCirConteudo:React.FC = () => {
       const fetchDataAndUpdateState = async () => {
          try {
             setIsLoading(true);
-            const fetchedData = await fetchData('getcircuitos', currentPage, 30);
+            const fetchedData = await fetchData('tblCircuitoList');
 
             if (fetchedData.totalPages > 0) {
                const primeiroItem = fetchedData.data[0];

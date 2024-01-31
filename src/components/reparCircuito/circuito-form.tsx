@@ -6,7 +6,7 @@ import { ComboboxChevron, Text, TextInput, Textarea, Flex, Box, Fieldset, Autoco
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
-import fetchData from '../../api/fetchData';
+import fetchData from '../../api/fetchDataBU';
 import postData from '../../api/postData';
 import 'dayjs/locale/pt'; // Implementa calendário e formatação de data - Portugal
 
