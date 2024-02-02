@@ -15,11 +15,13 @@ import Observacoes from '../partilhado/observacoes';
 interface GerarTabelaProps {
    data: any[];
    headers: string[];
-   onRowDoubleClick: (rowId: any) => void;
    onHeaderClick: (header: string) => void;
-   resetData: () => void;
    sortField: string | null;
-   sortOrder: 'asc' | 'desc';
+   sortOrder: string | null;
+   onRowClick: (index: number) => void;
+   selectedRowIndex: number | null;
+   onRowDoubleClick: (rowId: any) => void;
+   resetData: () => void;
 }
 interface NomesColunasRepar { [key: string]: string; }
 
@@ -29,12 +31,13 @@ interface NomesColunasRepar { [key: string]: string; }
 
 /* |----- COMPONENTE -----| */
 
-const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowDoubleClick, onHeaderClick, resetData, sortField, sortOrder }) => {
-
-   /* |----- INICIALIZAÇÃO DE ESTADOS / VARIÁVEIS -----| */
+const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onHeaderClick, sortField, sortOrder, onRowClick, onRowDoubleClick, selectedRowIndex, resetData }) => {
 
    // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
+
+
+   /* |----- INICIALIZAÇÃO DE ESTADOS / VARIÁVEIS -----| */
 
    // Menu de contexto (botão direito do rato)
    const {showContextMenu} = useContextMenu();
@@ -99,9 +102,8 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
       <Table.Tr 
       key={index} 
       data-index={index} 
-      // Edição de dados (duplo click)
-      onDoubleClick={() => onRowDoubleClick(index)} 
-      // Menu de contexto (botão direito do rato)
+      onDoubleClick={()=> onRowDoubleClick(index)} 
+      onClick={() => onRowClick(index)}
       onContextMenu={showContextMenu([
          {
             key: 'reset',
@@ -113,12 +115,19 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
             onClick: () => onRowDoubleClick(index),
             title: 'Editar dados',
          }
-      ])}
-      >
-         {/* Gerar tabela dinamicamente */}
+      ])}   
+      style={{
+         borderColor: selectedRowIndex ? ( selectedRowIndex === index ? '#black' : '#dee2e6') : '#dee2e6',
+      }} >
          {colunasMostradasRepar.map((header) => (
             colunasMostradasRepar.includes(header) && 
-            <Table.Td key={header}>
+            <Table.Td
+            key={header}
+            style={{
+               borderColor: selectedRowIndex ? ( selectedRowIndex === index ? '#black' : '#dee2e6') : '#dee2e6',
+               color: selectedRowIndex ? (selectedRowIndex === index ? 'black' : '#bbbbbb') : 'black',
+               userSelect: 'none',
+            }} >
                {
                   header === 'DataTime' ? formatarData(item[header]) : 
                   header === 'Observacoes' ? <Observacoes obData={item[header]} /> : 

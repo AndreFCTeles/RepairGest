@@ -4,6 +4,7 @@
 import React from 'react';
 import { Table, ScrollArea } from '@mantine/core';
 import { useContextMenu } from 'mantine-contextmenu';
+import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
 
 // Componentes
 import formatarData from '../../utils/formatar-data';
@@ -14,8 +15,12 @@ import Observacoes from '../partilhado/observacoes';
 interface GerarTabelaProps {
    data: any[];
    headers: string[];
-   onRowDoubleClick: (rowId: any) => void;
    onHeaderClick: (header: string) => void;
+   sortField: string | null;
+   sortOrder: string | null;
+   onRowClick: (index: number) => void;
+   selectedRowIndex: number | null;
+   onRowDoubleClick: (rowId: any) => void;
    resetData: () => void;
 }
 interface NomesColunasRepar { [key: string]: string; }
@@ -26,7 +31,7 @@ interface NomesColunasRepar { [key: string]: string; }
 
 /* |----- COMPONENTE -----| */
 
-const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowDoubleClick, onHeaderClick, resetData }) => {
+const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onHeaderClick, sortField, sortOrder, onRowClick, onRowDoubleClick, selectedRowIndex, resetData }) => {
 
     // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
@@ -36,6 +41,11 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
 
    // Menu de contexto (botão direito do rato)
    const {showContextMenu} = useContextMenu();
+
+   // Render sort icons for table headers
+   const renderSortIcon = (field: string) => {
+      return field === sortField && (sortOrder === 'asc' ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />);
+   };
 
    // Inicializar campos mostrados/filtrados
    const colunasMostradasRepar: string[] = [
@@ -76,6 +86,7 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
       onClick={()=>onHeaderClick(header)}
       >
          {nomesColunasRepar[header] || header}
+         {renderSortIcon(header)} 
       </Table.Th> 
    ));
 
@@ -85,6 +96,7 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
       key={index} 
       data-index={index} 
       onDoubleClick={()=> onRowDoubleClick(index)} 
+      onClick={() => onRowClick(index)}
       onContextMenu={showContextMenu([
          {
             key: 'reset',
@@ -96,11 +108,19 @@ const GerarTabelaReparCir: React.FC<GerarTabelaProps> = ({ data, headers, onRowD
             onClick: () => onRowDoubleClick(index),
             title: 'Editar dados',
          }
-      ])}
-      >
+      ])}      
+      style={{
+         borderColor: selectedRowIndex ? ( selectedRowIndex === index ? '#black' : '#dee2e6') : '#dee2e6',
+      }} >
          {colunasMostradasRepar.map((header) => (
             colunasMostradasRepar.includes(header) && 
-            <Table.Td key={header}>
+            <Table.Td 
+            key={header}
+            style={{
+               borderColor: selectedRowIndex ? ( selectedRowIndex === index ? '#black' : '#dee2e6') : '#dee2e6',
+               color: selectedRowIndex ? (selectedRowIndex === index ? 'black' : '#bbbbbb') : 'black',
+               userSelect: 'none',
+            }} >
                {
                   header === 'DataTime' ? formatarData(item[header]): 
                   header === 'Observacoes' ? <Observacoes obData={item[header]} /> : 

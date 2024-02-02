@@ -3,6 +3,7 @@
 // Frameworks
 import React from 'react';
 import { Table, ScrollArea } from '@mantine/core';
+import { useContextMenu } from 'mantine-contextmenu';
 
 // Componentes
 import formatarData from '../../utils/formatar-data';
@@ -13,7 +14,11 @@ import Observacoes from '../partilhado/observacoes';
 interface GerarTabelaProps {
    data: any[];
    headers: string[];
-   // onRowDoubleClick: (rowId: any) => void;
+   onRowDoubleClick: (rowId: any) => void;
+   onHeaderClick: (header: string) => void;
+   resetData: () => void;
+   onRowClick: (index: number) => void;
+   selectedRowIndex: number | null;
 }
 interface NomesColunasCliente { [key: string]: string; }
 
@@ -23,13 +28,16 @@ interface NomesColunasCliente { [key: string]: string; }
 
 /* |----- COMPONENTE -----| */
 
-const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDoubleClick*/ }) => {
+const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers, onRowClick, onRowDoubleClick, onHeaderClick,  selectedRowIndex, resetData }) => {
 
    // Em caso de erro
    if (!data || !headers) { return <div>Não existem dados a apresentar</div>; }
 
 
    /* |----- INICIALIZAÇÃO DE CAMPOS -----| */
+
+   // Menu de contexto (botão direito do rato)
+   const {showContextMenu} = useContextMenu();
 
    // Inicializar campos mostrados/filtrados
    const colunasMostradasCliente: string[] = [
@@ -66,15 +74,48 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDou
    // Gerar Headers
    const tableHeaders = colunasMostradasCliente
    .filter(header => colunasMostradasCliente.includes(header)) // filtrar campos desnecessários
-   .map((header) => ( <Table.Th key={header}>{nomesColunasCliente[header] || header}</Table.Th> ));
+   .map((header) => ( 
+      <Table.Th 
+      key={header}
+      onClick={()=>onHeaderClick(header)}
+      >
+         {nomesColunasCliente[header] || header}
+      </Table.Th> 
+   ));
 
    // Gerar células
    const tableRows = data.map((item, index) => (
-      //<Table.Tr key={index} data-index={index} onDoubleClick={()=>handleDoubleClick(index)} >
-      <Table.Tr key={index}>
+      <Table.Tr 
+      key={index}
+      data-index={index} 
+      onDoubleClick={()=> onRowDoubleClick(index)} 
+      onClick={() => onRowClick(index)}
+      onContextMenu={showContextMenu([
+         {
+            key: 'reset',
+            onClick: resetData,
+            title: 'Ordenar por data',
+         },
+         {
+            key: 'editar',
+            onClick: () => onRowDoubleClick(index),
+            title: 'Editar dados',
+         }
+      ])}      
+      style={{
+         borderColor: selectedRowIndex ? ( selectedRowIndex === index ? '#black' : '#dee2e6') : '#dee2e6',
+         //color: selectedRowIndex ? (selectedRowIndex === index ? 'black' : '#bbbbbb') : 'black',
+      }} >
          {colunasMostradasCliente.map((header) => (
             colunasMostradasCliente.includes(header) && 
-            <Table.Td key={header}>
+            <Table.Td 
+            key={header}            
+            style={{
+               borderColor: selectedRowIndex ? ( selectedRowIndex === index ? '#black' : '#dee2e6') : '#dee2e6',
+               color: selectedRowIndex ? (selectedRowIndex === index ? 'black' : '#bbbbbb') : 'black',
+               userSelect: 'none',
+            }}
+            >
                {
                   header === 'DataTime' ? formatarData(item[header]) : 
                   header === 'Observacoes' ? <Observacoes obData={item[header]} /> : 
@@ -84,9 +125,6 @@ const GerarTabelaCli: React.FC<GerarTabelaProps> = ({ data, headers /*, onRowDou
          ))}
       </Table.Tr>
    ));
-
-   // Duplo-click para edição de dados
-   // const handleDoubleClick = (index: number) => { onRowDoubleClick(index); };
 
 
 

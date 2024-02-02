@@ -6,7 +6,7 @@ import { ComboboxChevron, Text, TextInput, Textarea, Flex, Box, Fieldset, Autoco
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
-import fetchData from '../../api/fetchDataBU';
+import fetchData from '../../api/fetchData';
 import postData from '../../api/postData';
 import 'dayjs/locale/pt'; // Implementa calendário e formatação de data - Portugal
 
@@ -99,7 +99,7 @@ const NRCircuitoForm: React.FC<NRCircuitoFormProps> = ({initialData, isEditable=
             // Fetch Circuitos
             let circuitosData = circuitosCache;
             if (circuitosData.length === 0) {
-               const res = await fetchData('getci');
+               const res = await fetchData('getdata','tblCl');
                setCircuitosCache(res.data);
             }
          } catch (error) {

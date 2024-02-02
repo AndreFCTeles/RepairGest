@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Pagination, Flex, Center, Fieldset, Drawer } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
 
 // Componentes
 import GerarTabelaReparMaq from './reparacoes-tabela';
@@ -12,6 +13,8 @@ import NRExternaForm from './Externa/externa-form';
 
 // Utils
 import fetchData from '../../api/fetchData';
+import compareValues from '../../utils/compare-values';
+import paginateData from '../../utils/paginate-data';
 
 // Inicialização do tipo de formulário para edição de dados
 interface SelectedRowData { IntExt?: string; }
@@ -32,19 +35,21 @@ const ReparMaqConteudo:React.FC = () => {
    const [totalPages, setTotalPages] = useState(0);
 
    // Estados de cache
+   const [data, setData] = useState<any[]>([]);
    const [cachedData, setCachedData] = useState<any[]>([]);
+   const [sortField, setSortField] = useState<string | null>(null);
+   const [sortOrder, setSortOrder] = useState('asc');
+
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
-
-   // Edição de dados
    const [opened, { open, close }] = useDisclosure(false);
-   const [isFormEditable, setIsFormEditable] = useState(false);
    const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
-   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
+   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
 
-   // Gravar dados após edição
-   //const [isFormChanged, setIsFormChanged] = useState(false);
+   // Toggle para edição de dados
+   const [isFormEditable, setIsFormEditable] = useState(false);
+   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
 
 
 
@@ -52,19 +57,49 @@ const ReparMaqConteudo:React.FC = () => {
 
    /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
 
+   // Refrescamento de dados da tabela
+   /*
+   const updateTableData = (repairs: any[], page: number) => {
+      const pageSize = 30; // Declara o numero de items por página
+      const startIndex = (page - 1) * pageSize; // Declara o tamanho de cada página
+      const endIndex = startIndex + pageSize;
+      setData(repairs.slice(startIndex, endIndex));
+      setTotalPages(Math.ceil(repairs.length / pageSize));
+   };
+   */
+
    // Paginação - mudança de página
    const handlePageChange = (newPage: number) => { setCurrentPage(newPage); };
 
+   // Seleção de rows
+   const handleRowClick = (index: number) => {
+      if (selectedRowIndex === index) { setSelectedRowIndex(null); } 
+      else { setSelectedRowIndex(index); }
+   };
+   
    // Duplo-click e edição de dados
    const handleRowDoubleClick = (index: number) => {
-      setSelectedRowData(displayData ? displayData[index] : cachedData[index]);
+      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
+      setSelectedRowData(rowData);
+      setSelectedRowIndex(index);
       //console.log(rowData.DateTime); // testar objeto
       open();
    };
 
+   // Ordenar dados
+   const sortData = (field: string) => {
+      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+      const unsortedData = data;
+      const sortedData = unsortedData.sort((a, b) => compareValues(a, b, field, order));      
+      paginateData(sortedData, 1, 30);
+      setSortOrder(order);
+      setSortField(field);
+      setCachedData(sortedData);
+   };
+
    // Reset à ordem/aos dados
    const resetData = () => {
-      setDisplayData(cachedData);
+      setCachedData(data);
       setSortField(null);
       setSortOrder('asc');
    };
@@ -73,22 +108,6 @@ const ReparMaqConteudo:React.FC = () => {
    const handleFormSave = () => {
       // 
    };
-
-   /*
-   // Determinar o que ordenar, em que ordem
-   const sortData = (field: string) => {
-      const isSameField = field === sortField;
-      setSortField(field);
-      setSortOrder(isSameField && sortOrder === 'asc' ? 'desc' : 'asc');
-   };
-*/
-   // Usar a memória em vez de operações estáticas para ordenar dados
-   /*
-   const sortedData = useMemo(() => {
-      return sortField ? quickSort([...displayData], sortField, sortOrder) : displayData;
-   }, [displayData, sortField, sortOrder]);
-*/
-
 
 
 
@@ -99,13 +118,16 @@ const ReparMaqConteudo:React.FC = () => {
       const fetchDataAndUpdateState = async () => {
          setIsLoading(true);
          try {
-            const fetchedData = await fetchData('getrepar', currentPage, 30);
-            if (fetchedData.totalPages > 0) {
-               setHeaders(Object.keys(fetchedData.data[0]));
-               setTotalPages(fetchedData.totalPages);
+            const fetchedData = await fetchData('getdata', 'tblRepairList');
+            const paginated = paginateData(fetchedData.data, 1, 30)
+            if (paginated.totalPages > 0) {
+               const primeiroItem = fetchedData.data[0];
+               const headerKeys = Object.keys(primeiroItem);
+               setHeaders(headerKeys);
+               setTotalPages(paginated.totalPages);
             }
-            setCachedData(fetchedData.data);
-            setDisplayData(fetchedData.data);
+            setData(fetchedData.data);
+            setCachedData(paginated.data);
          } catch (error) { console.error('Erro ao buscar e atualizar dados - Aplicação:', error); } 
          finally { setIsLoading(false); }
       }
@@ -115,43 +137,6 @@ const ReparMaqConteudo:React.FC = () => {
 
    // Repõe "disabled" nos elementos de formulário quando Drawer é fechado
    useEffect(() => { if (!opened) { setIsFormEditable(false); } }, [opened]);
-
-   // Guardar dados ordenados em cache
-   //useEffect(() => { updateTableData(sortedData); }, [sortedData]);
-
-   // Refrescar dados da Tabela consoante a página escolhida
-   /*
-   useEffect(() => {
-      const pageSize = 30;
-      const totalItems = sortedData.length;
-      const startIndex = (currentPage - 1) * pageSize;
-      let endIndex = startIndex + pageSize;
-      endIndex = endIndex > totalItems ? totalItems : endIndex;
-
-      if (startIndex < totalItems) {
-         setPaginatedData(sortedData.slice(startIndex, endIndex));
-      } else if (currentPage > 1) {
-         setCurrentPage(prevPage => prevPage - 1);
-      } else {
-         setPaginatedData([]);
-      }
-   }, [sortedData, currentPage]);
-   */
-
-   /*
-   const updateTableData = (data: any[]) => {
-      const pageSize = 30;
-      const totalItems = data.length;
-      const startIndex = (currentPage - 1) * pageSize;
-      let endIndex = startIndex + pageSize;
-      endIndex = endIndex > totalItems ? totalItems : endIndex;
-
-      if (startIndex < totalItems) { setPaginatedData(data.slice(startIndex, endIndex)); } 
-      else if (currentPage > 1) { setCurrentPage(currentPage - 1); } 
-      else { setPaginatedData([]); }
-   };
-   */
-
 
 
    /* |----- JSX / GERAR ELEMENTO -----| */
@@ -163,6 +148,7 @@ const ReparMaqConteudo:React.FC = () => {
             opened={opened} 
             onClose={()=>{
                setIsFormEditable(false);
+               setSelectedRowIndex(null);
                close();
             }} 
             padding="md" 
@@ -213,13 +199,15 @@ const ReparMaqConteudo:React.FC = () => {
                         />
                      </Center>
                      <GerarTabelaReparMaq 
-                     data={paginatedData} 
+                     data={cachedData} 
                      headers={headers} 
                      onHeaderClick={sortData}
-                     resetData={resetData}
-                     onRowDoubleClick={handleRowDoubleClick}
                      sortField={sortField}
                      sortOrder={sortOrder}
+                     onRowDoubleClick={handleRowDoubleClick}
+                     onRowClick={handleRowClick}
+                     selectedRowIndex={selectedRowIndex}
+                     resetData={resetData}
                      />  
                   </Flex>
                )}

@@ -143,12 +143,12 @@ const compareValues = (a, b, field, sortOrder) => {
 
 // |----- ENDPOINTS DE BUSCA -----|
 
-// API endpoint para buscar dados
-app.get('/api/getdata', async (req, res) => {
+// API endpoint para buscar dados (pre-paginados, pre-ordenados)
+app.get('/api/getpagdata', async (req, res) => {
    try {
       const dataType = req.query.dataType;
-      const fileName = `${dataType}.json` || "_id" || "ID";
-      const sortField = req.query.sortField;
+      const fileName = `${dataType}.json`;
+      const sortField = req.query.sortField || "_id" || "ID";
       const sortOrder = req.query.sortOrder || 'desc';
       const page = parseInt(req.query.page, 10) || 1;
       const pageSize = parseInt(req.query.pageSize, 10);
@@ -165,6 +165,19 @@ app.get('/api/getdata', async (req, res) => {
       } else {
          res.json({ data: dataCopy });
       }
+   } catch (error) { handleError(res, error, 400, 'Erro ao buscar dados - Servidor'); }
+});
+
+// API endpoint para buscar dados
+app.get('/api/getdata', async (req, res) => {
+   try {
+      const dataType = req.query.dataType;
+      const fileName = `${dataType}.json`;
+
+      const jsonData = await readJsonFile(fileName);
+      const dataCopy = JSON.parse(JSON.stringify(jsonData));
+      if (!Array.isArray(dataCopy)) { throw new Error('Dados num formato inesperado - Servidor'); }
+      res.json({ data: dataCopy });
    } catch (error) { handleError(res, error, 400, 'Erro ao buscar dados - Servidor'); }
 });
 

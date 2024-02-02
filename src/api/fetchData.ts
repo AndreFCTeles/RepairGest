@@ -1,12 +1,15 @@
 const fetchData = async (
-   dataType: string,
+   endpoint: string,
+   dataType?: string,
    page?: number,
    pageSize?: number,
    sortField?: string,
    sortOrder?: string
 ) => {
-   const queryParams = new URLSearchParams();
-   queryParams.append('dataType', dataType);
+   const queryParams = new URLSearchParams();   
+   if (dataType) {
+      queryParams.append('dataType', dataType);
+   }
    if (sortField) {
       queryParams.append('sortField', sortField);
       if (sortOrder) { queryParams.append('sortOrder', sortOrder); }
@@ -15,8 +18,13 @@ const fetchData = async (
       queryParams.append('page', page.toString());
       queryParams.append('pageSize', pageSize.toString());
    }
-
-   const url = `http://localhost:3000/api/getdata?${queryParams.toString()}`;
+   let url = '';
+   if (endpoint!=='currentDateTime') {
+      url = `http://localhost:3000/api/${endpoint}?${queryParams.toString()}`;
+   } else { 
+      url = `http://localhost:3000/api/${endpoint}`; 
+   }
+   console.log(url);
 
    try {
       const response = await fetch(url);

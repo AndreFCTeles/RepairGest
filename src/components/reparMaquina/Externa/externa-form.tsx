@@ -6,7 +6,7 @@ import { Autocomplete, ComboboxChevron, ScrollArea, Text, Flex, TextInput, Texta
 import { DatePickerInput , DatesProvider} from '@mantine/dates'
 
 // Componentes
-import fetchData from '../../../api/fetchDataBU';
+import fetchData from '../../../api/fetchData';
 import postData from '../../../api/postData';
 import 'dayjs/locale/pt';
 
@@ -147,7 +147,7 @@ const NRExternaForm: React.FC<NRExternaFormProps> = ({initialData, isEditable=tr
             // Fetch Avarias
             let avariasData = avariasCache;
             if (avariasData.length === 0) {
-               const res = await fetchData('getavarias');
+               const res = await fetchData('getdata','tblAvarias');
                avariasData = res.data;
                setAvariasCache(avariasData);
                adjustListSize();
@@ -155,28 +155,28 @@ const NRExternaForm: React.FC<NRExternaFormProps> = ({initialData, isEditable=tr
             // Fetch Clientes
             let clientesData = clientesCache;
             if (clientesData.length === 0) {
-               const res = await fetchData('getclientes');
+               const res = await fetchData('getdata','tblClientes');
                clientesData = res.data;
                setClientesCache(clientesData);
             }
             // Fetch Marcas
             let maquinasData = maquinasCache;
             if (maquinasData.length === 0) {
-               const res = await fetchData('getmaquinas');
+               const res = await fetchData('getdata','tblMaquinas');
                maquinasData = res.data;
                setMaquinasCache(maquinasData);
             }
             // Fetch Modelos
             let modelosData = modelosCache;
             if (modelosData.length === 0) {
-               const res = await fetchData('getmodelos');
+               const res = await fetchData('getdata','tblModelosElectrex');
                modelosData = res.data;
                setModelosCache(modelosData);
             }
             // Fetch Tipos
             let tiposData = tiposCache;
             if (tiposData.length === 0) {
-               const res = await fetchData('gettipos');
+               const res = await fetchData('getdata','tblTipos');
                tiposData = res.data;
                setTiposCache(tiposData);
             }

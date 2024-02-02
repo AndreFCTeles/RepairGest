@@ -95,6 +95,11 @@ body {
   border-radius: 5px;
 }
 
+th,
+tr {
+  border-color: #dee2e6;
+}
+
 
 @layer components {
   #logo {

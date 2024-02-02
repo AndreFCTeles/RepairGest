@@ -5,7 +5,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Text, Flex, TextInput, Textarea,  Box, Fieldset, Button,  Group, ScrollArea} from '@mantine/core';
 
 // Componentes
-import fetchData from '../../api/fetchDataBU';
+import fetchData from '../../api/fetchData';
 
 // Tipos estruturados de valores para validação / estados - Contacto
 interface Contacto {
@@ -79,7 +79,7 @@ const NClienteForm: React.FC = () => {
    // Gerar ID único para dados
    const generateUniqueId = async () => {
       try {
-         const data = await fetchData('getclientes');
+         const data = await fetchData('getdata','tblClientes');
          const maxId = data.reduce((max: number, item: any) => (item.ID > max ? item.ID : max), 0);
          return maxId + 1;
       } catch (error) {

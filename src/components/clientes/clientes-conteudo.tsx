@@ -2,12 +2,20 @@
 
 // Frameworks
 import React, { useRef, useState, useEffect } from 'react';
-import { Pagination, Button, Text, Flex, Center, Fieldset, Radio, Autocomplete, ScrollArea } from '@mantine/core';
+import { Pagination, Button, Text, Flex, Center, Fieldset, Radio, Autocomplete, ScrollArea, Drawer } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
 // Componentes
-import fetchData from '../../api/fetchData';
 import GerarTabelaCli from './clientes-tabela';
+import NRInternaForm from '../reparMaquina/Interna/interna-form';
+import NRExternaForm from '../reparMaquina/Externa/externa-form';
 
+// Utils
+import fetchData from '../../api/fetchData';
+import compareValues from '../../utils/compare-values';
+
+// Inicialização do tipo de formulário para edição de dados
+interface SelectedRowData { IntExt?: string; }
 
 
 
@@ -29,10 +37,19 @@ const ClientesConteudo: React.FC = () => {
    const [allRepairsCache, setAllRepairsCache] = useState<any[]>([]);
    const [filteredRepairsCache, setFilteredRepairsCache] = useState<any[]>([]);
    const [selectedClient, setSelectedClient] = useState<string>('');
+   const [sortField, setSortField] = useState<string | null>(null);
+   const [sortOrder, setSortOrder] = useState('asc');
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
    const [autocompleteFilter, setAutocompleteFilter] = useState('');
+   const [opened, { open, close }] = useDisclosure(false);
+   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
+   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
+
+   // Toggle para edição de dados
+   const [isFormEditable, setIsFormEditable] = useState(false);
+   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
 
    // Dimensionamento dinâmico de elementos
    const radioGroupRef = useRef<HTMLDivElement | null>(null);
@@ -80,6 +97,34 @@ const ClientesConteudo: React.FC = () => {
       updateTableData(filteredRepairsCache, newPage);
    };
 
+   // Seleção de rows
+   const handleRowClick = (index: number) => {
+      if (selectedRowIndex === index) {
+         setSelectedRowIndex(null);
+      } else {
+         setSelectedRowIndex(index);
+      }
+   };
+   
+   // Duplo-click e edição de dados
+   const handleRowDoubleClick = (index: number) => {
+      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
+      setSelectedRowData(rowData);
+      setSelectedRowIndex(index);
+      //console.log(rowData.DateTime); // testar objeto
+      open();
+   };
+
+   // Ordenar dados
+   const sortData = (field: string) => {
+      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+      const unsortedData = data;
+      const sortedData = unsortedData.sort((a, b) => compareValues(a, b, field, order));
+      setSortOrder(order);
+      setSortField(field);
+      setFilteredRepairsCache(sortedData);
+   };
+
    // "Limpar" seleções
    const handleReset = () => {
       setAutocompleteFilter('');
@@ -88,7 +133,19 @@ const ClientesConteudo: React.FC = () => {
       setFilteredRepairsCache(filteredRepairs);
       updateTableData(filteredRepairs, 1);
       setCurrentPage(1);
-   }
+   }   
+
+   // Reset à ordem/aos dados
+   const resetData = () => {
+      setFilteredRepairsCache(data);
+      setSortField(null);
+      setSortOrder('asc');
+   };
+
+   // Handler para guardar dados alterados
+   const handleFormSave = () => {
+      // 
+   };
 
 
 
@@ -101,8 +158,8 @@ const ClientesConteudo: React.FC = () => {
       const fetchClientsAndRepairs = async () => {
          setIsLoading(true);
          try {
-            const clienteRes = await fetchData('tblClientes');
-            const reparRes = await fetchData('tblRepairList');
+            const clienteRes = await fetchData('getdata','tblClientes');
+            const reparRes = await fetchData('getdata','tblRepairList');
             const reparClienteDados = reparRes.data.filter((repair: any) => repair.Cliente);
             if (reparClienteDados.length > 0) { setHeaders(Object.keys(reparClienteDados[0])); }
             setAllRepairsCache(reparRes.data);
@@ -116,9 +173,12 @@ const ClientesConteudo: React.FC = () => {
          }
       };
       fetchClientsAndRepairs();
-      adjustListSize();
+      adjustListSize();  
+      return () => {}; // cleanup
    }, []);
 
+   // Repõe "disabled" nos elementos de formulário quando Drawer é fechado
+   useEffect(() => { if (!opened) { setIsFormEditable(false); } }, [opened]);
 
    // Filtragem dinâmica de dados
    useEffect(() => {
@@ -147,7 +207,34 @@ const ClientesConteudo: React.FC = () => {
    /* |----- JSX / GERAR ELEMENTO -----| */
 
    return (  
-      <div className="bg-gray-100 FIXContainer" >          
+      <div className="bg-gray-100 FIXContainer" >    
+      
+         {/* Drawer para formulário / edição de dados */}
+         <Drawer 
+            opened={opened} 
+            onClose={()=>{
+               setIsFormEditable(false);
+               close();
+            }} 
+            padding="md" 
+            size="xl" 
+            position='right' 
+            withCloseButton={false}>
+            <Flex direction='row' justify='center'>
+               <Button className='normalBtn' onClick={toggleFormEditability}>
+                  {isFormEditable ? "Cancelar" : "Editar"}
+               </Button>
+               <Button className='normalBtn' onClick={handleFormSave}>
+                  Guardar
+               </Button>
+            </Flex>
+            {selectedRowData && (
+               selectedRowData.IntExt === "2" ? 
+               <NRExternaForm initialData={selectedRowData} isEditable={isFormEditable} /> : 
+               <NRInternaForm initialData={selectedRowData} isEditable={isFormEditable} />
+            )}
+         </Drawer>
+
          <Flex
          justify="left"
          direction="row"
@@ -228,6 +315,11 @@ const ClientesConteudo: React.FC = () => {
                      <GerarTabelaCli 
                      data={data} 
                      headers={headers} 
+                     onHeaderClick={sortData}
+                     resetData={resetData}
+                     onRowDoubleClick={handleRowDoubleClick}
+                     onRowClick={handleRowClick}
+                     selectedRowIndex={selectedRowIndex}
                      />  
                   </Flex>
                )}
