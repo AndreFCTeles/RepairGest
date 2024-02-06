@@ -17,6 +17,9 @@ app.use(express.urlencoded({ extended: true })); // --- Permite decompor URLs pa
 app.use(cors()); // ----------------------------------- CORS básico para cross-referencing de origens cliente-servidor
 app.use('/files', express.static(dataFilePath)); // --- Servir ficheiros JSON estáticos a partir de caminho
 
+// Objeto temporário para cache
+let cache = {};
+
 
 
 
@@ -30,28 +33,23 @@ app.use('/files', express.static(dataFilePath)); // --- Servir ficheiros JSON es
  */
 
 // Ler ficheiro JSON
-async function readJsonFile(fileName) {
+const readJsonFile = async (fileName) => {
    const filePath = path.join(dataFilePath, fileName);
+   if (cache[filePath]) { return cache[filePath]; }
    try {
-      const fileContent = await fs.readFile(filePath, 'utf-8');
-      return JSON.parse(fileContent);
+      const jsonData = await fs.readFile(filePath, 'utf-8');
+      const parsedJsonData = JSON.parse(jsonData);
+      cache[filePath] = parsedJsonData;
+      return parsedJsonData;
    }
    catch (error) { throw error; }
-}
+};
 
-// Tratamento de erros
+// Error handling
 const handleError = (res, error, message = 'Erro') => {
    console.error(`${message}: ${error.message}`);
    res.status(500).json({ error: message });
 };
-
-/**
- * Filtragem de dados
- * @param {Array} data - O conjunto de dados a filtrar.
- * @param {string} cliente - Nome de cliente a usar como filtro.
- * @returns {Array} - Os dados filtrados.
- */
-function applyFilters(data, cliente) { return !cliente ? data : data.filter(item => item.Cliente && item.Cliente === cliente); }
 
 // Paginar data caso seja pedido no frontend
 function paginateData(data, page, pageSize) {
@@ -114,9 +112,8 @@ app.get('/api/getpagdata', async (req, res) => {
       const data = await readJsonFile(fileName);
 
       if (!Array.isArray(data)) { throw new Error('Dados num formato inesperado - Servidor'); }
-      data = applyFilters(data, cliente); // aplica filtros se necessário
 
-      const effectiveSortField = // Analisa que ordenação é aplicada por defeito
+      const effectiveSortField =
          data[0] && data[0].hasOwnProperty(sortField) ? sortField :
             data[0] && data[0].hasOwnProperty('ID') ? 'ID' : '_id';
 
