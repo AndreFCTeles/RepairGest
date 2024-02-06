@@ -1,8 +1,8 @@
 /* |----- IMPORTAÇÕES -----| */
 
 // Frameworks
-import React from 'react';
-import { Table, ScrollArea, Flex } from '@mantine/core';
+import React, { useCallback } from 'react';
+import { Table, ScrollArea } from '@mantine/core';
 import { useContextMenu } from 'mantine-contextmenu';
 import { IconChevronUp, IconChevronDown } from '@tabler/icons-react';
 
@@ -85,15 +85,30 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onHead
 
    /* |----- LÓGICA -----| */
 
+   //Lógica para menu de contexto
+   const contextMenuHandler = useCallback((index:number) => showContextMenu([
+      {
+         key: 'reset',
+         onClick: () => resetData(),
+         title: 'Reset sorting',
+      },
+      {
+         key: 'edit',
+         onClick: () => onRowDoubleClick(index),
+         title: 'Edit data',
+      },
+   ]), [resetData, onRowDoubleClick]);
+
    // Gerar Headers
    const tableHeaders = colunasMostradasRepar
    .filter(header => colunasMostradasRepar.includes(header)) // Filtrar campos desnecessários
    .map((header) => ( // Gear headers da tabela dinamicamente
-      <Table.Th key={header} onClick={()=>onHeaderClick(header)} >
-         <Flex direction='row' align='center'>
-            {nomesColunasRepar[header] || header}  
-            {renderSortIcon(header)} 
-         </Flex>
+      <Table.Th 
+      key={header} 
+      onClick={()=>onHeaderClick(header)} 
+      >
+         {nomesColunasRepar[header] || header}  
+         {renderSortIcon(header)} 
       </Table.Th> 
    ));
 
@@ -102,20 +117,9 @@ const GerarTabelaReparMaq: React.FC<GerarTabelaProps> = ({ data, headers, onHead
       <Table.Tr 
       key={index} 
       data-index={index} 
-      onDoubleClick={()=> onRowDoubleClick(index)} 
-      onClick={() => onRowClick(index)}
-      onContextMenu={showContextMenu([
-         {
-            key: 'reset',
-            onClick: resetData,
-            title: 'Ordenar por data',
-         },
-         {
-            key: 'editar',
-            onClick: () => onRowDoubleClick(index),
-            title: 'Editar dados',
-         }
-      ])}   
+      onClick={() => onRowClick(index)} // single click
+      onDoubleClick={()=> onRowDoubleClick(index)} // double click
+      onContextMenu={ contextMenuHandler(index) } // right click
       style={{
          borderColor: selectedRowIndex ? ( selectedRowIndex === index ? '#black' : '#dee2e6') : '#dee2e6',
       }} >

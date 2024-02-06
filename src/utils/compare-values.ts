@@ -1,4 +1,6 @@
-const compareValues = (a:any, b:any, field:string, sortOrder:string) => {
+interface DataItem { [key: string]: string | number | Date | Array<any>; }
+
+const compareValues = (a:DataItem, b:DataItem, field:string, sortOrder:'asc' | 'desc') => {
    let valueA = a[field], valueB = b[field];
 
    // Comparar datas

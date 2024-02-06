@@ -11,7 +11,6 @@ import NRCircuitoForm from './circuito-form';
 
 // Utils
 import fetchData from '../../api/fetchData';
-import compareValues from '../../utils/compare-values';
 
 // Inicialização do tipo de formulário para edição de dados
 interface SelectedRowData { IntExt?: string; }
@@ -33,9 +32,8 @@ const ReparCirConteudo:React.FC = () => {
 
    // Estados de cache/sorting
    const [data, setData] = useState<any[]>([]);
-   const [cachedData, setCachedData] = useState<any[]>([]);
-   const [sortField, setSortField] = useState<string | null>(null);
-   const [sortOrder, setSortOrder] = useState('asc');
+   const [sortField, setSortField] = useState<string>('DataTime');
+   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
 
    // Estados/Funcionalidade da aplicação
@@ -46,7 +44,6 @@ const ReparCirConteudo:React.FC = () => {
 
    // Toggle para edição de dados
    const [isFormEditable, setIsFormEditable] = useState(false);
-   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
 
 
 
@@ -54,19 +51,39 @@ const ReparCirConteudo:React.FC = () => {
 
    /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
 
+   // Buscar dados e atualizar tabela
+   const fetchDataAndUpdateState = async (
+      page: number = currentPage, 
+      field: string = sortField, 
+      order: 'asc' | 'desc' = sortOrder
+   ) => {
+      setIsLoading(true);
+      try {
+         const result = await fetchData('getpagdata', 'tblCircuitoList', page, 30, field, order);
+         setData(result.data);
+         setTotalPages(result.totalPages);
+         setCurrentPage(result.currentPage);
+
+         if (result.data.length > 0) { setHeaders(Object.keys(result.data[0])); }
+      } catch (error) { console.error('Error fetching data:', error); } 
+      finally { setIsLoading(false); }
+   };
+
+   // Toggle para edição de dados
+   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
+
    // Paginação - mudança de página
-   const handlePageChange = (newPage: number) => { setCurrentPage(newPage); }
+   const handlePageChange = (newPage: number) => { 
+      setCurrentPage(newPage);
+      fetchDataAndUpdateState(newPage); 
+   }
    
    // Seleção de rows
-   const handleRowClick = (index: number) => {
-      if (selectedRowIndex === index) { setSelectedRowIndex(null); } 
-      else { setSelectedRowIndex(index); }
-   };
+   const handleRowClick = (index: number) => { setSelectedRowIndex(selectedRowIndex === index ? null : index); };
    
    // Duplo-click e edição de dados
    const handleRowDoubleClick = (index: number) => {
-      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
-      setSelectedRowData(rowData);
+      setSelectedRowData(data[index]); // dados correspondentes à linha onde o ID é clickado
       setSelectedRowIndex(index);
       //console.log(rowData.DateTime); // testar objeto
       open();
@@ -74,25 +91,20 @@ const ReparCirConteudo:React.FC = () => {
 
    // Ordenar dados
    const sortData = (field: string) => {
-      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
-      const unsortedData = data;
-      const sortedData = unsortedData.sort((a, b) => compareValues(a, b, field, order));
+      const order = sortField === field && sortOrder === 'desc' ? 'asc' : 'desc';
       setSortOrder(order);
       setSortField(field);
-      setCachedData(sortedData);
+      fetchDataAndUpdateState(currentPage, field, order);
    };
 
    // Reset à ordem/aos dados
    const resetData = () => {
-      setCachedData(data);
-      setSortField(null);
+      setSortField('DataTime');
       setSortOrder('desc');
    };
 
    // Handler para guardar dados alterados
-   const handleFormSave = () => {
-      // 
-   };
+   const handleFormSave = () => { };
 
 
 
@@ -101,26 +113,7 @@ const ReparCirConteudo:React.FC = () => {
    /* |----- GESTÃO DE ESTADOS -----| */
 
    // Buscar dados e atualizar tabela
-   useEffect(() => {
-      const fetchDataAndUpdateState = async () => {
-         try {
-            setIsLoading(true);
-            const fetchedData = await fetchData('getdata','tblCircuitoList');
-
-            if (fetchedData.totalPages > 0) {
-               const primeiroItem = fetchedData.data[0];
-               const headerKeys = Object.keys(primeiroItem);
-               setHeaders(headerKeys);
-               setTotalPages(fetchedData.totalPages);
-            }
-            setData(fetchedData.data);
-            setCachedData(fetchedData.data);
-         } catch (error) { console.error('Erro ao buscar e atualizar dados - Aplicação:', error); } 
-         finally { setIsLoading(false); }
-      }
-      fetchDataAndUpdateState();      
-      return () => {}; // cleanup
-   }, [currentPage]);
+   useEffect(()=>{ fetchDataAndUpdateState(1) }, [])
 
    // Repõe "disabled" nos elementos de formulário quando Drawer é fechado
    useEffect(() => { if (!opened) { setIsFormEditable(false); } }, [opened]);
@@ -170,8 +163,8 @@ const ReparCirConteudo:React.FC = () => {
                ) : (
                   <Flex 
                   className="flex-col mb-1 px-4 pb-4 FIXContainer" 
-                  align={totalPages <= 1 ? 'center' : ''}
-                  justify={totalPages <= 1 ? 'center' : ''}
+                  /*align={totalPages <= 1 ? 'center' : ''}*/
+                  justify={totalPages <= 1 ? 'bottom' : ''}
                   >
                      
                      {totalPages <= 1 ? null : (
@@ -188,7 +181,7 @@ const ReparCirConteudo:React.FC = () => {
                         </Center>
                      )}
                      <GerarTabelaReparCir 
-                     data={cachedData} 
+                     data={data} 
                      headers={headers} 
                      onHeaderClick={sortData}
                      sortField={sortField}

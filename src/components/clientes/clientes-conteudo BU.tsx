@@ -34,9 +34,11 @@ const ClientesConteudo: React.FC = () => {
    // Estado para cache e uso de dados
    const [data, setData] = useState<any[]>([]);
    const [clientList, setClientList] = useState<any[]>([]);
+   const [allRepairsCache, setAllRepairsCache] = useState<any[]>([]);
+   const [filteredRepairsCache, setFilteredRepairsCache] = useState<any[]>([]);
    const [selectedClient, setSelectedClient] = useState<string>('');
-   const [sortField, setSortField] = useState<string>('DataTime');
-   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+   const [sortField, setSortField] = useState<string | null>(null);
+   const [sortOrder, setSortOrder] = useState('asc');
 
    // Estados/Funcionalidade da aplicação
    const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +46,10 @@ const ClientesConteudo: React.FC = () => {
    const [opened, { open, close }] = useDisclosure(false);
    const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
    const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
-   const [isFormEditable, setIsFormEditable] = useState(false); // Toggle para edição de dados   
+
+   // Toggle para edição de dados
+   const [isFormEditable, setIsFormEditable] = useState(false);
+   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
 
    // Dimensionamento dinâmico de elementos
    const radioGroupRef = useRef<HTMLDivElement | null>(null);
@@ -56,33 +61,14 @@ const ClientesConteudo: React.FC = () => {
 
    /* |----- FUNÇÕES "HELPER" - Separação de lógica -----| */
 
-   // Busca de dados de clientes
-   const fetchClientes = async () => {
-      setIsLoading(true);
-      try {
-         const response = await fetchData('getdata', 'tblClientes');
-         setClientList(response.data);
-      } 
-      catch (error) { console.error('Erro ao buscar e atualizar dados de clientes - Aplicação:', error); } 
-      finally { setIsLoading(false); }
+   // Refrescamento de dados da tabela
+   const updateTableData = (repairs: any[], page: number) => {
+      const pageSize = 30; // Declara o numero de items por página
+      const startIndex = (page - 1) * pageSize; // Declara o tamanho de cada página
+      const endIndex = startIndex + pageSize;
+      setData(repairs.slice(startIndex, endIndex));
+      setTotalPages(Math.ceil(repairs.length / pageSize));
    };
-
-   // Busca de dados de reparações
-   const fetchRepar = async (cliente: string = '', page: number = 1) => {
-      setIsLoading(true);
-      try {
-         const response = await fetchData('getpagdata', 'tblRepairList', page, 30, 'DataTime', 'desc', { cliente: selectedClient });
-         setData(response.data);
-         setTotalPages(response.totalPages);
-         setCurrentPage(response.currentPage);
-         if (response.data.length > 0) { setHeaders(Object.keys(response.data[0])); }
-      } 
-      catch (error) { console.error('Erro ao buscar e atualizar dados de reparações - Aplicação:', error); } 
-      finally { setIsLoading(false); }
-   };
-
-   // Toggle para edição de dados
-   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
 
    // Dimensionamento de lista de clientes
    const adjustListSize = () => {
@@ -103,15 +89,12 @@ const ClientesConteudo: React.FC = () => {
 
    // Gestão da filtragem da lista de clientes 
    const handleAutocompleteChange = (value: string) => { setAutocompleteFilter(value.toLowerCase()); };
-   const handleRadioChange = (value: string) => { 
-      setSelectedClient(value); 
-      fetchRepar(value);
-   };
+   const handleRadioChange = (value: string) => { setSelectedClient(value); };
 
    // Paginação - mudança de página
    const handlePageChange = (newPage: number) => { 
       setCurrentPage(newPage); 
-      fetchRepar(selectedClient, newPage);
+      updateTableData(filteredRepairsCache, newPage);
    };
 
    // Seleção de rows

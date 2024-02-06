@@ -12,6 +12,8 @@ import NRExternaForm from './Externa/externa-form';
 
 // Utils
 import fetchData from '../../api/fetchData';
+import compareValues from '../../utils/compare-values';
+import paginateData from '../../utils/paginate-data';
 
 // Inicialização do tipo de formulário para edição de dados
 interface SelectedRowData { IntExt?: string; }
@@ -33,8 +35,9 @@ const ReparMaqConteudo:React.FC = () => {
 
    // Estados de cache
    const [data, setData] = useState<any[]>([]);
-   const [sortField, setSortField] = useState<string>('DataTime');
-   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+   const [cachedData, setCachedData] = useState<any[]>([]);
+   const [sortField, setSortField] = useState<string | null>(null);
+   const [sortOrder, setSortOrder] = useState('asc');
 
 
    // Estados/Funcionalidade da aplicação
@@ -45,47 +48,42 @@ const ReparMaqConteudo:React.FC = () => {
 
    // Toggle para edição de dados
    const [isFormEditable, setIsFormEditable] = useState(false);
+   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
 
 
 
 
 
    /* |----- FUNÇÕES "HELPER"/"HANDLER" - Separação de lógica -----| */
-   
-   // Buscar dados e atualizar tabela
-   const fetchDataAndUpdateState = async (
-      page: number, 
-      field: string = sortField, 
-      order: 'asc' | 'desc' = sortOrder
-   ) => {
-      setIsLoading(true);
-      try {
-         const result = await fetchData('getpagdata', 'tblRepairList', page, 30, field, order);
-         setData(result.data);
-         setTotalPages(result.totalPages);
-         setCurrentPage(result.currentPage);
 
-         if (result.data.length > 0) { setHeaders(Object.keys(result.data[0])); }
-      } 
-      catch (error) { console.error('Error fetching data:', error); } 
-      finally { setIsLoading(false); }
+   // Refrescamento de dados da tabela
+   /*
+   const updateTableData = (repairs: any[], page: number) => {
+      const pageSize = 30; // Declara o numero de items por página
+      const startIndex = (page - 1) * pageSize; // Declara o tamanho de cada página
+      const endIndex = startIndex + pageSize;
+      setData(repairs.slice(startIndex, endIndex));
+      setTotalPages(Math.ceil(repairs.length / pageSize));
    };
-   
-   // Toggle para edição de dados
-   const toggleFormEditability = () => { setIsFormEditable(current => !current); };
+   */
 
    // Paginação - mudança de página
    const handlePageChange = (newPage: number) => { 
-      setCurrentPage(newPage);
-      fetchDataAndUpdateState(newPage, sortField, sortOrder);
+      setCurrentPage(newPage); 
+      const paginated = paginateData(cachedData, newPage, 30);
+      setData(paginated.data);
    };
 
    // Seleção de rows
-   const handleRowClick = (index: number) => { setSelectedRowIndex(selectedRowIndex === index ? null : index); };
+   const handleRowClick = (index: number) => {
+      if (selectedRowIndex === index) { setSelectedRowIndex(null); } 
+      else { setSelectedRowIndex(index); }
+   };
    
    // Duplo-click e edição de dados
    const handleRowDoubleClick = (index: number) => {
-      setSelectedRowData(data[index]);
+      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
+      setSelectedRowData(rowData);
       setSelectedRowIndex(index);
       //console.log(rowData.DateTime); // testar objeto
       open();
@@ -93,35 +91,57 @@ const ReparMaqConteudo:React.FC = () => {
 
    // Ordenar dados
    const sortData = (field: string) => {
-      const order = sortField === field && sortOrder === 'desc' ? 'asc' : 'desc';
+      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+      const sortedData = [...cachedData].sort((a, b) => compareValues(a, b, field, order));
+      const paginated = paginateData(sortedData, currentPage, 30);
+      setCachedData(paginated.data);
       setSortOrder(order);
       setSortField(field);
-      fetchDataAndUpdateState(currentPage, field, order);
    };
 
    // Reset à ordem/aos dados
    const resetData = () => {
-      setSortField('DataTime');
-      setSortOrder('desc');
+      setCachedData(data);
+      setSortField(null);
+      setSortOrder('asc');
    };
 
    // Handler para guardar dados alterados
-   const handleFormSave = () => { };
-
-
+   const handleFormSave = () => {
+      // 
+   };
 
 
 
    /* |----- GESTÃO DE ESTADOS -----| */
 
-   // Buscar dados e atualizar tabela   
-   useEffect(()=>{ fetchDataAndUpdateState(1) }, [])
+   // Buscar dados e atualizar tabela
+   useEffect(() => {
+      let isMounted = true;
+      const fetchDataAndUpdateState = async () => {
+         setIsLoading(true);
+         try {
+            const fetchedData = await fetchData('getdata', 'tblRepairList');
+            if (isMounted) {
+               const paginated = paginateData(fetchedData.data, 1, 30)
+               if (paginated.totalPages > 0) {
+                  const primeiroItem = fetchedData.data[0];
+                  const headerKeys = Object.keys(primeiroItem);
+                  setHeaders(headerKeys);
+                  setTotalPages(paginated.totalPages);
+               }
+               setData(fetchedData.data);
+               setCachedData(paginated.data);
+            }
+         } catch (error) { console.error('Erro ao buscar e atualizar dados - Aplicação:', error); } 
+         finally { if (isMounted) setIsLoading(false); }
+      }
+      fetchDataAndUpdateState();      
+      return () => { isMounted = false; }; // cleanup
+   }, [currentPage]);
 
    // Repõe "disabled" nos elementos de formulário quando Drawer é fechado
    useEffect(() => { if (!opened) { setIsFormEditable(false); } }, [opened]);
-
-
-
 
 
    /* |----- JSX / GERAR ELEMENTO -----| */
@@ -184,7 +204,7 @@ const ReparMaqConteudo:React.FC = () => {
                         />
                      </Center>
                      <GerarTabelaReparMaq 
-                     data={data} 
+                     data={cachedData} 
                      headers={headers} 
                      onHeaderClick={sortData}
                      sortField={sortField}

@@ -4,26 +4,33 @@ const fetchData = async (
    page?: number,
    pageSize?: number,
    sortField?: string,
-   sortOrder?: string
+   sortOrder?: string,
+   filterCriteria?: { [key: string]: string }
 ) => {
+
    const queryParams = new URLSearchParams();   
-   if (dataType) {
-      queryParams.append('dataType', dataType);
-   }
+
+   if (dataType) { queryParams.append('dataType', dataType); }
+
    if (sortField) {
       queryParams.append('sortField', sortField);
       if (sortOrder) { queryParams.append('sortOrder', sortOrder); }
    }
+
    if (page !== undefined && pageSize !== undefined) {
       queryParams.append('page', page.toString());
       queryParams.append('pageSize', pageSize.toString());
    }
-   let url = '';
-   if (endpoint!=='currentDateTime') {
-      url = `http://localhost:3000/api/${endpoint}?${queryParams.toString()}`;
-   } else { 
-      url = `http://localhost:3000/api/${endpoint}`; 
+
+   if (filterCriteria) {
+      Object.keys(filterCriteria).forEach(key => {
+         if (filterCriteria[key]) { queryParams.append(key, filterCriteria[key]); }
+      });
    }
+
+   let url = '';
+   if (endpoint!=='currentDateTime') { url = `http://localhost:3000/api/${endpoint}?${queryParams.toString()}`; } 
+   else { url = `http://localhost:3000/api/${endpoint}`; }
    console.log(url);
 
    try {
