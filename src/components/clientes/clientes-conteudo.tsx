@@ -42,8 +42,8 @@ const ClientesConteudo: React.FC = () => {
    const [isLoading, setIsLoading] = useState(false);
    const [autocompleteFilter, setAutocompleteFilter] = useState('');
    const [opened, { open, close }] = useDisclosure(false);
-   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null);
-   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
+   const [selectedRowData, setSelectedRowData] = useState<SelectedRowData | null>(null); // Dados da row selecionada para edição
+   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null); // Index da row para indicador de seleção
    const [isFormEditable, setIsFormEditable] = useState(false); // Toggle para edição de dados   
 
    // Dimensionamento dinâmico de elementos
@@ -68,10 +68,16 @@ const ClientesConteudo: React.FC = () => {
    };
 
    // Busca de dados de reparações
-   const fetchRepar = async (cliente: string = '', page: number = 1) => {
+   const fetchRepar = async (
+      filter: string = selectedClient, 
+      page: number = currentPage,      
+      field: string = sortField, 
+      order: 'asc' | 'desc' = sortOrder
+   ) => {
       setIsLoading(true);
       try {
-         const response = await fetchData('getpagdata', 'tblRepairList', page, 30, 'DataTime', 'desc', { cliente: selectedClient });
+         console.log(filter)
+         const response = await fetchData('getpagdata', 'tblRepairList', page, 30, field, order, { Cliente: filter });
          setData(response.data);
          setTotalPages(response.totalPages);
          setCurrentPage(response.currentPage);
@@ -81,7 +87,7 @@ const ClientesConteudo: React.FC = () => {
       finally { setIsLoading(false); }
    };
 
-   // Toggle para edição de dados
+   // Toggle para edição de dado
    const toggleFormEditability = () => { setIsFormEditable(current => !current); };
 
    // Dimensionamento de lista de clientes
@@ -92,7 +98,7 @@ const ClientesConteudo: React.FC = () => {
          const procuraClienteHeight = radioGroupParent.querySelector('.procuraCliente')?.clientHeight || 0;
          const clientesListaTituloHeight = radioGroupParent.querySelector('.clientesListaTitulo')?.clientHeight || 0;
 
-         const totalDeductions = procuraClienteHeight + clientesListaTituloHeight + 32; // Adicionar margens ou padding (24)
+         const totalDeductions = procuraClienteHeight + clientesListaTituloHeight + 32; // Adicionar margens ou padding (32)
          const availableHeight = radioGroupParent.clientHeight - totalDeductions;
 
          const finalHeight = availableHeight > 0 ? `${availableHeight}px` : '100%';
@@ -103,9 +109,15 @@ const ClientesConteudo: React.FC = () => {
 
    // Gestão da filtragem da lista de clientes 
    const handleAutocompleteChange = (value: string) => { setAutocompleteFilter(value.toLowerCase()); };
+   
    const handleRadioChange = (value: string) => { 
-      setSelectedClient(value); 
-      fetchRepar(value);
+      if (value === selectedClient){
+         setSelectedClient(''); 
+         fetchRepar('', currentPage, 'DataTime', 'desc');
+      } else {
+         setSelectedClient(value); 
+         fetchRepar(value);
+      }
    };
 
    // Paginação - mudança de página
@@ -115,45 +127,36 @@ const ClientesConteudo: React.FC = () => {
    };
 
    // Seleção de rows
-   const handleRowClick = (index: number) => {
-      if (selectedRowIndex === index) { setSelectedRowIndex(null); } 
-      else { setSelectedRowIndex(index); }
-   };
+   const handleRowClick = (index: number) => setSelectedRowIndex(selectedRowIndex === index ? null : index);
    
    // Duplo-click e edição de dados
    const handleRowDoubleClick = (index: number) => {
-      const rowData = data[index]; // dados correspondentes à linha onde o ID é clickado
-      setSelectedRowData(rowData);
+      setSelectedRowData(data[index]);
       setSelectedRowIndex(index);
-      //console.log(rowData.DateTime); // testar objeto
       open();
-   };
-
-   // Ordenar dados
-   const sortData = (field: string) => {
-      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
-      const unsortedData = data;
-      const sortedData = unsortedData.sort((a, b) => compareValues(a, b, field, order));
-      setSortOrder(order);
-      setSortField(field);
-      setFilteredRepairsCache(sortedData);
    };
 
    // "Limpar" seleções
    const handleReset = () => {
       setAutocompleteFilter('');
       setSelectedClient('');
-      const filteredRepairs = allRepairsCache.filter(repair => repair.Cliente);
-      setFilteredRepairsCache(filteredRepairs);
-      updateTableData(filteredRepairs, 1);
-      setCurrentPage(1);
+      fetchRepar();
    }   
+
+   // Implement dynamic sorting
+   const sortData = (field: string) => {
+      const order = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+      setSortField(field);
+      setSortOrder(order);
+      fetchRepar(selectedClient, currentPage, field, order); // Adjust fetchRepar to accept sortField and sortOrder
+   };
 
    // Reset à ordem/aos dados
    const resetData = () => {
-      setFilteredRepairsCache(data);
-      setSortField(null);
-      setSortOrder('asc');
+      setData([]);
+      fetchRepar();
+      setSortField('DataTime');
+      setSortOrder('desc');
    };
 
    // Handler para guardar dados alterados
@@ -169,31 +172,15 @@ const ClientesConteudo: React.FC = () => {
 
    // Buscar dados e atualizar tabela
    useEffect(() => {
-      const fetchClientsAndRepairs = async () => {
-         setIsLoading(true);
-         try {
-            const clienteRes = await fetchData('getdata','tblClientes');
-            const reparRes = await fetchData('getdata','tblRepairList');
-            const reparClienteDados = reparRes.data.filter((repair: any) => repair.Cliente);
-            if (reparClienteDados.length > 0) { setHeaders(Object.keys(reparClienteDados[0])); }
-            setAllRepairsCache(reparRes.data);
-            setFilteredRepairsCache(reparClienteDados);
-            setClientList(clienteRes.data);
-            updateTableData(reparClienteDados, 1);
-         } catch (error) {
-            console.error('Erro ao buscar e atualizar dados - Aplicação:', error);
-         } finally {
-            setIsLoading(false);
-         }
-      };
-      fetchClientsAndRepairs();
+      fetchClientes();
+      fetchRepar(selectedClient);
       adjustListSize();  
-      return () => {}; // cleanup
-   }, []);
+   }, [selectedClient]);
 
    // Repõe "disabled" nos elementos de formulário quando Drawer é fechado
    useEffect(() => { if (!opened) { setIsFormEditable(false); } }, [opened]);
 
+   /*
    // Filtragem dinâmica de dados
    useEffect(() => {
       // Filtrar dados de reparação consoante o cliente selecionado e refrescar tabela
@@ -205,6 +192,7 @@ const ClientesConteudo: React.FC = () => {
       updateTableData(newFilteredRepairs, 1); // Reverter para página 1 mudando de filtragem
       setCurrentPage(1);
    }, [selectedClient, allRepairsCache]);
+   */
 
    // Lógica para dimensionamento caso a janela mude de tamanho
    useEffect(() => {
