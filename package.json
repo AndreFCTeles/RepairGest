@@ -25,7 +25,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
-    "react-window": "^1.8.10"
+    "react-window": "^1.8.10",
+    "repairgest": "file:"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
@@ -52,7 +53,7 @@
   "resolutions": {
     "mini-css-extract-plugin": "2.4.7"
   },
-  "description": "This template should help get you started developing with Tauri, React and Typescript in Vite.",
+  "description": "Software de Gestão de Reparações - Electrex",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/AndreFCTeles/RepairGest.git"
